@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "Findemy Student",
+    "slug": "findemy-student",
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1A1D3D"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.findemy.student",
+      "usesAppleSignIn": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#FBF7EF"
+      },
+      "package": "app.findemy.student"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-location",
+      "expo-apple-authentication",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.PLACEHOLDER"
+        }
+      ]
+    ],
+    "scheme": "findemy",
+    "extra": {
+      "googleIosClientId": "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID_PLACEHOLDER",
+      "googleAndroidClientId": "EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID_PLACEHOLDER"
+    }
+  }
+}

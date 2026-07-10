@@ -1,0 +1,4828 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Findemy · Admin app · Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+  <style>
+    /* === tokens.css inlined === */
+    /* Findemy unified design tokens. Used by both student and admin apps. */
+
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* ---------- Color tokens ---------- */
+  --ink:           #14110F;
+  --ink-soft:      #3A332D;
+  --mist:          #8B7F73;
+  --whisper:       #B5AB9B;
+
+  --paper:         #F1ECE2;
+  --paper-warm:    #EDE6D8;
+  --ivory:         #FAF6EE;
+  --bone:          #E5DDC9;
+  --hairline:      #DDD3BC;
+
+  --persimmon:     #D8492A;
+  --persimmon-deep:#B33B1E;
+  --persimmon-soft:#FBE3D9;
+
+  --jade:          #1E5C5A;
+  --jade-soft:     #C9DCD8;
+
+  --marigold:      #E8A33D;
+  --marigold-soft: #F7E4C0;
+
+  --rose:          #C7556A;
+  --rose-soft:     #F3DBDF;
+
+  --plum:          #5B2F3D;
+
+  --charcoal:      #1A1614;
+  --charcoal-2:    #211C19;
+  --charcoal-line: #2E2825;
+
+  /* ---------- Typography ---------- */
+  --serif: 'Instrument Serif', 'Fraunces', Georgia, serif;
+  --sans:  'Geist', 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* ---------- Radius ---------- */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+
+  /* ---------- Shadow ---------- */
+  --sh-sm: 0 1px 2px rgba(60, 30, 10, 0.06);
+  --sh-md: 0 8px 24px -12px rgba(60, 30, 10, 0.16), 0 2px 6px rgba(60, 30, 10, 0.04);
+  --sh-lg: 0 24px 48px -16px rgba(40, 20, 10, 0.20);
+  --sh-frame: 0 60px 120px -40px rgba(0,0,0,0.55), 0 30px 60px -30px rgba(0,0,0,0.4);
+
+  /* ---------- Phone metrics ---------- */
+  --phone-w: 390px;
+  --phone-h: 844px;
+  --phone-bezel: 14px;
+  --phone-radius: 56px;
+  --phone-radius-inner: 42px;
+
+  /* Density tokens — adopted from admin app to tighten student app inputs/chips. */
+  --input-pad-y: 14px;
+  --input-pad-x: 16px;
+  --chip-pad-y: 7px;
+  --chip-pad-x: 13px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: #0E0C0A;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-feature-settings: 'cv11';
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; border: 0; background: none; color: inherit; }
+img, svg { display: block; max-width: 100%; }
+input, textarea { font: inherit; }
+
+    /* === components.css inlined === */
+    /* Findemy unified component library. Used by both student and admin apps.
+   Requires: shared/tokens.css loaded first.
+   Do NOT add screen-specific selectors (.s-*) here — use student.css / admin.css. */
+
+/* ========================================================================
+   PHONE FRAME
+   ======================================================================== */
+
+.phone {
+  width: var(--phone-w);
+  height: var(--phone-h);
+  border-radius: var(--phone-radius);
+  background: linear-gradient(135deg, #2A2A2C 0%, #161617 50%, #2A2A2C 100%);
+  padding: var(--phone-bezel);
+  position: relative;
+  box-shadow: var(--sh-frame);
+  flex-shrink: 0;
+}
+.phone::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: calc(var(--phone-radius) - 4px);
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.4));
+  pointer-events: none;
+}
+
+.screen {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--phone-radius-inner);
+  overflow: hidden;
+  background: var(--paper);
+  position: relative;
+  isolation: isolate;
+}
+
+.phone .island {
+  position: absolute;
+  top: 11px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 116px;
+  height: 32px;
+  background: #000;
+  border-radius: 18px;
+  z-index: 50;
+}
+
+/* ========================================================================
+   STATUS BAR
+   ======================================================================== */
+
+.status-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px 0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  z-index: 40;
+  pointer-events: none;
+}
+.status-bar .time { color: var(--ink); }
+.status-bar .signals { display: flex; gap: 5px; align-items: center; color: var(--ink); }
+.status-bar.on-dark .time,
+.status-bar.on-dark .signals { color: #F1ECE2; }
+.signal-dots { display: inline-flex; align-items: end; gap: 2px; height: 10px; }
+.signal-dots i { display: block; width: 3px; background: currentColor; border-radius: 1px; }
+.signal-dots i:nth-child(1) { height: 4px; }
+.signal-dots i:nth-child(2) { height: 6px; }
+.signal-dots i:nth-child(3) { height: 8px; }
+.signal-dots i:nth-child(4) { height: 10px; }
+.battery { width: 24px; height: 11px; border: 1px solid currentColor; border-radius: 3px; position: relative; padding: 1px; }
+.battery::after { content: ""; position: absolute; right: -3px; top: 3px; width: 2px; height: 5px; background: currentColor; border-radius: 0 1px 1px 0; }
+.battery i { display: block; height: 100%; width: 80%; background: currentColor; border-radius: 1px; }
+
+/* ========================================================================
+   BOTTOM NAV — unified base + per-app modifiers
+   ======================================================================== */
+
+.nav-bar {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  background: rgba(250, 246, 238, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--hairline);
+  display: grid;
+  align-items: center;
+  z-index: 5;
+}
+.nav-bar.student { height: 100px; grid-template-columns: repeat(5, 1fr); padding: 14px 8px 28px; }
+.nav-bar.admin   { height: 84px;  grid-template-columns: repeat(4, 1fr); padding: 12px 8px 24px; }
+
+.nav-bar.on-dark {
+  background: rgba(20, 16, 14, 0.92);
+  border-top-color: rgba(255,255,255,0.08);
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--mist);
+  letter-spacing: 0.04em;
+  font-weight: 500;
+  padding: 6px 4px;
+}
+.nav-item svg { width: 22px; height: 22px; }
+.nav-item.active { color: var(--ink); }
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 2px;
+  background: var(--persimmon);
+  border-radius: 2px;
+}
+.nav-bar.on-dark .nav-item { color: #847A6E; }
+.nav-bar.on-dark .nav-item.active { color: #F1ECE2; }
+
+/* ========================================================================
+   NAV FAB (student only — floating action button for reel creation)
+   ======================================================================== */
+
+.nav-fab {
+  position: absolute;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 22px;
+  background: var(--persimmon);
+  color: #FAF6EE;
+  display: grid;
+  place-items: center;
+  box-shadow:
+    0 10px 24px -8px rgba(216, 73, 42, 0.55),
+    0 2px 0 rgba(255,255,255,0.2) inset,
+    0 -2px 0 rgba(0,0,0,0.15) inset;
+  z-index: 60;
+}
+.nav-fab svg { width: 22px; height: 22px; }
+
+/* ========================================================================
+   ACADEMY ICON + BADGE DOT (promoted from admin)
+   ======================================================================== */
+
+.ic-aca {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--persimmon);
+  color: var(--ivory);
+  display: grid;
+  place-items: center;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 12px;
+  font-weight: 400;
+}
+.nav-item.active .ic-aca {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.badge-dot {
+  position: absolute;
+  top: 4px;
+  margin-left: 12px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--persimmon);
+  border: 2px solid var(--ivory);
+}
+
+/* ========================================================================
+   BUTTONS
+   ======================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 22px;
+  border-radius: var(--r-pill);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  transition: transform .15s;
+}
+.btn-primary {
+  background: var(--persimmon);
+  color: var(--ivory);
+  box-shadow: 0 8px 20px -8px rgba(216, 73, 42, 0.55), 0 1px 0 rgba(255,255,255,0.18) inset;
+}
+.btn-jade { background: var(--jade); color: var(--ivory); }
+.btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--hairline); }
+.btn-ink { background: var(--ink); color: var(--ivory); }
+.btn-block { width: 100%; padding: 16px 20px; font-size: 15px; }
+.btn-sm { padding: 8px 14px; font-size: 12px; gap: 5px; }
+.btn-rose { background: var(--rose); color: var(--ivory); }
+.btn-soft { background: var(--paper-warm); color: var(--ink); }
+
+/* ========================================================================
+   INPUT
+   ======================================================================== */
+
+.input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: var(--input-pad-y) var(--input-pad-x);
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  font-size: 14px;
+  color: var(--ink);
+  width: 100%;
+}
+.input input, .input textarea {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  resize: none;
+}
+.input input::placeholder, .input textarea::placeholder { color: var(--mist); }
+.input .pre {
+  color: var(--mist);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ========================================================================
+   OTP
+   ======================================================================== */
+
+.otp-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+.otp-cell {
+  height: 56px;
+  border-radius: var(--r-md);
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  display: grid;
+  place-items: center;
+  font-family: var(--serif);
+  font-size: 28px;
+  color: var(--ink);
+}
+.otp-cell.filled { border-color: var(--ink); }
+.otp-cell.cursor {
+  border-color: var(--persimmon);
+  position: relative;
+}
+.otp-cell.cursor::after {
+  content: "";
+  width: 2px; height: 24px;
+  background: var(--persimmon);
+  animation: blink 1s infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ========================================================================
+   CHIP
+   ======================================================================== */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--chip-pad-y) var(--chip-pad-x);
+  border-radius: var(--r-pill);
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--ivory);
+  color: var(--ink-soft);
+  border: 1px solid var(--hairline);
+}
+.chip.active { background: var(--ink); color: var(--ivory); border-color: var(--ink); }
+.chip.persimmon { background: var(--persimmon); color: var(--ivory); border-color: var(--persimmon); }
+.chip.is-on { background: var(--ink); color: var(--ivory); border-color: var(--ink); }
+
+/* ========================================================================
+   TAG
+   ======================================================================== */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+.tag.jade { background: var(--jade-soft); color: var(--jade); }
+.tag.marigold { background: var(--marigold-soft); color: #8A5E1F; }
+.tag.persimmon { background: var(--persimmon-soft); color: var(--persimmon-deep); }
+.tag.rose { background: var(--rose-soft); color: var(--rose); }
+.tag.ink { background: var(--ink); color: var(--marigold); }
+.tag.bone { background: var(--bone); color: var(--ink-soft); }
+
+/* ========================================================================
+   STATUS PILLS (promoted from admin)
+   ======================================================================== */
+
+.spill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: var(--r-pill);
+}
+.spill.now      { background: var(--persimmon); color: var(--ivory); }
+.spill.upcoming { background: var(--ivory); color: var(--ink-soft); border: 1px solid var(--hairline); }
+.spill.done     { background: var(--jade-soft); color: var(--jade); }
+.spill.pending  { background: var(--marigold-soft); color: #8A5E1F; }
+.spill.declined { background: var(--rose-soft); color: var(--rose); }
+.spill.active   { background: var(--jade-soft); color: var(--jade); }
+.spill.trial    { background: var(--persimmon-soft); color: var(--persimmon-deep); }
+.spill.inactive { background: var(--bone); color: var(--mist); }
+
+/* ========================================================================
+   CARD
+   ======================================================================== */
+
+.card {
+  background: var(--ivory);
+  border-radius: var(--r-lg);
+  border: 1px solid rgba(0,0,0,0.04);
+  box-shadow: var(--sh-sm);
+}
+
+/* ========================================================================
+   DIVIDER / STAR / MISC UTILITIES
+   ======================================================================== */
+
+.divider { height: 1px; background: var(--hairline); width: 100%; }
+
+.star { color: var(--marigold); display: inline-flex; align-items: center; gap: 3px; font-weight: 600; font-size: 13px; color: var(--ink); }
+.star svg { width: 13px; height: 13px; fill: var(--marigold); }
+
+/* Tabs (text style with underline indicator) */
+.tabs {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  font-size: 14px;
+  color: var(--mist);
+  font-weight: 500;
+}
+.tabs .tab.active {
+  color: var(--ink);
+  font-weight: 600;
+  position: relative;
+}
+.tabs .tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -8px;
+  height: 2px;
+  background: var(--persimmon);
+  border-radius: 2px;
+}
+
+/* Pill tabs */
+.pill-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 4px;
+  background: var(--paper-warm);
+  border-radius: var(--r-pill);
+  font-size: 13px;
+}
+.pill-tabs .pill {
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+.pill-tabs .pill.active {
+  background: var(--ivory);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: var(--sh-sm);
+}
+
+/* Generic icon button */
+.icbtn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  position: relative;
+}
+.icbtn.on-dark {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.08);
+  color: var(--ivory);
+}
+.icbtn .dot-ind {
+  position: absolute;
+  top: 7px; right: 7px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--persimmon);
+  border: 2px solid var(--ivory);
+}
+
+/* Avatar / initials */
+.av {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ivory);
+  background: var(--persimmon);
+  flex-shrink: 0;
+}
+.av.sm { width: 32px; height: 32px; font-size: 14px; }
+.av.md { width: 40px; height: 40px; font-size: 16px; }
+.av.lg { width: 56px; height: 56px; font-size: 22px; }
+.av.xl { width: 72px; height: 72px; font-size: 28px; }
+.av.jade { background: var(--jade); }
+.av.marigold { background: var(--marigold); color: #5B3F0E; }
+.av.rose { background: var(--rose); }
+.av.plum { background: var(--plum); }
+.av.ink { background: var(--ink-soft); }
+
+/* Block-print texture overlay */
+.block-print { position: relative; }
+.block-print::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(255,255,255,0.10) 6px, transparent 7px),
+    radial-gradient(circle at 75% 75%, rgba(255,255,255,0.10) 6px, transparent 7px),
+    radial-gradient(circle at 75% 25%, rgba(255,255,255,0.06) 4px, transparent 5px),
+    radial-gradient(circle at 25% 75%, rgba(255,255,255,0.06) 4px, transparent 5px),
+    linear-gradient(160deg, transparent 60%, rgba(0,0,0,0.18));
+  background-size: 60px 60px, 60px 60px, 60px 60px, 60px 60px, 100% 100%;
+  pointer-events: none;
+  border-radius: inherit;
+  mix-blend-mode: soft-light;
+  z-index: 1;
+}
+.block-print > * { position: relative; z-index: 2; }
+
+/* Art category gradients */
+.art-music { background: linear-gradient(135deg, #5B2F3D 0%, #8C3A4C 100%); }
+.art-dance { background: linear-gradient(135deg, #1E5C5A 0%, #2F8580 100%); }
+.art-arts  { background: linear-gradient(135deg, #B33B1E 0%, #D8492A 100%); }
+.art-yoga  { background: linear-gradient(135deg, #5C5A1E 0%, #8A8A33 100%); }
+.art-1 { background: linear-gradient(135deg, #6B2D38 0%, #A04555 100%); }
+.art-2 { background: linear-gradient(135deg, #1E5C5A 0%, #3A8F88 100%); }
+.art-3 { background: linear-gradient(135deg, #B33B1E 0%, #E26A3A 100%); }
+.art-4 { background: linear-gradient(135deg, #2A4A6B 0%, #3D6B96 100%); }
+
+/* Section row (used in both apps) */
+.sec-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 24px;
+  margin-bottom: 12px;
+}
+.sec-row h3 {
+  font-family: var(--serif);
+  font-size: 22px;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  font-weight: 400;
+}
+.sec-row .meta {
+  font-size: 11px;
+  color: var(--mist);
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+.sec-row .meta.alert { color: var(--persimmon); font-weight: 600; }
+.sec-row .see {
+  font-size: 12px;
+  color: var(--persimmon);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+    /* === admin.css inlined === */
+    /* Findemy admin Studio app — screen-specific styles. Tokens + components are in coded/shared/. */
+
+/* ========================================================================
+   SCREEN: AUTH — STUDIO LOGIN (source class renamed to .s-auth.studio)
+   ======================================================================== */
+
+.s-auth.studio {
+  background:
+    radial-gradient(800px 500px at 50% -10%, rgba(216, 73, 42, 0.18), transparent 55%),
+    var(--paper);
+  padding: 70px 28px 40px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.s-auth.studio .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 48px;
+}
+.s-auth.studio .brand .mark {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--marigold);
+  font-family: var(--serif);
+  font-style: italic;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+}
+.s-auth.studio .brand .word {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 22px;
+  color: var(--ink);
+}
+.s-auth.studio .brand .pill {
+  margin-left: auto;
+  padding: 5px 11px;
+  background: var(--ink);
+  color: var(--marigold);
+  border-radius: var(--r-pill);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.s-auth.studio h1 {
+  font-family: var(--serif);
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+.s-auth.studio h1 em { font-style: italic; color: var(--persimmon); }
+.s-auth.studio .sub {
+  font-size: 14px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  max-width: 280px;
+  margin-bottom: 36px;
+}
+.s-auth.studio .auth-label {
+  font-size: 12px;
+  color: var(--mist);
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+.s-auth.studio .field-stack { display: grid; gap: 14px; margin-bottom: 18px; }
+.s-auth.studio .helper {
+  font-size: 12px;
+  color: var(--mist);
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.s-auth.studio .helper svg { color: var(--jade); }
+.s-auth.studio .cta-row { margin-top: 24px; }
+.s-auth.studio .alt-link {
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-align: center;
+  margin-top: 18px;
+}
+.s-auth.studio .alt-link a { color: var(--persimmon); font-weight: 600; }
+.s-auth.studio .foot-tip {
+  margin-top: auto;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: start;
+}
+.s-auth.studio .foot-tip .ic {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--marigold-soft);
+  color: #8A5E1F;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.s-auth.studio .foot-tip .t { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.s-auth.studio .foot-tip .s { font-size: 11px; color: var(--mist); line-height: 1.4; }
+
+/* ========================================================================
+   SCREEN: INBOX HOME
+   ======================================================================== */
+
+.s-inbox {
+  background: var(--paper);
+  padding: 60px 0 96px;
+  position: relative;
+  overflow-y: auto;
+}
+.inbox-head {
+  padding: 8px 24px 18px;
+}
+.inbox-head .row {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+}
+.inbox-head .greet {
+  font-size: 12px;
+  color: var(--mist);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.inbox-head .h {
+  font-family: var(--serif);
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-weight: 400;
+}
+.inbox-head .h em { font-style: italic; color: var(--persimmon); }
+.inbox-head .head-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.inbox-head .aca-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 5px 5px 11px;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-pill);
+  font-size: 11px;
+  color: var(--ink);
+  font-weight: 500;
+}
+.inbox-head .aca-pill .av { width: 22px; height: 22px; font-size: 11px; }
+
+.stats-strip {
+  margin: 0 24px 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  background: var(--ink);
+  color: var(--ivory);
+  border-radius: var(--r-md);
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.stats-strip::before {
+  content: "";
+  position: absolute;
+  right: -40px; top: -40px;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(216,73,42,0.35), transparent 60%);
+}
+.stats-strip .stat { position: relative; }
+.stats-strip .stat + .stat { border-left: 1px solid rgba(255,255,255,0.08); padding-left: 12px; }
+.stats-strip .v {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1;
+}
+.stats-strip .v em { color: var(--marigold); font-style: normal; }
+.stats-strip .l {
+  font-size: 9px;
+  color: rgba(241,236,226,0.6);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+.trial-card {
+  margin: 0 24px 10px;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 14px;
+  position: relative;
+}
+.trial-card.urgent {
+  border-color: var(--persimmon);
+  box-shadow: 0 0 0 4px rgba(216,73,42,0.08);
+}
+.trial-card .meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--mist);
+  margin-bottom: 10px;
+}
+.trial-card .meta-row .dot { width: 3px; height: 3px; background: var(--mist); border-radius: 50%; }
+.trial-card .meta-row .badge {
+  padding: 3px 8px;
+  background: var(--persimmon-soft);
+  color: var(--persimmon-deep);
+  border-radius: var(--r-pill);
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.trial-card .stu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.trial-card .stu .info { flex: 1; }
+.trial-card .stu .name { font-size: 15px; font-weight: 600; color: var(--ink); }
+.trial-card .stu .sub { font-size: 12px; color: var(--mist); margin-top: 2px; }
+.trial-card .note {
+  font-size: 12px;
+  color: var(--ink-soft);
+  background: var(--paper-warm);
+  border-radius: var(--r-sm);
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  font-style: italic;
+}
+.trial-card .actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.sched-list {
+  margin: 0 24px;
+}
+.sched-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  margin-bottom: 8px;
+}
+.sched-row.now {
+  border-color: var(--persimmon);
+  background: linear-gradient(180deg, var(--persimmon-soft) 0%, var(--ivory) 60%);
+}
+.sched-row .time-col {
+  width: 48px;
+  text-align: center;
+  border-right: 1px solid var(--hairline);
+  padding-right: 12px;
+}
+.sched-row .time-col .t {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--ink);
+  line-height: 1;
+}
+.sched-row .time-col .ts {
+  font-size: 9px;
+  color: var(--mist);
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  margin-top: 3px;
+}
+.sched-row .info { flex: 1; }
+.sched-row .title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.sched-row .sub {
+  font-size: 11px;
+  color: var(--mist);
+  margin-top: 3px;
+}
+
+.activity-list {
+  margin: 0 24px;
+}
+.activity-row {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.activity-row:last-child { border-bottom: 0; }
+.activity-row .ic {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--paper-warm);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.activity-row .ic.jade { background: var(--jade-soft); color: var(--jade); }
+.activity-row .ic.marigold { background: var(--marigold-soft); color: #8A5E1F; }
+.activity-row .ic.persimmon { background: var(--persimmon-soft); color: var(--persimmon-deep); }
+.activity-row .ic.rose { background: var(--rose-soft); color: var(--rose); }
+.activity-row .copy { flex: 1; }
+.activity-row .t {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.35;
+}
+.activity-row .t b { font-weight: 600; }
+.activity-row .ts {
+  font-size: 11px;
+  color: var(--mist);
+  margin-top: 3px;
+}
+.activity-row .act {
+  font-size: 12px;
+  color: var(--persimmon);
+  font-weight: 600;
+}
+
+.earnings-mini {
+  margin: 18px 24px 0;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.earnings-mini .ic {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: var(--jade);
+  color: var(--ivory);
+  font-family: var(--serif);
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+}
+.earnings-mini .info { flex: 1; }
+.earnings-mini .l {
+  font-size: 10px;
+  color: var(--mist);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.earnings-mini .v {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--ink);
+  margin-top: 2px;
+  line-height: 1;
+}
+.earnings-mini .delta {
+  font-size: 11px;
+  color: var(--jade);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* ========================================================================
+   SCREEN: TRIAL REQUEST DETAIL
+   ======================================================================== */
+
+.s-trial {
+  background: var(--paper);
+  padding: 0 0 140px;
+  position: relative;
+  overflow-y: auto;
+}
+.trial-top {
+  padding: 60px 24px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.trial-top .back {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+}
+.trial-top .h {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--ink);
+  flex: 1;
+}
+.trial-top .badge {
+  padding: 4px 10px;
+  background: var(--marigold-soft);
+  color: #8A5E1F;
+  border-radius: var(--r-pill);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.trial-hero {
+  margin: 6px 24px 18px;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: 18px;
+  text-align: center;
+}
+.trial-hero .av { margin: 0 auto 12px; }
+.trial-hero h2 {
+  font-family: var(--serif);
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  font-weight: 400;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.trial-hero .stu-sub {
+  font-size: 12px;
+  color: var(--mist);
+  margin-bottom: 12px;
+}
+.trial-hero .quick-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.trial-hero .quick-btn {
+  padding: 10px;
+  border-radius: var(--r-md);
+  background: var(--paper-warm);
+  border: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.trial-hero .quick-btn.wa { color: var(--jade); }
+
+.trial-card-detail {
+  margin: 0 24px 14px;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: 16px 18px;
+}
+.trial-card-detail h4 {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mist);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.kv-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 13px;
+}
+.kv-row:last-child { border-bottom: 0; }
+.kv-row .l { color: var(--mist); }
+.kv-row .v { color: var(--ink); font-weight: 500; }
+.kv-row .v.muted { color: var(--mist); font-weight: 400; }
+.kv-row .v.jade { color: var(--jade); font-weight: 600; }
+
+.note-card {
+  margin: 0 24px 14px;
+  background: var(--persimmon-soft);
+  border: 1px dashed var(--persimmon);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+}
+.note-card .l {
+  font-size: 11px;
+  color: var(--persimmon-deep);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.note-card .t {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.trial-source {
+  margin: 0 24px 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--mist);
+  padding: 10px 14px;
+  background: var(--paper-warm);
+  border-radius: var(--r-md);
+}
+.trial-source svg { color: var(--persimmon); }
+.trial-source b { color: var(--ink); font-weight: 600; }
+
+.trial-actions {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 18px 24px 28px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 8px;
+  background: linear-gradient(180deg, rgba(241,236,226,0) 0%, rgba(241,236,226,0.92) 30%, var(--paper) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ========================================================================
+   SCREEN: SCHEDULE WEEK
+   ======================================================================== */
+
+.s-schedule {
+  background: var(--paper);
+  padding: 0 0 96px;
+  position: relative;
+  overflow-y: auto;
+}
+.sched-head {
+  padding: 60px 24px 14px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+}
+.sched-head .h {
+  font-family: var(--serif);
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-weight: 400;
+}
+.sched-head .h em { font-style: italic; color: var(--persimmon); }
+.sched-head .add-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--ivory);
+  display: grid;
+  place-items: center;
+}
+
+.week-strip {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  padding: 0 24px;
+  margin-bottom: 18px;
+}
+.day-pill {
+  text-align: center;
+  padding: 10px 4px;
+  border-radius: var(--r-sm);
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  position: relative;
+}
+.day-pill .dow {
+  font-size: 9px;
+  color: var(--mist);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.day-pill .d {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--ink);
+  line-height: 1;
+}
+.day-pill .ct {
+  font-size: 9px;
+  color: var(--persimmon);
+  font-weight: 700;
+  margin-top: 4px;
+}
+.day-pill.today {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.day-pill.today .dow { color: var(--marigold); }
+.day-pill.today .d { color: var(--ivory); }
+.day-pill.today .ct { color: var(--marigold); }
+
+.day-block {
+  padding: 0 24px;
+  margin-bottom: 18px;
+}
+.day-block .day-h {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.day-block .day-h .dt {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--ink);
+}
+.day-block .day-h .dt em { font-style: italic; color: var(--persimmon); }
+.day-block .day-h .ct { font-size: 10px; color: var(--mist); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; }
+
+.batch-pill {
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  border-left: 4px solid var(--mist);
+}
+.batch-pill.music { border-left-color: var(--plum); }
+.batch-pill.dance { border-left-color: var(--jade); }
+.batch-pill.arts  { border-left-color: var(--persimmon); }
+.batch-pill.yoga  { border-left-color: #8A8A33; }
+.batch-pill.full  { background: var(--paper-warm); }
+.batch-pill .time-col {
+  width: 64px;
+  text-align: left;
+  flex-shrink: 0;
+}
+.batch-pill .time-col .t {
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--ink);
+  line-height: 1;
+}
+.batch-pill .time-col .ts {
+  font-size: 10px;
+  color: var(--mist);
+  margin-top: 3px;
+  letter-spacing: 0.06em;
+}
+.batch-pill .info { flex: 1; }
+.batch-pill .title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.batch-pill .sub {
+  font-size: 11px;
+  color: var(--mist);
+  margin-top: 3px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* ========================================================================
+   SCREEN: BATCH DETAIL / ATTENDANCE
+   ======================================================================== */
+
+.s-batch {
+  background: var(--paper);
+  padding: 0 0 96px;
+  position: relative;
+  overflow-y: auto;
+}
+.batch-top {
+  padding: 60px 24px 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.batch-top .back {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  display: grid;
+  place-items: center;
+}
+.batch-top .more {
+  margin-left: auto;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  color: var(--ink-soft);
+  letter-spacing: 0.1em;
+}
+
+.batch-hero {
+  margin: 8px 24px 18px;
+  background: var(--ink);
+  color: var(--ivory);
+  border-radius: var(--r-lg);
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+}
+.batch-hero::before {
+  content: "";
+  position: absolute;
+  right: -50px; top: -50px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(216,73,42,0.32), transparent 60%);
+}
+.batch-hero .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: rgba(232,163,61,0.18);
+  color: var(--marigold);
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.batch-hero h2 {
+  font-family: var(--serif);
+  font-size: 24px;
+  letter-spacing: -0.005em;
+  font-weight: 400;
+  line-height: 1.05;
+  margin-bottom: 12px;
+  position: relative;
+}
+.batch-hero h2 em { color: var(--marigold); font-style: italic; }
+.batch-hero .meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 12px;
+  color: rgba(241,236,226,0.7);
+  position: relative;
+}
+.batch-hero .meta-row span { display: inline-flex; align-items: center; gap: 5px; }
+
+.attend-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 0 24px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.attend-tabs::-webkit-scrollbar { display: none; }
+.attend-tabs .tab {
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  border: 1px solid var(--hairline);
+  background: var(--ivory);
+  flex-shrink: 0;
+}
+.attend-tabs .tab.on { background: var(--ink); color: var(--ivory); border-color: var(--ink); }
+
+.attend-summary {
+  margin: 0 24px 14px;
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+}
+.attend-summary .pill {
+  padding: 5px 11px;
+  border-radius: var(--r-pill);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.attend-summary .pill.present { background: var(--jade-soft); color: var(--jade); }
+.attend-summary .pill.absent { background: var(--rose-soft); color: var(--rose); }
+.attend-summary .pill.pending { background: var(--paper-warm); color: var(--ink-soft); border: 1px solid var(--hairline); }
+
+.roster {
+  margin: 0 24px;
+}
+.roster-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  margin-bottom: 8px;
+}
+.roster-row.present { background: linear-gradient(90deg, rgba(201,220,216,0.25), var(--ivory)); border-color: var(--jade-soft); }
+.roster-row.absent { background: linear-gradient(90deg, rgba(243,219,223,0.25), var(--ivory)); border-color: var(--rose-soft); }
+.roster-row .info { flex: 1; }
+.roster-row .name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.roster-row .sub {
+  font-size: 11px;
+  color: var(--mist);
+  margin-top: 2px;
+}
+.roster-row .checkbox {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--hairline);
+  background: var(--ivory);
+  display: grid;
+  place-items: center;
+  color: var(--ivory);
+  flex-shrink: 0;
+}
+.roster-row.present .checkbox {
+  background: var(--jade);
+  border-color: var(--jade);
+}
+.roster-row.absent .checkbox {
+  background: var(--rose);
+  border-color: var(--rose);
+}
+
+.batch-foot-cta {
+  position: absolute;
+  bottom: 100px;
+  left: 24px; right: 24px;
+}
+
+/* ========================================================================
+   SCREEN: BATCH EDIT
+   ======================================================================== */
+
+.s-batch-edit {
+  background: var(--paper);
+  padding: 0 0 96px;
+  position: relative;
+  overflow-y: auto;
+}
+.edit-top {
+  padding: 60px 24px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.edit-top .x {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  display: grid;
+  place-items: center;
+}
+.edit-top .h {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--ink);
+  flex: 1;
+}
+.edit-top .save {
+  font-size: 13px;
+  color: var(--persimmon);
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: var(--r-pill);
+  background: var(--persimmon-soft);
+}
+
+.field-group { padding: 6px 24px 10px; }
+.field-group .glabel {
+  font-size: 10px;
+  color: var(--mist);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.field-group .input { margin-bottom: 6px; padding: 12px 14px; }
+.field-group .input-row {
+  display: grid;
+  gap: 8px;
+}
+
+.day-toggle-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.day-toggle {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  display: grid;
+  place-items: center;
+}
+.day-toggle.on {
+  background: var(--ink);
+  color: var(--ivory);
+  border-color: var(--ink);
+}
+.day-toggle.skip { color: var(--whisper); }
+
+.mode-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.mode-card {
+  padding: 14px;
+  border: 1.5px solid var(--hairline);
+  background: var(--ivory);
+  border-radius: var(--r-md);
+  text-align: center;
+}
+.mode-card.on { border-color: var(--persimmon); background: var(--persimmon-soft); }
+.mode-card .ic {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: var(--paper-warm);
+  margin: 0 auto 8px;
+  display: grid;
+  place-items: center;
+}
+.mode-card.on .ic { background: var(--persimmon); color: var(--ivory); }
+.mode-card .t { font-size: 13px; font-weight: 600; color: var(--ink); }
+.mode-card .s { font-size: 10px; color: var(--mist); margin-top: 2px; }
+
+.price-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.price-input {
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+}
+.price-input .l {
+  font-size: 10px;
+  color: var(--mist);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.price-input .v {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--ink);
+}
+
+.danger-row {
+  margin: 10px 24px 0;
+  padding: 12px 14px;
+  background: var(--rose-soft);
+  border: 1px dashed var(--rose);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.danger-row .ic {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--rose);
+  color: var(--ivory);
+  display: grid;
+  place-items: center;
+}
+.danger-row .copy { flex: 1; font-size: 12px; color: var(--ink); }
+.danger-row .copy .t { font-weight: 600; }
+.danger-row .copy .s { color: var(--ink-soft); margin-top: 2px; }
+.danger-row .act {
+  font-size: 11px;
+  color: var(--rose);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ========================================================================
+   SCREEN: STUDENTS LIST
+   ======================================================================== */
+
+.s-students {
+  background: var(--paper);
+  padding: 0 0 96px;
+  position: relative;
+  overflow-y: auto;
+}
+.stu-head {
+  padding: 60px 24px 14px;
+}
+.stu-head .row {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.stu-head .h {
+  font-family: var(--serif);
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-weight: 400;
+}
+.stu-head .h em { font-style: italic; color: var(--persimmon); }
+.stu-head .stu-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  font-size: 13px;
+  color: var(--mist);
+}
+.stu-head .stu-search .filter {
+  margin-left: auto;
+  width: 28px; height: 28px;
+  background: var(--ink);
+  color: var(--ivory);
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+}
+.stu-cats {
+  padding: 0 24px;
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.stu-cats::-webkit-scrollbar { display: none; }
+.stu-cats .chip { white-space: nowrap; padding: 6px 12px; font-size: 11px; }
+
+.stu-row {
+  margin: 0 24px 8px;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.stu-row .info { flex: 1; min-width: 0; }
+.stu-row .name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stu-row .sub {
+  font-size: 11px;
+  color: var(--mist);
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.stu-row .sub .dot { width: 3px; height: 3px; background: var(--mist); border-radius: 50%; }
+
+/* ========================================================================
+   SCREEN: STUDENT DETAIL
+   ======================================================================== */
+
+.s-student {
+  background:
+    linear-gradient(180deg, var(--ink) 0%, var(--ink) 280px, var(--paper) 280px, var(--paper) 100%);
+  padding: 0 0 96px;
+  position: relative;
+  overflow-y: auto;
+}
+.stud-top {
+  padding: 60px 24px 0;
+  color: var(--ivory);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.stud-top .back {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: grid;
+  place-items: center;
+}
+.stud-id {
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--ivory);
+  margin-bottom: 18px;
+}
+.stud-id .meta { flex: 1; }
+.stud-id h2 {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.stud-id .sub {
+  font-size: 12px;
+  color: rgba(241,236,226,0.6);
+}
+.stud-id .actions {
+  display: flex;
+  gap: 6px;
+}
+.stud-id .actions .iconbtn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: grid;
+  place-items: center;
+}
+.stud-id .actions .iconbtn.wa { background: var(--jade); border-color: var(--jade); }
+
+.stud-stats {
+  margin: 0 24px 8px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--r-md);
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  color: var(--ivory);
+}
+.stud-stats .s + .s { border-left: 1px solid rgba(255,255,255,0.08); padding-left: 12px; }
+.stud-stats .v {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1;
+}
+.stud-stats .l {
+  font-size: 9px;
+  color: rgba(241,236,226,0.5);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+.stud-section {
+  padding: 22px 24px 0;
+}
+.stud-section .h {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.attend-line {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+.attend-line .day {
+  flex: 1;
+  height: 30px;
+  border-radius: var(--r-xs);
+  background: var(--bone);
+  position: relative;
+}
+.attend-line .day.p { background: var(--jade); }
+.attend-line .day.a { background: var(--rose-soft); }
+.attend-line .day.s { background: var(--marigold-soft); }
+
+.payment-row {
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.payment-row .ic-mo {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--jade-soft);
+  color: var(--jade);
+  display: grid;
+  place-items: center;
+  font-family: var(--serif);
+  font-size: 16px;
+}
+.payment-row .info { flex: 1; }
+.payment-row .name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.payment-row .sub { font-size: 11px; color: var(--mist); margin-top: 2px; }
+.payment-row .v {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--ink);
+}
+
+/* ========================================================================
+   SCREEN: REVIEWS LIST
+   ======================================================================== */
+
+.s-reviews {
+  background: var(--paper);
+  padding: 0 0 96px;
+  position: relative;
+  overflow-y: auto;
+}
+.rev-top {
+  padding: 60px 24px 14px;
+}
+.rev-top .row {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.rev-top .h {
+  font-family: var(--serif);
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-weight: 400;
+}
+.rev-top .h em { font-style: italic; color: var(--persimmon); }
+.rev-summary {
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 14px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.rev-summary .big {
+  font-family: var(--serif);
+  font-size: 44px;
+  color: var(--ink);
+  line-height: 1;
+}
+.rev-summary .big em { font-style: italic; color: var(--persimmon); }
+.rev-summary .stars {
+  color: var(--marigold);
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.rev-summary .l {
+  font-size: 11px;
+  color: var(--mist);
+  letter-spacing: 0.04em;
+}
+.rev-summary .bars {
+  flex: 1;
+  display: grid;
+  gap: 4px;
+}
+.rev-summary .bar-row {
+  display: grid;
+  grid-template-columns: 12px 1fr 24px;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--mist);
+}
+.rev-summary .bar-row .bar {
+  height: 5px;
+  background: var(--paper-warm);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.rev-summary .bar-row .bar i {
+  display: block;
+  height: 100%;
+  background: var(--marigold);
+  border-radius: 3px;
+}
+
+.rev-tabs {
+  padding: 0 24px;
+  margin-bottom: 14px;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.rev-tabs::-webkit-scrollbar { display: none; }
+.rev-tabs .tab {
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  border: 1px solid var(--hairline);
+  background: var(--ivory);
+  flex-shrink: 0;
+}
+.rev-tabs .tab.on {
+  background: var(--ink);
+  color: var(--ivory);
+  border-color: var(--ink);
+}
+.rev-tabs .tab.alert {
+  background: var(--marigold-soft);
+  color: #8A5E1F;
+  border-color: var(--marigold);
+}
+
+.rev-card {
+  margin: 0 24px 10px;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 14px;
+}
+.rev-card.flag {
+  border-color: var(--marigold);
+  background: linear-gradient(180deg, var(--marigold-soft) 0%, var(--ivory) 60%);
+}
+.rev-card .head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.rev-card .head .info { flex: 1; }
+.rev-card .head .name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.rev-card .head .meta {
+  font-size: 11px;
+  color: var(--mist);
+  margin-top: 2px;
+}
+.rev-card .head .stars {
+  color: var(--marigold);
+  font-size: 12px;
+}
+.rev-card .body {
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+.rev-card .reply {
+  background: var(--paper-warm);
+  border-left: 2px solid var(--persimmon);
+  padding: 10px 12px;
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.rev-card .reply b {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--persimmon);
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.rev-card .respond-cta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--persimmon);
+  font-weight: 600;
+}
+
+/* ========================================================================
+   SCREEN: REVIEW RESPOND
+   ======================================================================== */
+
+.s-respond {
+  background: var(--paper);
+  padding: 0 0 14px;
+  position: relative;
+  overflow-y: auto;
+}
+.respond-top {
+  padding: 60px 24px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.respond-top .x {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  display: grid;
+  place-items: center;
+}
+.respond-top .h {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--ink);
+  flex: 1;
+}
+.respond-top .send {
+  font-size: 13px;
+  color: var(--ivory);
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+  background: var(--persimmon);
+}
+
+.review-quote {
+  margin: 6px 24px 18px;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 14px;
+}
+.review-quote .head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.review-quote .head .info { flex: 1; }
+.review-quote .head .name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.review-quote .head .meta { font-size: 11px; color: var(--mist); }
+.review-quote .stars { color: var(--marigold); font-size: 13px; }
+.review-quote .body {
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.tone-row {
+  margin: 0 24px 14px;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tone-row::-webkit-scrollbar { display: none; }
+.tone-chip {
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tone-chip svg { color: var(--persimmon); }
+
+.respond-field {
+  margin: 0 24px 14px;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+}
+.respond-field .label {
+  font-size: 10px;
+  color: var(--mist);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.respond-field textarea {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.5;
+  min-height: 110px;
+  resize: none;
+}
+.respond-field .count {
+  text-align: right;
+  font-size: 10px;
+  color: var(--mist);
+  margin-top: 8px;
+}
+
+.tip-card {
+  margin: 0 24px;
+  background: var(--marigold-soft);
+  border: 1px solid var(--marigold);
+  border-radius: var(--r-md);
+  padding: 14px;
+  display: flex;
+  gap: 12px;
+}
+.tip-card .ic {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--marigold);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.tip-card .copy { font-size: 12px; color: var(--ink); line-height: 1.4; }
+.tip-card .copy b { font-weight: 700; }
+
+/* ========================================================================
+   SCREEN: EARNINGS
+   ======================================================================== */
+
+.s-earnings {
+  background:
+    linear-gradient(180deg, var(--ink) 0%, var(--ink) 320px, var(--paper) 320px, var(--paper) 100%);
+  padding: 0 0 96px;
+  position: relative;
+  overflow-y: auto;
+}
+.earn-top {
+  padding: 60px 24px 0;
+  color: var(--ivory);
+}
+.earn-top .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.earn-top .h {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-style: italic;
+  font-weight: 400;
+}
+.earn-top .h em { color: var(--marigold); font-style: normal; }
+.earn-top .icbtn-d {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: grid;
+  place-items: center;
+  color: var(--ivory);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.earn-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: var(--r-pill);
+  margin-bottom: 22px;
+}
+.earn-tabs .t {
+  flex: 1;
+  text-align: center;
+  padding: 9px;
+  border-radius: var(--r-pill);
+  font-size: 12px;
+  color: rgba(241,236,226,0.65);
+  font-weight: 500;
+}
+.earn-tabs .t.on { background: var(--marigold); color: var(--ink); font-weight: 600; }
+
+.earn-big {
+  text-align: left;
+  margin-bottom: 18px;
+}
+.earn-big .l {
+  font-size: 10px;
+  color: rgba(241,236,226,0.5);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.earn-big .v {
+  font-family: var(--serif);
+  font-size: 56px;
+  color: var(--ivory);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.earn-big .v em { color: var(--marigold); font-style: italic; }
+.earn-big .delta {
+  font-size: 12px;
+  color: var(--jade-soft);
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.payout-card {
+  margin: 0 24px 18px;
+  background: var(--marigold);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink);
+}
+.payout-card .info { flex: 1; }
+.payout-card .l {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.payout-card .v {
+  font-family: var(--serif);
+  font-size: 22px;
+}
+.payout-card .s {
+  font-size: 11px;
+  color: rgba(20,16,14,0.65);
+  margin-top: 2px;
+}
+
+.earn-section {
+  padding: 18px 24px 0;
+}
+.earn-section .h {
+  font-family: var(--serif);
+  font-size: 20px;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.breakdown-row {
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.breakdown-row .ic {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-family: var(--serif);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.breakdown-row .ic.persimmon { background: var(--persimmon-soft); color: var(--persimmon-deep); }
+.breakdown-row .ic.jade { background: var(--jade-soft); color: var(--jade); }
+.breakdown-row .ic.marigold { background: var(--marigold-soft); color: #8A5E1F; }
+.breakdown-row .info { flex: 1; }
+.breakdown-row .name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.breakdown-row .sub { font-size: 11px; color: var(--mist); margin-top: 2px; }
+.breakdown-row .v {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--ink);
+}
+
+.txn-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 13px;
+}
+.txn-row:last-child { border-bottom: 0; }
+.txn-row .info { flex: 1; }
+.txn-row .name { font-size: 13px; color: var(--ink); font-weight: 500; }
+.txn-row .sub { font-size: 11px; color: var(--mist); margin-top: 2px; }
+.txn-row .v { font-weight: 600; color: var(--jade); font-family: var(--serif); font-size: 16px; }
+.txn-row .v.out { color: var(--rose); }
+
+/* ========================================================================
+   SCREEN: PROFILE EDIT
+   ======================================================================== */
+
+.s-profile {
+  background: var(--paper);
+  padding: 0 0 96px;
+  position: relative;
+  overflow-y: auto;
+}
+.prof-top {
+  padding: 60px 24px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.prof-top .back {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  display: grid;
+  place-items: center;
+}
+.prof-top .h {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--ink);
+  flex: 1;
+}
+.prof-top .save {
+  font-size: 13px;
+  color: var(--persimmon);
+  font-weight: 600;
+}
+
+.cover-edit {
+  margin: 8px 24px 0;
+  height: 140px;
+  border-radius: var(--r-lg);
+  position: relative;
+  overflow: hidden;
+}
+.cover-edit .change {
+  position: absolute;
+  bottom: 12px; right: 12px;
+  background: rgba(20,16,14,0.7);
+  color: var(--ivory);
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: var(--r-pill);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  backdrop-filter: blur(8px);
+}
+.cover-edit .verified-pill {
+  position: absolute;
+  top: 12px; left: 12px;
+  background: var(--jade);
+  color: var(--ivory);
+  font-size: 10px;
+  padding: 5px 10px;
+  border-radius: var(--r-pill);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.prof-name-card {
+  margin: -24px 16px 14px;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 5;
+  box-shadow: var(--sh-md);
+}
+.prof-name-card .av { background: var(--ink); color: var(--marigold); }
+.prof-name-card .info { flex: 1; }
+.prof-name-card h2 {
+  font-family: var(--serif);
+  font-size: 20px;
+  color: var(--ink);
+  font-weight: 400;
+  line-height: 1.1;
+}
+.prof-name-card .sub {
+  font-size: 11px;
+  color: var(--mist);
+  margin-top: 3px;
+}
+.prof-name-card .edit-btn {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--paper-warm);
+  display: grid;
+  place-items: center;
+  color: var(--ink-soft);
+}
+
+.prof-fields { padding: 0 24px; }
+.prof-field {
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.prof-field .ic {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--paper-warm);
+  display: grid;
+  place-items: center;
+  color: var(--ink-soft);
+  flex-shrink: 0;
+}
+.prof-field .info { flex: 1; }
+.prof-field .l {
+  font-size: 10px;
+  color: var(--mist);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.prof-field .v {
+  font-size: 13px;
+  color: var(--ink);
+  margin-top: 3px;
+  font-weight: 500;
+}
+.prof-field .v.muted { color: var(--mist); font-style: italic; font-weight: 400; }
+.prof-field .arrow { color: var(--mist); }
+
+.spec-chips {
+  padding: 14px 24px 0;
+}
+.spec-chips .l {
+  font-size: 10px;
+  color: var(--mist);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.spec-chips .row { display: flex; flex-wrap: wrap; gap: 5px; }
+.spec-chips .chip { font-size: 10px; padding: 5px 9px; letter-spacing: 0.02em; }
+.spec-chips .chip.add {
+  border-style: dashed;
+  color: var(--persimmon);
+  border-color: var(--persimmon);
+}
+
+/* ========================================================================
+   SCREEN: STUDIO MENU
+   ======================================================================== */
+
+.s-studio {
+  background:
+    linear-gradient(180deg, var(--ink) 0%, var(--ink) 240px, var(--paper) 240px, var(--paper) 100%);
+  padding: 0 0 96px;
+  position: relative;
+  overflow-y: auto;
+}
+.studio-top {
+  padding: 60px 24px 0;
+  color: var(--ivory);
+}
+.studio-top .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.studio-top .word {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 22px;
+  color: var(--ivory);
+}
+.studio-top .actions { display: flex; gap: 6px; }
+.studio-top .actions .ib {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: grid;
+  place-items: center;
+}
+.studio-id {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  color: var(--ivory);
+}
+.studio-id h2 {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.1;
+  margin-bottom: 5px;
+}
+.studio-id .sub {
+  font-size: 12px;
+  color: rgba(241,236,226,0.6);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.menu-list {
+  margin: 14px 24px 0;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.menu-row {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--hairline);
+}
+.menu-row:last-child { border-bottom: 0; }
+.menu-row .ic {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--paper-warm);
+  display: grid;
+  place-items: center;
+  color: var(--ink-soft);
+  flex-shrink: 0;
+}
+.menu-row .ic.persimmon { background: var(--persimmon-soft); color: var(--persimmon-deep); }
+.menu-row .ic.jade { background: var(--jade-soft); color: var(--jade); }
+.menu-row .ic.marigold { background: var(--marigold-soft); color: #8A5E1F; }
+.menu-row .info { flex: 1; }
+.menu-row .name { font-size: 14px; color: var(--ink); font-weight: 600; }
+.menu-row .sub { font-size: 11px; color: var(--mist); margin-top: 2px; }
+.menu-row .v {
+  font-family: var(--serif);
+  font-size: 16px;
+  color: var(--ink);
+}
+.menu-row .arrow { color: var(--mist); }
+
+.studio-section-h {
+  padding: 22px 24px 8px;
+  font-size: 10px;
+  color: var(--mist);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* ========================================================================
+   SCREEN: SETTINGS
+   ======================================================================== */
+
+.s-settings {
+  background: var(--paper);
+  padding: 0 0 96px;
+  position: relative;
+  overflow-y: auto;
+}
+.set-top {
+  padding: 60px 24px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.set-top .back {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  display: grid;
+  place-items: center;
+}
+.set-top .h {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--ink);
+  flex: 1;
+}
+.set-section-h {
+  padding: 14px 24px 8px;
+  font-size: 10px;
+  color: var(--mist);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.set-list {
+  margin: 0 24px;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.set-row {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--hairline);
+}
+.set-row:last-child { border-bottom: 0; }
+.set-row .ic {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--paper-warm);
+  display: grid;
+  place-items: center;
+  color: var(--ink-soft);
+  flex-shrink: 0;
+}
+.set-row .info { flex: 1; }
+.set-row .name { font-size: 14px; color: var(--ink); font-weight: 500; }
+.set-row .sub { font-size: 11px; color: var(--mist); margin-top: 2px; }
+.set-row .toggle {
+  width: 36px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--bone);
+  position: relative;
+}
+.set-row .toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--ivory);
+  box-shadow: var(--sh-sm);
+  transition: transform .2s;
+}
+.set-row .toggle.on { background: var(--persimmon); }
+.set-row .toggle.on::after { transform: translateX(14px); }
+.set-row .arrow { color: var(--mist); }
+
+.signout-btn {
+  margin: 24px 24px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  background: var(--ivory);
+  border: 1px solid var(--rose);
+  border-radius: var(--r-md);
+  color: var(--rose);
+  font-size: 14px;
+  font-weight: 600;
+}
+.set-foot {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 10px;
+  color: var(--mist);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* ========================================================================
+   SCREEN: PUBLISH AVAILABILITY
+   ======================================================================== */
+.s-publish { padding: 60px 0 24px; display: flex; flex-direction: column; gap: 14px; background: var(--paper); height: 100%; position: relative; overflow: hidden; }
+.publish-top { display: flex; align-items: center; gap: 12px; padding: 0 22px; }
+.publish-back, .publish-week { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: var(--ivory); border: 1px solid var(--hairline); color: var(--ink-soft); flex-shrink: 0; }
+.publish-top-text { flex: 1; min-width: 0; }
+.publish-top-text h1 { margin: 0; font: 400 22px 'Instrument Serif', serif; color: var(--ink); }
+.publish-top-text p { margin: 2px 0 0; font: 500 11px 'Geist', system-ui; color: var(--mist); letter-spacing: 0.04em; }
+
+.publish-week-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; padding: 0 22px; }
+.publish-day { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px 6px; border-radius: var(--r-md); background: var(--ivory); border: 1px solid var(--hairline); cursor: pointer; }
+.publish-day-name { font: 700 9px 'Geist', system-ui; letter-spacing: 0.14em; color: var(--mist); text-transform: uppercase; }
+.publish-day-num { font: 400 18px 'Instrument Serif', serif; color: var(--ink); }
+.publish-day-dots { display: flex; gap: 2px; height: 6px; }
+.publish-day-dots i { width: 4px; height: 4px; border-radius: 50%; background: var(--persimmon); display: block; }
+.publish-day-dots-off { font: 700 8px 'Geist', system-ui; letter-spacing: 0.14em; text-transform: uppercase; color: var(--whisper); }
+.publish-day-active { background: var(--ink); border-color: var(--ink); }
+.publish-day-active .publish-day-name { color: var(--marigold); }
+.publish-day-active .publish-day-num { color: var(--ivory); }
+.publish-day-active .publish-day-dots i { background: var(--marigold); }
+.publish-day-off { opacity: 0.55; }
+
+.publish-templates { display: flex; gap: 6px; padding: 0 22px; flex-wrap: wrap; }
+.publish-templates .chip { font-size: 11px; }
+.publish-templates .chip svg { color: var(--ink-soft); }
+
+.publish-grid-wrap { flex: 1; min-height: 0; padding: 0 22px; overflow-y: auto; }
+.publish-grid { display: flex; flex-direction: column; gap: 6px; }
+.publish-row { display: grid; grid-template-columns: 48px 1fr; gap: 10px; align-items: stretch; }
+.publish-hour { font: 600 11px 'Geist', system-ui; color: var(--mist); display: flex; align-items: center; letter-spacing: 0.04em; }
+.publish-slot { border-radius: var(--r-md); padding: 12px 14px; min-height: 44px; display: flex; flex-direction: column; justify-content: center; gap: 2px; font-family: 'Geist', system-ui; }
+.publish-slot b { font-weight: 600; font-size: 13px; color: var(--ink); }
+.publish-slot span { font-size: 11px; color: var(--ink-soft); letter-spacing: 0.02em; }
+.publish-slot-empty { background: rgba(255,255,255,0.4); border: 1px dashed var(--hairline); color: var(--whisper); align-items: center; justify-content: center; font-size: 18px; }
+.publish-slot-open { background: var(--jade-soft); border: 1px solid rgba(30,92,90,0.18); }
+.publish-slot-open b { color: var(--jade); }
+.publish-slot-booked { background: var(--persimmon-soft); border: 1px solid var(--persimmon); }
+.publish-slot-booked b { color: var(--persimmon-deep); }
+.publish-slot-editing { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.slot-drawer { background: var(--ivory); border-top-left-radius: var(--r-xl); border-top-right-radius: var(--r-xl); border-top: 1px solid var(--hairline); padding: 14px 22px 26px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 -20px 40px -20px rgba(40,20,10,0.18); }
+.slot-drawer-handle { width: 40px; height: 4px; border-radius: 2px; background: var(--hairline); margin: 0 auto; }
+.slot-drawer-title { margin: 0; font: 400 16px 'Instrument Serif', serif; color: var(--ink); text-align: center; }
+.slot-drawer-row { display: flex; flex-direction: column; gap: 6px; }
+.slot-drawer-label { font: 600 10px 'Geist', system-ui; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mist); }
+.slot-drawer-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.slot-drawer-chips .chip-on { background: var(--ink); color: var(--ivory); border-color: var(--ink); }
+.slot-drawer-stepper { display: inline-flex; align-items: center; gap: 0; border: 1px solid var(--hairline); border-radius: var(--r-pill); background: var(--paper-warm); width: fit-content; }
+.slot-drawer-stepper button { width: 36px; height: 36px; background: none; border: 0; font: 600 18px 'Geist', system-ui; color: var(--ink); cursor: pointer; }
+.slot-drawer-stepper b { font: 600 14px 'Geist', system-ui; min-width: 32px; text-align: center; }
+
+/* ========================================================================
+   SCREEN: ATTENDANCE OTP ENTRY
+   ======================================================================== */
+.s-attend { padding: 60px 22px 28px; display: flex; flex-direction: column; gap: 18px; background: var(--paper); }
+.attend-top { display: flex; align-items: center; gap: 12px; }
+.attend-back { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: var(--ivory); border: 1px solid var(--hairline); color: var(--ink-soft); }
+.attend-top h1 { margin: 0; font: 400 22px 'Instrument Serif', serif; color: var(--ink); }
+
+.attend-recap { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.attend-recap-row { display: flex; align-items: center; gap: 12px; }
+.attend-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--persimmon); color: var(--ivory); font: 400 18px 'Instrument Serif', serif; display: grid; place-items: center; }
+.attend-meta { flex: 1; min-width: 0; }
+.attend-name { margin: 0; font: 600 14px 'Geist', system-ui; color: var(--ink); }
+.attend-sub { margin: 2px 0 0; font: 500 11px 'Geist', system-ui; color: var(--mist); }
+.attend-recap-line { display: flex; align-items: center; gap: 8px; padding-top: 8px; border-top: 1px dashed var(--hairline); font: 500 12px 'Geist', system-ui; color: var(--ink-soft); }
+.attend-recap-line svg { color: var(--mist); }
+
+.attend-instruct { margin: 0; font: 500 13px/1.5 'Geist', system-ui; color: var(--ink-soft); padding: 2px 4px; }
+.attend-instruct b { color: var(--ink); font-weight: 600; }
+
+.attend-otp { padding: 4px 0; }
+.attend-otp .otp-cell { font-size: 32px; }
+.attend-otp .otp-filled { border-color: var(--ink); color: var(--ink); }
+
+.attend-attempts { display: flex; align-items: center; gap: 6px; justify-content: center; font: 500 11px 'Geist', system-ui; color: var(--mist); }
+.attend-attempts svg { color: var(--mist); }
+
+.attend-verify { padding: 16px 22px; }
+
+.attend-noshow { background: none; border: 0; font: 600 12px 'Geist', system-ui; color: var(--ink-soft); padding: 8px; cursor: pointer; text-align: center; }
+
+/* Trial card footer post no-acceptance update */
+.trial-card-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; margin-top: 12px; border-top: 1px dashed var(--hairline); }
+.trial-card-foot .spill svg { vertical-align: -2px; margin-right: 2px; }
+.trial-card-otp { background: none; border: 0; font: 600 12px 'Geist', system-ui; color: var(--persimmon); cursor: pointer; padding: 4px 0; }
+
+/* Trial detail CTA post no-acceptance update */
+.trial-cta { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.trial-cta .spill { align-self: flex-start; }
+.trial-cta .spill svg { vertical-align: -2px; margin-right: 2px; }
+.trial-cta .btn-block { padding: 16px 22px; }
+
+/* Schedule publish CTA post no-acceptance update */
+.schedule-top-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.schedule-publish { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: var(--r-pill); background: var(--persimmon); color: var(--ivory); font: 600 11px 'Geist', system-ui; border: 0; cursor: pointer; }
+.schedule-publish svg { color: currentColor; }
+
+
+/* ========================================================================
+   SCREENS 17–18: WORKSHOP MANAGEMENT
+   ======================================================================== */
+
+.s-workshops {
+  padding: 60px 0 110px;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  overflow-y: auto;
+}
+.ws-mgr-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px 18px;
+}
+.ws-mgr-top h1 { margin: 0; font: 400 26px 'Instrument Serif', serif; color: var(--ink); }
+.ws-new-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+  background: var(--persimmon);
+  color: var(--ivory);
+  font: 600 12px 'Geist', system-ui;
+  border: 0;
+  cursor: pointer;
+}
+.ws-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 0 22px 16px;
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: 16px;
+}
+.ws-tab {
+  padding: 7px 14px;
+  border-radius: var(--r-pill);
+  font: 600 12px 'Geist', system-ui;
+  color: var(--ink-soft);
+  border: 1px solid var(--hairline);
+  background: transparent;
+  cursor: pointer;
+}
+.ws-tab.on { background: var(--ink); color: var(--ivory); border-color: var(--ink); }
+.ws-mgr-list { display: flex; flex-direction: column; gap: 10px; padding: 0 22px; }
+.ws-mgr-card {
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+}
+.ws-mgr-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.ws-mgr-card-title { font: 600 14px 'Geist', system-ui; color: var(--ink); line-height: 1.3; }
+.ws-mgr-card-meta {
+  font: 500 11px 'Geist', system-ui;
+  color: var(--mist);
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.ws-mgr-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ws-mgr-card-reg { font: 600 12px 'Geist', system-ui; color: var(--ink-soft); }
+.ws-mgr-edit {
+  font: 600 11px 'Geist', system-ui;
+  color: var(--persimmon);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+/* Workshop create form */
+.s-ws-create {
+  padding: 60px 0 110px;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  overflow-y: auto;
+}
+.ws-create-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 22px 18px;
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: 0;
+}
+.ws-create-back {
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: 1px solid var(--hairline);
+  color: var(--ink-soft);
+  flex-shrink: 0;
+}
+.ws-create-top h1 { margin: 0; font: 400 22px 'Instrument Serif', serif; color: var(--ink); flex: 1; }
+.ws-form { padding: 18px 22px; display: flex; flex-direction: column; gap: 14px; }
+.ws-form-label {
+  font: 700 10px 'Geist', system-ui;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+  display: block;
+}
+.ws-type-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.ws-type-btn {
+  padding: 12px;
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--hairline);
+  background: var(--ivory);
+  font: 600 12px 'Geist', system-ui;
+  color: var(--ink-soft);
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ws-type-btn .ic { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--bone); color: var(--ink-soft); }
+.ws-type-btn.on {
+  border-color: var(--persimmon);
+  background: var(--persimmon-soft);
+  color: var(--persimmon-deep);
+}
+.ws-type-btn.on .ic { background: var(--persimmon-soft); color: var(--persimmon-deep); }
+.ws-date-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.ws-create-foot {
+  padding: 16px 22px;
+  border-top: 1px solid var(--hairline);
+  background: var(--ivory);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+    /* Prototype layout */
+    body { padding: 60px 0 120px; background: var(--paper); margin: 0; font-family: 'Geist', system-ui, sans-serif; }
+    .stage { display: flex; flex-direction: column; align-items: center; gap: 80px; }
+    .stage-row { display: flex; flex-direction: column; align-items: center; gap: 18px; scroll-margin-top: 40px; }
+    .stage-row .num { font: 700 11px 'Geist', system-ui; letter-spacing: 0.18em; color: var(--mist); text-transform: uppercase; }
+    .stage-row h2 { font-family: 'Instrument Serif', serif; font-size: 22px; color: var(--ink-soft); margin: 0; font-weight: 400; }
+    .rail { position: fixed; top: 50%; right: 24px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 4px; background: var(--ivory); border: 1px solid var(--hairline); border-radius: var(--r-pill); padding: 10px 6px; box-shadow: var(--sh-md); font: 600 10px 'Geist', system-ui; z-index: 100; }
+    .rail a { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; color: var(--mist); text-decoration: none; transition: all .15s; }
+    .rail a:hover { color: var(--ink); background: var(--paper-warm); }
+    @media (max-width: 600px) { .rail { display: none; } }
+
+  </style>
+</head>
+<body>
+  <!-- Inline icon sprite (strip leading <?xml ?> declaration) -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <!-- Symbols shared by both apps (admin version preferred for duplicates) -->
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-loc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c-4-5-7-8.5-7-12a7 7 0 1 1 14 0c0 3.5-3 7-7 12z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9z"/><path d="M10 20a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-chev-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-arrow-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l6 6-12 12H2v-6z"/></symbol>
+  <symbol id="i-mappin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c-4-5-7-8.5-7-12a7 7 0 1 1 14 0c0 3.5-3 7-7 12z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M16 3.5a4 4 0 0 1 0 9"/><path d="M22 21a7 7 0 0 0-5-6.7"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 7 9-7"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2zm5.4 14.3c-.2.6-1.3 1.2-1.8 1.3-.5.1-1.1.1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.7-1.2-4.5-3.9-4.6-4.1-.1-.2-1.1-1.5-1.1-2.8 0-1.4.7-2 1-2.3.3-.3.6-.4.8-.4h.6c.2 0 .4-.1.7.5.2.6.8 2 .9 2.1.1.1.1.3 0 .5-.1.2-.2.3-.4.5-.1.2-.3.3-.4.5-.1.2-.3.4-.1.7.2.4.7 1.3 1.6 2 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.7-.1.2-.2.8-.9 1-1.2.2-.3.4-.2.7-.1.3.1 1.6.8 1.9.9.3.1.5.2.6.3.1.2.1 1-.2 1.6z"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" d="m12 2 2.9 6.6 7.1.6-5.4 4.7 1.7 7-6.3-3.8-6.3 3.8 1.7-7L2 9.2l7.1-.6z"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-9-9.4C1.6 6.7 4.6 3.5 8 4.6c1.7.6 3 2 4 3.4 1-1.4 2.3-2.8 4-3.4 3.4-1.1 6.4 2.1 5 6-2 5-9 9.4-9 9.4z"/></symbol>
+  <symbol id="i-medal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="14" r="6"/><path d="m8 4 4 6 4-6"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v3a5 5 0 0 1-10 0z"/><path d="M17 6h3v2a3 3 0 0 1-3 3M7 6H4v2a3 3 0 0 0 3 3"/><path d="M9 17h6l-1 4h-4z"/><path d="M12 12v5"/></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4 0 7-3 7-7 0-4-3-6-3-9-2 1-4 3-4 6-1-1-2-2-2-4-2 1-5 4-5 8 0 4 3 6 7 6z"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2l2 6 6 2-6 2-2 6-2-6-6-2 6-2zm7 11 1 3 3 1-3 1-1 3-1-3-3-1 3-1z"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4 2c-1 .5-1.5 1.5-1.5 2.5"/><circle cx="12" cy="17" r=".8" fill="currentColor"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h3l1.5-2h5L16 8h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m3 18 6-6 5 5 3-3 4 4"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h14M5 17h9"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v.01M12 11v6"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13a9 9 0 1 1-10-10 7 7 0 0 0 10 10z"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="14" height="12" rx="2"/><path d="m17 10 4-2v8l-4-2z"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="6" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18" r="1.6"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3"/><path d="m16 17 5-5-5-5M9 12h12"/></symbol>
+  <symbol id="i-cog" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3h.1a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8v.1a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9 5 3h14l2 6"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9c0 1.7 1.3 3 3 3s3-1.3 3-3 1.3 3 3 3 3-1.3 3-3 1.3 3 3 3 3-1.3 3-3"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8 11 8-4M8 13l8 4"/></symbol>
+  <symbol id="i-comment" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-12.5 6.6L4 20l1.4-4.5A8 8 0 1 1 21 12z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4z" fill="currentColor"/></symbol>
+  <symbol id="i-music" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol>
+  <symbol id="i-rupee" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5h10M7 9h10M11 5c4 0 4 8-1 8H7l9 8"/></symbol>
+  <symbol id="i-google" viewBox="0 0 24 24"><path fill="currentColor" d="M21 12.2c0-.7-.1-1.4-.2-2H12v3.8h5c-.2 1.2-.9 2.2-1.9 2.9v2.4h3.1C20 17.7 21 15.2 21 12.2z"/><path fill="currentColor" opacity=".6" d="M12 21c2.6 0 4.7-.9 6.3-2.3l-3.1-2.4c-.9.6-2 .9-3.2.9-2.5 0-4.5-1.7-5.3-3.9H3.5v2.5C5.1 18.9 8.3 21 12 21z"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 12a10 10 0 0 1 14 0"/><path d="M8 15a6 6 0 0 1 8 0"/><circle cx="12" cy="18" r="1" fill="currentColor"/></symbol>
+  <!-- Symbols only in student app -->
+  <symbol id="i-apple" viewBox="0 0 24 24"><path fill="currentColor" d="M16 3c0 1.5-1 3-3 3 0-1.5 1-3 3-3zm3 6c-2 0-3 1-4 1s-2-1-4-1c-2.5 0-5 2-5 6 0 4 3 9 5 9 1 0 2-1 4-1s3 1 4 1c2 0 5-5 5-9 0-3-2-5-4-5z"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path fill="currentColor" d="M13 2 3 14h7l-1 8 10-12h-7z"/></symbol>
+  <symbol id="i-brush" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l6 6-9 9-3-3z"/><path d="M5 16l-2 5 5-2"/></symbol>
+  <symbol id="i-dance" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 7v5l-3 4-2 4M12 12l3 4 2 4M9 11h6"/></symbol>
+  <symbol id="i-fast" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4 6 6 6-6 6M12 6l6 6-6 6"/></symbol>
+  <symbol id="i-heart-f" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21s-7-4.5-9.3-9.6C1 7.6 3.6 4 7.4 4.6c1.9.3 3.5 1.6 4.6 3.2 1.1-1.6 2.7-2.9 4.6-3.2C20.4 4 23 7.6 21.3 11.4 19 16.5 12 21 12 21z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+  <symbol id="i-timer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6"/><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/></symbol>
+  <symbol id="i-yoga" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 7v5M5 12h14M8 18l4-6 4 6"/></symbol>
+</svg>
+
+
+  <nav class="rail">
+    <a href="#screen-01-login">01</a>
+    <a href="#screen-02-inbox">02</a>
+    <a href="#screen-03-trial">03</a>
+    <a href="#screen-04-schedule">04</a>
+    <a href="#screen-05-batch-attendance">05</a>
+    <a href="#screen-06-batch-edit">06</a>
+    <a href="#screen-07-students">07</a>
+    <a href="#screen-08-student-detail">08</a>
+    <a href="#screen-09-studio">09</a>
+    <a href="#screen-10-reviews">10</a>
+    <a href="#screen-11-review-respond">11</a>
+    <a href="#screen-12-earnings">12</a>
+    <a href="#screen-13-profile-edit">13</a>
+    <a href="#screen-14-settings">14</a>
+    <a href="#screen-15-publish-availability">15</a>
+    <a href="#screen-16-attendance-otp">16</a>
+    <a href="#screen-17-workshops">17</a>
+    <a href="#screen-18-workshop-create">18</a>
+  </nav>
+
+  <main class="stage">
+    <section class="stage-row" id="screen-01-login">
+      <span class="num">01</span>
+      <h2>Log in</h2>
+      <article class="phone">
+    <div class="island"></div>
+        <div class="screen s-auth studio">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="signals">
+              <span class="signal-dots"><i></i><i></i><i></i><i></i></span>
+              <svg width="14" height="10"><use href="#i-wifi"/></svg>
+              <span class="battery"><i></i></span>
+            </span>
+          </div>
+          <div class="brand" style="margin-top:36px">
+            <div class="mark">F</div>
+            <div class="word">Findemy</div>
+            <div class="pill">Studio</div>
+          </div>
+          <h1>Run your<br/><em>studio</em>.</h1>
+          <p class="sub">Sign in to manage trial requests, batches, students and earnings.</p>
+
+          <div class="field-stack">
+            <div>
+              <div class="auth-label">Mobile number</div>
+              <div class="input">
+                <span style="font-weight:600;color:var(--ink)">+91</span>
+                <span style="height:14px;width:1px;background:var(--hairline)"></span>
+                <input value="98450 · 47291" />
+              </div>
+            </div>
+          </div>
+          <div class="helper">
+            <svg width="14" height="14"><use href="#i-shield"/></svg>
+            <span>OTP-only sign in · one login per academy</span>
+          </div>
+
+          <div class="cta-row">
+            <button class="btn btn-primary btn-block">Continue with OTP <svg width="16" height="16"><use href="#i-arrow-r"/></svg></button>
+          </div>
+
+          <div class="alt-link">New to Findemy? <a>List your academy</a></div>
+
+          <div class="foot-tip">
+            <div class="ic"><svg width="16" height="16"><use href="#i-wa"/></svg></div>
+            <div>
+              <div class="t">Trial alerts on WhatsApp</div>
+              <div class="s">Get a ping the moment a student requests a class — before they look elsewhere.</div>
+            </div>
+          </div>
+        </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-02-inbox">
+      <span class="num">02</span>
+      <h2>Inbox</h2>
+      <article class="phone">
+    <div class="island"></div>
+        <div class="screen s-inbox">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="signals">
+              <span class="signal-dots"><i></i><i></i><i></i><i></i></span>
+              <svg width="14" height="10"><use href="#i-wifi"/></svg>
+              <span class="battery"><i></i></span>
+            </span>
+          </div>
+
+          <div class="inbox-head">
+            <div class="row">
+              <div>
+                <div class="greet">Wed · 16 Apr</div>
+                <div class="h">Good morning,<br/><em>Aman</em>.</div>
+              </div>
+              <div class="head-actions">
+                <button class="icbtn"><svg width="16" height="16"><use href="#i-bell"/></svg><i class="dot-ind"></i></button>
+                <div class="aca-pill">
+                  <div class="av sm" style="background:var(--ink);color:var(--marigold)">R</div>
+                  <span>Raaga Music</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-strip">
+            <div class="stat">
+              <div class="v"><em>3</em></div>
+              <div class="l">Today's trials</div>
+            </div>
+            <div class="stat">
+              <div class="v">3</div>
+              <div class="l">Today's classes</div>
+            </div>
+            <div class="stat">
+              <div class="v"><em>₹38.4k</em></div>
+              <div class="l">This month</div>
+            </div>
+          </div>
+
+          <div class="sec-row">
+            <h3>Today's trials</h3>
+            <span class="meta alert">3 today</span>
+          </div>
+
+          <div class="trial-card urgent">
+            <div class="meta-row">
+              <span class="badge">TRIAL</span>
+              <span>2h ago</span>
+              <span class="dot"></span>
+              <span>Guitar · Beginner</span>
+            </div>
+            <div class="stu">
+              <div class="av md">P</div>
+              <div class="info">
+                <div class="name">Priya Sharma</div>
+                <div class="sub">Sat 19 Apr · 4:00 PM · ₹150</div>
+              </div>
+            </div>
+            <div class="note">"I've played guitar for 6 months at home. Hoping to start with fundamentals."</div>
+            <div class="trial-card-foot">
+              <span class="spill active"><svg width="12" height="12" aria-hidden="true"><use href="#i-check"/></svg> Auto-confirmed</span>
+              <button class="trial-card-otp">Mark attendance →</button>
+            </div>
+          </div>
+
+          <div class="trial-card">
+            <div class="meta-row">
+              <span class="badge">TRIAL</span>
+              <span>5h ago</span>
+              <span class="dot"></span>
+              <span>Tabla · Intermediate</span>
+            </div>
+            <div class="stu">
+              <div class="av md jade">A</div>
+              <div class="info">
+                <div class="name">Arjun Mehta</div>
+                <div class="sub">Sun 20 Apr · 11:00 AM · ₹200</div>
+              </div>
+            </div>
+            <div class="trial-card-foot">
+              <span class="spill active"><svg width="12" height="12" aria-hidden="true"><use href="#i-check"/></svg> Auto-confirmed</span>
+              <button class="trial-card-otp">Mark attendance →</button>
+            </div>
+          </div>
+
+          <div class="sec-row" style="margin-top:18px">
+            <h3>Today's classes</h3>
+            <span class="meta">3 BATCHES</span>
+          </div>
+
+          <div class="sched-list">
+            <div class="sched-row">
+              <div class="time-col"><div class="t">10:00</div><div class="ts">AM</div></div>
+              <div class="info">
+                <div class="title">Hindustani Vocals · Beginner</div>
+                <div class="sub">6 students · Aman M.</div>
+              </div>
+              <span class="spill done">Done</span>
+            </div>
+            <div class="sched-row now">
+              <div class="time-col"><div class="t">4:00</div><div class="ts">PM</div></div>
+              <div class="info">
+                <div class="title">Guitar · Beginner</div>
+                <div class="sub">4 students · Rohan D.</div>
+              </div>
+              <span class="spill now">Now</span>
+            </div>
+            <div class="sched-row">
+              <div class="time-col"><div class="t">6:00</div><div class="ts">PM</div></div>
+              <div class="info">
+                <div class="title">Hindustani Vocals · Beginner</div>
+                <div class="sub">8 students · Aman M.</div>
+              </div>
+              <span class="spill upcoming">Upcoming</span>
+            </div>
+          </div>
+
+          <div class="sec-row" style="margin-top:18px">
+            <h3>Activity</h3>
+          </div>
+
+          <div class="activity-list">
+            <div class="activity-row">
+              <div class="ic jade"><svg width="14" height="14"><use href="#i-check"/></svg></div>
+              <div class="copy">
+                <div class="t">Riya N. completed her trial</div>
+                <div class="ts">10 min ago · <span class="act">Invite to enroll</span></div>
+              </div>
+            </div>
+            <div class="activity-row">
+              <div class="ic marigold"><svg width="14" height="14"><use href="#i-star"/></svg></div>
+              <div class="copy">
+                <div class="t"><b>★★★★★</b> from Aman M. — "Best music academy in Indiranagar."</div>
+                <div class="ts">1 hour ago · <span class="act">Respond</span></div>
+              </div>
+            </div>
+            <div class="activity-row">
+              <div class="ic persimmon"><svg width="14" height="14"><use href="#i-medal"/></svg></div>
+              <div class="copy">
+                <div class="t">You're now <b>#4</b> in Bengaluru music academies</div>
+                <div class="ts">▲ Up 1 spot · today</div>
+              </div>
+            </div>
+            <div class="activity-row">
+              <div class="ic"><svg width="14" height="14"><use href="#i-play"/></svg></div>
+              <div class="copy">
+                <div class="t">@meera.dances tagged your studio in a reel — 3.1k views</div>
+                <div class="ts">3 hours ago</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="earnings-mini">
+            <div class="ic">₹</div>
+            <div class="info">
+              <div class="l">This month</div>
+              <div class="v">₹38,400</div>
+              <div class="delta">▲ ₹4,200 vs March</div>
+            </div>
+            <svg width="14" height="14" style="color:var(--mist)"><use href="#i-chev-r"/></svg>
+          </div>
+
+          <div class="nav-bar admin">
+            <span class="nav-item active"><svg><use href="#i-mail"/></svg>Inbox</span>
+            <span class="nav-item"><svg><use href="#i-cal"/></svg>Schedule</span>
+            <span class="nav-item"><svg><use href="#i-users"/></svg>Students</span>
+            <span class="nav-item"><span class="ic-aca">R</span>Studio</span>
+          </div>
+        </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-03-trial">
+      <span class="num">03</span>
+      <h2>Trial detail</h2>
+      <article class="phone">
+    <div class="island"></div>
+        <div class="screen s-trial">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="signals">
+              <span class="signal-dots"><i></i><i></i><i></i><i></i></span>
+              <svg width="14" height="10"><use href="#i-wifi"/></svg>
+              <span class="battery"><i></i></span>
+            </span>
+          </div>
+
+          <div class="trial-top">
+            <button class="back"><svg width="16" height="16"><use href="#i-chev-l"/></svg></button>
+            <div class="h">Today, 4:00 PM</div>
+            <span class="badge active">CONFIRMED</span>
+          </div>
+
+          <div class="trial-hero">
+            <div class="av lg">P</div>
+            <h2>Priya Sharma</h2>
+            <div class="stu-sub">26 · Indiranagar · 1.4 km</div>
+            <div class="quick-row">
+              <button class="quick-btn"><svg width="14" height="14"><use href="#i-phone"/></svg> Call</button>
+              <button class="quick-btn wa"><svg width="14" height="14"><use href="#i-wa"/></svg> WhatsApp</button>
+            </div>
+          </div>
+
+          <div class="trial-source">
+            <svg width="14" height="14"><use href="#i-search"/></svg>
+            <span>From <b>Discover</b> · viewed your studio 3× this week</span>
+          </div>
+
+          <div class="trial-card-detail">
+            <h4>TRIAL DETAILS</h4>
+            <div class="kv-row"><span class="l">Batch</span><span class="v">Guitar · Beginner</span></div>
+            <div class="kv-row"><span class="l">When</span><span class="v">Sat 19 Apr · 4:00 PM</span></div>
+            <div class="kv-row"><span class="l">Mode</span><span class="v">In studio · Indiranagar</span></div>
+            <div class="kv-row"><span class="l">Pays</span><span class="v">₹150 · <span class="jade" style="font-weight:600">card on file</span></span></div>
+          </div>
+
+          <div class="note-card">
+            <div class="l">PRIYA WROTE</div>
+            <div class="t">"6 months on my own — hoping to start fundamentals with a teacher."</div>
+          </div>
+
+          <div class="trial-cta">
+            <span class="spill active"><svg width="12" height="12" aria-hidden="true"><use href="#i-check"/></svg> Auto-confirmed</span>
+            <button class="btn btn-primary btn-block"><svg width="16" height="16" aria-hidden="true"><use href="#i-shield"/></svg> Mark attendance (enter OTP)</button>
+          </div>
+        </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-04-schedule">
+      <span class="num">04</span>
+      <h2>Schedule</h2>
+      <article class="phone">
+    <div class="island"></div>
+        <div class="screen s-schedule">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="signals">
+              <span class="signal-dots"><i></i><i></i><i></i><i></i></span>
+              <svg width="14" height="10"><use href="#i-wifi"/></svg>
+              <span class="battery"><i></i></span>
+            </span>
+          </div>
+
+          <div class="sched-head">
+            <div class="schedule-top-row">
+              <div class="h">This <em>week</em></div>
+              <button class="schedule-publish"><svg width="14" height="14" aria-hidden="true"><use href="#i-plus"/></svg> Publish slots</button>
+            </div>
+          </div>
+
+          <div class="week-strip">
+            <div class="day-pill"><div class="dow">M</div><div class="d">14</div><div class="ct">3</div></div>
+            <div class="day-pill"><div class="dow">T</div><div class="d">15</div><div class="ct">2</div></div>
+            <div class="day-pill today"><div class="dow">W</div><div class="d">16</div><div class="ct">3</div></div>
+            <div class="day-pill"><div class="dow">T</div><div class="d">17</div><div class="ct">2</div></div>
+            <div class="day-pill"><div class="dow">F</div><div class="d">18</div><div class="ct">3</div></div>
+            <div class="day-pill"><div class="dow">S</div><div class="d">19</div><div class="ct">5</div></div>
+            <div class="day-pill"><div class="dow">S</div><div class="d">20</div><div class="ct">1</div></div>
+          </div>
+
+          <div class="day-block">
+            <div class="day-h">
+              <div class="dt">Wed 16 Apr · <em>today</em></div>
+              <div class="ct">3 BATCHES</div>
+            </div>
+            <div class="batch-pill music">
+              <div class="time-col"><div class="t">10:00</div><div class="ts">AM · 1h</div></div>
+              <div class="info">
+                <div class="title">Hindustani Vocals · Beginner</div>
+                <div class="sub">6/8 students · Aman M.</div>
+              </div>
+              <span class="spill done">Done</span>
+            </div>
+            <div class="batch-pill arts">
+              <div class="time-col"><div class="t">4:00</div><div class="ts">PM · 1h</div></div>
+              <div class="info">
+                <div class="title">Guitar · Beginner</div>
+                <div class="sub">4/6 students · Rohan D.</div>
+              </div>
+              <span class="spill now">Now</span>
+            </div>
+            <div class="batch-pill music">
+              <div class="time-col"><div class="t">6:00</div><div class="ts">PM · 1h</div></div>
+              <div class="info">
+                <div class="title">Hindustani Vocals · Beginner</div>
+                <div class="sub">8/10 students · Aman M.</div>
+              </div>
+              <span class="spill upcoming">Upcoming</span>
+            </div>
+          </div>
+
+          <div class="day-block">
+            <div class="day-h">
+              <div class="dt">Thu 17 Apr</div>
+              <div class="ct">2 BATCHES</div>
+            </div>
+            <div class="batch-pill arts">
+              <div class="time-col"><div class="t">11:00</div><div class="ts">AM · 1h</div></div>
+              <div class="info">
+                <div class="title">Guitar · Intermediate</div>
+                <div class="sub">5/8 students · Rohan D.</div>
+              </div>
+            </div>
+            <div class="batch-pill music">
+              <div class="time-col"><div class="t">7:00</div><div class="ts">PM · 1h</div></div>
+              <div class="info">
+                <div class="title">Tabla · Beginner</div>
+                <div class="sub">3/6 students · Aman M.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="day-block">
+            <div class="day-h">
+              <div class="dt">Fri 18 Apr</div>
+              <div class="ct">3 BATCHES</div>
+            </div>
+            <div class="batch-pill music">
+              <div class="time-col"><div class="t">6:00</div><div class="ts">PM · 1h</div></div>
+              <div class="info">
+                <div class="title">Hindustani Vocals · Beginner</div>
+                <div class="sub">8/10 students · Aman M.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="nav-bar admin">
+            <span class="nav-item"><svg><use href="#i-mail"/></svg>Inbox</span>
+            <span class="nav-item active"><svg><use href="#i-cal"/></svg>Schedule</span>
+            <span class="nav-item"><svg><use href="#i-users"/></svg>Students</span>
+            <span class="nav-item"><span class="ic-aca">R</span>Studio</span>
+          </div>
+        </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-05-batch-attendance">
+      <span class="num">05</span>
+      <h2>Batch · attendance</h2>
+      <article class="phone">
+    <div class="island"></div>
+        <div class="screen s-batch">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="signals">
+              <span class="signal-dots"><i></i><i></i><i></i><i></i></span>
+              <svg width="14" height="10"><use href="#i-wifi"/></svg>
+              <span class="battery"><i></i></span>
+            </span>
+          </div>
+
+          <div class="batch-top">
+            <button class="back"><svg width="16" height="16"><use href="#i-chev-l"/></svg></button>
+            <button class="more"><svg width="14" height="14"><use href="#i-more"/></svg></button>
+          </div>
+
+          <div class="batch-hero">
+            <div class="badge">TODAY · 4:00 PM · NOW</div>
+            <h2>Guitar · <em>Beginner</em></h2>
+            <div class="meta-row">
+              <span><svg width="11" height="11"><use href="#i-cal"/></svg> Wed 16 Apr</span>
+              <span><svg width="11" height="11"><use href="#i-clock"/></svg> 4:00 — 5:00 PM</span>
+              <span><svg width="11" height="11"><use href="#i-users"/></svg> 4/6 enrolled</span>
+              <span><svg width="11" height="11"><use href="#i-user"/></svg> Rohan D.</span>
+            </div>
+          </div>
+
+          <div class="attend-tabs">
+            <span class="tab on">Today</span>
+            <span class="tab">Upcoming · 3</span>
+            <span class="tab">Roster · 4</span>
+            <span class="tab">Edit</span>
+          </div>
+
+          <div class="attend-summary">
+            <span class="pill present">2 present</span>
+            <span class="pill absent">1 absent</span>
+            <span class="pill pending">1 pending</span>
+          </div>
+
+          <div class="roster">
+            <div class="roster-row present">
+              <div class="av md">P</div>
+              <div class="info">
+                <div class="name">Priya Sharma</div>
+                <div class="sub">6 sessions · enrolled Apr 1</div>
+              </div>
+              <div class="checkbox"><svg width="14" height="14"><use href="#i-check"/></svg></div>
+            </div>
+            <div class="roster-row present">
+              <div class="av md jade">S</div>
+              <div class="info">
+                <div class="name">Saanvi K.</div>
+                <div class="sub">1 session · trial</div>
+              </div>
+              <div class="checkbox"><svg width="14" height="14"><use href="#i-check"/></svg></div>
+            </div>
+            <div class="roster-row absent">
+              <div class="av md plum">D</div>
+              <div class="info">
+                <div class="name">Dev A.</div>
+                <div class="sub">4 sessions · enrolled Mar 18</div>
+              </div>
+              <div class="checkbox"><svg width="12" height="12"><use href="#i-x"/></svg></div>
+            </div>
+            <div class="roster-row">
+              <div class="av md marigold">A</div>
+              <div class="info">
+                <div class="name">Arjun M.</div>
+                <div class="sub">2 sessions · trial</div>
+              </div>
+              <div class="checkbox"></div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-block batch-foot-cta">Save attendance · 4 of 4 marked</button>
+
+          <div class="nav-bar admin">
+            <span class="nav-item"><svg><use href="#i-mail"/></svg>Inbox</span>
+            <span class="nav-item active"><svg><use href="#i-cal"/></svg>Schedule</span>
+            <span class="nav-item"><svg><use href="#i-users"/></svg>Students</span>
+            <span class="nav-item"><span class="ic-aca">R</span>Studio</span>
+          </div>
+        </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-06-batch-edit">
+      <span class="num">06</span>
+      <h2>Batch · edit</h2>
+      <article class="phone">
+    <div class="island"></div>
+        <div class="screen s-batch-edit">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="signals">
+              <span class="signal-dots"><i></i><i></i><i></i><i></i></span>
+              <svg width="14" height="10"><use href="#i-wifi"/></svg>
+              <span class="battery"><i></i></span>
+            </span>
+          </div>
+
+          <div class="edit-top">
+            <button class="x"><svg width="14" height="14"><use href="#i-x"/></svg></button>
+            <div class="h">Edit batch</div>
+            <button class="save">Save</button>
+          </div>
+
+          <div class="field-group">
+            <div class="glabel">BATCH NAME</div>
+            <div class="input"><input value="Guitar · Beginner" /></div>
+            <div class="glabel" style="margin-top:14px">INSTRUCTOR</div>
+            <div class="input">
+              <div class="av sm" style="background:var(--marigold);color:#5B3F0E;width:24px;height:24px;font-size:11px">R</div>
+              <input value="Rohan D'Souza" />
+              <svg width="14" height="14" style="color:var(--mist)"><use href="#i-chev-d"/></svg>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="glabel">DAYS</div>
+            <div class="day-toggle-row">
+              <span class="day-toggle">M</span>
+              <span class="day-toggle on">T</span>
+              <span class="day-toggle">W</span>
+              <span class="day-toggle on">T</span>
+              <span class="day-toggle">F</span>
+              <span class="day-toggle skip">S</span>
+              <span class="day-toggle skip">S</span>
+            </div>
+            <div class="glabel" style="margin-top:14px">TIME</div>
+            <div class="input">
+              <svg width="14" height="14" style="color:var(--ink)"><use href="#i-clock"/></svg>
+              <input value="5:30 PM — 6:30 PM" />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="glabel">MODE</div>
+            <div class="mode-toggle">
+              <div class="mode-card on">
+                <div class="ic"><svg width="16" height="16"><use href="#i-mappin"/></svg></div>
+                <div class="t">In studio</div>
+                <div class="s">Indiranagar</div>
+              </div>
+              <div class="mode-card">
+                <div class="ic"><svg width="16" height="16"><use href="#i-video"/></svg></div>
+                <div class="t">Online</div>
+                <div class="s">Add Zoom link</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="glabel">PRICING &amp; CAPACITY</div>
+            <div class="price-row">
+              <div class="price-input">
+                <div class="l">TRIAL</div>
+                <div class="v">₹150</div>
+              </div>
+              <div class="price-input">
+                <div class="l">MONTHLY</div>
+                <div class="v">₹2,200</div>
+              </div>
+            </div>
+            <div class="input" style="margin-top:8px"><svg width="14" height="14" style="color:var(--mist)"><use href="#i-users"/></svg><input value="6 students per session" /></div>
+          </div>
+
+          <div class="danger-row">
+            <div class="ic"><svg width="14" height="14"><use href="#i-trash"/></svg></div>
+            <div class="copy">
+              <div class="t">Pause this batch</div>
+              <div class="s">Stops new sign-ups · students notified</div>
+            </div>
+            <span class="act">Pause</span>
+          </div>
+        </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-07-students">
+      <span class="num">07</span>
+      <h2>Students</h2>
+      <article class="phone">
+    <div class="island"></div>
+        <div class="screen s-students">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="signals">
+              <span class="signal-dots"><i></i><i></i><i></i><i></i></span>
+              <svg width="14" height="10"><use href="#i-wifi"/></svg>
+              <span class="battery"><i></i></span>
+            </span>
+          </div>
+
+          <div class="stu-head">
+            <div class="row">
+              <div class="h">Your <em>students</em></div>
+              <button class="icbtn" style="background:var(--ink);color:var(--ivory);border-color:var(--ink)"><svg width="14" height="14"><use href="#i-plus"/></svg></button>
+            </div>
+            <div class="stu-search">
+              <svg width="16" height="16" style="color:var(--ink)"><use href="#i-search"/></svg>
+              <span>Search by name, batch…</span>
+              <span class="filter"><svg width="14" height="14"><use href="#i-sliders"/></svg></span>
+            </div>
+          </div>
+
+          <div class="stu-cats">
+            <span class="chip persimmon">All · 52</span>
+            <span class="chip">Active · 38</span>
+            <span class="chip">Trial · 6</span>
+            <span class="chip">Inactive · 8</span>
+            <span class="chip">Guitar</span>
+            <span class="chip">Vocals</span>
+            <span class="chip">Tabla</span>
+          </div>
+
+          <div class="stu-row">
+            <div class="av md">P</div>
+            <div class="info">
+              <div class="name">Priya Sharma</div>
+              <div class="sub">Guitar · Beginner <span class="dot"></span> 6 sessions</div>
+            </div>
+            <span class="spill active">Active</span>
+          </div>
+
+          <div class="stu-row">
+            <div class="av md ink">A</div>
+            <div class="info">
+              <div class="name"><span style="color:var(--marigold)">★</span> Aman Mukherjee</div>
+              <div class="sub">Vocals · Advanced <span class="dot"></span> 84 sessions</div>
+            </div>
+            <span class="spill active">Active</span>
+          </div>
+
+          <div class="stu-row">
+            <div class="av md jade">S</div>
+            <div class="info">
+              <div class="name">Saanvi K.</div>
+              <div class="sub">Guitar · Beginner <span class="dot"></span> 1 session</div>
+            </div>
+            <span class="spill trial">Trial</span>
+          </div>
+
+          <div class="stu-row">
+            <div class="av md rose">R</div>
+            <div class="info">
+              <div class="name">Riya N.</div>
+              <div class="sub">Bharatanatyam <span class="dot"></span> trial done</div>
+            </div>
+            <span class="spill pending">Decide</span>
+          </div>
+
+          <div class="stu-row">
+            <div class="av md jade">K</div>
+            <div class="info">
+              <div class="name">Kabir J.</div>
+              <div class="sub">Tabla · Beginner <span class="dot"></span> 4 sessions</div>
+            </div>
+            <span class="spill active">Active</span>
+          </div>
+
+          <div class="stu-row">
+            <div class="av md plum">D</div>
+            <div class="info">
+              <div class="name">Dev A.</div>
+              <div class="sub">Guitar · Beginner <span class="dot"></span> 2 sessions</div>
+            </div>
+            <span class="spill inactive">Idle · 18d</span>
+          </div>
+
+          <div class="stu-row">
+            <div class="av md marigold">M</div>
+            <div class="info">
+              <div class="name">Meera Iyer</div>
+              <div class="sub">Tabla · Intermediate <span class="dot"></span> 18 sessions</div>
+            </div>
+            <span class="spill active">Active</span>
+          </div>
+
+          <div class="nav-bar admin">
+            <span class="nav-item"><svg><use href="#i-mail"/></svg>Inbox</span>
+            <span class="nav-item"><svg><use href="#i-cal"/></svg>Schedule</span>
+            <span class="nav-item active"><svg><use href="#i-users"/></svg>Students</span>
+            <span class="nav-item"><span class="ic-aca">R</span>Studio</span>
+          </div>
+        </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-08-student-detail">
+      <span class="num">08</span>
+      <h2>Student detail</h2>
+      <article class="phone">
+    <div class="island"></div>
+        <div class="screen s-student">
+          <div class="status-bar on-dark">
+            <span class="time">9:41</span>
+            <span class="signals">
+              <span class="signal-dots"><i></i><i></i><i></i><i></i></span>
+              <svg width="14" height="10"><use href="#i-wifi"/></svg>
+              <span class="battery"><i></i></span>
+            </span>
+          </div>
+
+          <div class="stud-top">
+            <button class="back"><svg width="16" height="16"><use href="#i-chev-l"/></svg></button>
+          </div>
+
+          <div class="stud-id">
+            <div class="av xl">P</div>
+            <div class="meta">
+              <h2>Priya Sharma</h2>
+              <div class="sub"><svg width="11" height="11"><use href="#i-mappin"/></svg> Indiranagar · 1.4 km</div>
+            </div>
+            <div class="actions">
+              <button class="iconbtn"><svg width="14" height="14"><use href="#i-phone"/></svg></button>
+              <button class="iconbtn wa"><svg width="14" height="14"><use href="#i-wa"/></svg></button>
+            </div>
+          </div>
+
+          <div class="stud-stats">
+            <div class="s"><div class="v">6</div><div class="l">Sessions</div></div>
+            <div class="s"><div class="v">24d</div><div class="l">Joined</div></div>
+            <div class="s"><div class="v">95%</div><div class="l">Attendance</div></div>
+          </div>
+
+          <div class="stud-section">
+            <div class="h">Last 14 days</div>
+            <div class="attend-line">
+              <div class="day p"></div>
+              <div class="day p"></div>
+              <div class="day s"></div>
+              <div class="day p"></div>
+              <div class="day p"></div>
+              <div class="day"></div>
+              <div class="day"></div>
+              <div class="day p"></div>
+              <div class="day p"></div>
+              <div class="day a"></div>
+              <div class="day p"></div>
+              <div class="day p"></div>
+              <div class="day"></div>
+              <div class="day p"></div>
+            </div>
+            <div style="display:flex;gap:14px;font-size:10px;color:var(--mist);letter-spacing:0.04em">
+              <span><i style="display:inline-block;width:8px;height:8px;background:var(--jade);border-radius:2px;vertical-align:-1px"></i> Present</span>
+              <span><i style="display:inline-block;width:8px;height:8px;background:var(--rose-soft);border-radius:2px;vertical-align:-1px"></i> Absent</span>
+              <span><i style="display:inline-block;width:8px;height:8px;background:var(--marigold-soft);border-radius:2px;vertical-align:-1px"></i> Sick</span>
+            </div>
+          </div>
+
+          <div class="stud-section">
+            <div class="h">Payments</div>
+            <div class="payment-row">
+              <div class="ic-mo">₹</div>
+              <div class="info">
+                <div class="name">Guitar · Monthly</div>
+                <div class="sub">Apr 2026 · paid 3 Apr</div>
+              </div>
+              <div class="v">₹2,200</div>
+            </div>
+            <div class="payment-row">
+              <div class="ic-mo">₹</div>
+              <div class="info">
+                <div class="name">Trial fee</div>
+                <div class="sub">16 Mar · paid</div>
+              </div>
+              <div class="v">₹150</div>
+            </div>
+          </div>
+
+          <div class="stud-section">
+            <div class="h">Notes</div>
+            <div class="input" style="align-items:start;min-height:80px">
+              <textarea style="border:0;outline:0;background:transparent;width:100%;font-family:var(--sans);font-size:13px;color:var(--ink);line-height:1.5;resize:none">Picks well with thumb — needs work on left-hand fingering. Goal: open chords by May.</textarea>
+            </div>
+          </div>
+
+          <div class="nav-bar admin">
+            <span class="nav-item"><svg><use href="#i-mail"/></svg>Inbox</span>
+            <span class="nav-item"><svg><use href="#i-cal"/></svg>Schedule</span>
+            <span class="nav-item active"><svg><use href="#i-users"/></svg>Students</span>
+            <span class="nav-item"><span class="ic-aca">R</span>Studio</span>
+          </div>
+        </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-09-studio">
+      <span class="num">09</span>
+      <h2>Studio menu</h2>
+      <article class="phone">
+    <div class="island"></div>
+        <div class="screen s-studio">
+          <div class="status-bar on-dark">
+            <span class="time">9:41</span>
+            <span class="signals">
+              <span class="signal-dots"><i></i><i></i><i></i><i></i></span>
+              <svg width="14" height="10"><use href="#i-wifi"/></svg>
+              <span class="battery"><i></i></span>
+            </span>
+          </div>
+
+          <div class="studio-top">
+            <div class="row">
+              <div class="word">Studio</div>
+              <div class="actions">
+                <button class="ib" style="color:var(--ivory)"><svg width="14" height="14"><use href="#i-bell"/></svg></button>
+                <button class="ib" style="color:var(--ivory)"><svg width="14" height="14"><use href="#i-help"/></svg></button>
+              </div>
+            </div>
+            <div class="studio-id">
+              <div class="av xl" style="background:var(--ink-soft);color:var(--marigold);border:3px solid var(--ivory)">R</div>
+              <div>
+                <h2>Raaga Music Academy</h2>
+                <div class="sub"><svg width="11" height="11" style="color:var(--jade-soft)"><use href="#i-shield"/></svg> Verified · ★ 4.9 · 84 reviews</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="studio-section-h">STUDIO</div>
+          <div class="menu-list">
+            <div class="menu-row">
+              <div class="ic"><svg width="16" height="16"><use href="#i-store"/></svg></div>
+              <div class="info">
+                <div class="name">Academy profile</div>
+                <div class="sub">Listing, photos, address, prices</div>
+              </div>
+              <svg width="14" height="14" class="arrow"><use href="#i-chev-r"/></svg>
+            </div>
+            <div class="menu-row">
+              <div class="ic persimmon"><svg width="16" height="16"><use href="#i-star"/></svg></div>
+              <div class="info">
+                <div class="name">Reviews &amp; ratings</div>
+                <div class="sub">★ 4.9 · 1 needs reply</div>
+              </div>
+              <span class="tag marigold">1 NEW</span>
+              <svg width="14" height="14" class="arrow" style="margin-left:6px"><use href="#i-chev-r"/></svg>
+            </div>
+            <div class="menu-row">
+              <div class="ic jade"><svg width="16" height="16"><use href="#i-rupee"/></svg></div>
+              <div class="info">
+                <div class="name">Earnings &amp; payouts</div>
+                <div class="sub">₹38,400 this month · ▲ 12%</div>
+              </div>
+              <svg width="14" height="14" class="arrow"><use href="#i-chev-r"/></svg>
+            </div>
+            <div class="menu-row">
+              <div class="ic marigold"><svg width="16" height="16"><use href="#i-shield"/></svg></div>
+              <div class="info">
+                <div class="name">Verification</div>
+                <div class="sub">KYC complete · Verified Apr 2025</div>
+              </div>
+              <svg width="14" height="14" class="arrow"><use href="#i-chev-r"/></svg>
+            </div>
+          </div>
+
+          <div class="studio-section-h">ACCOUNT</div>
+          <div class="menu-list">
+            <div class="menu-row">
+              <div class="ic"><svg width="16" height="16"><use href="#i-bell"/></svg></div>
+              <div class="info">
+                <div class="name">Notifications</div>
+                <div class="sub">Push, email, WhatsApp</div>
+              </div>
+              <svg width="14" height="14" class="arrow"><use href="#i-chev-r"/></svg>
+            </div>
+            <div class="menu-row">
+              <div class="ic"><svg width="16" height="16"><use href="#i-phone"/></svg></div>
+              <div class="info">
+                <div class="name">Login phone</div>
+                <div class="sub">+91 98450 47291</div>
+              </div>
+              <svg width="14" height="14" class="arrow"><use href="#i-chev-r"/></svg>
+            </div>
+            <div class="menu-row">
+              <div class="ic"><svg width="16" height="16"><use href="#i-users"/></svg></div>
+              <div class="info">
+                <div class="name">Team access</div>
+                <div class="sub" style="color:var(--whisper)">Coming in v2 · 1 owner now</div>
+              </div>
+              <svg width="14" height="14" class="arrow"><use href="#i-chev-r"/></svg>
+            </div>
+          </div>
+
+          <div class="studio-section-h">SUPPORT</div>
+          <div class="menu-list">
+            <div class="menu-row">
+              <div class="ic"><svg width="16" height="16"><use href="#i-help"/></svg></div>
+              <div class="info"><div class="name">Help &amp; FAQ</div></div>
+              <svg width="14" height="14" class="arrow"><use href="#i-chev-r"/></svg>
+            </div>
+            <div class="menu-row">
+              <div class="ic"><svg width="16" height="16"><use href="#i-comment"/></svg></div>
+              <div class="info"><div class="name">Contact support</div></div>
+              <svg width="14" height="14" class="arrow"><use href="#i-chev-r"/></svg>
+            </div>
+            <div class="menu-row">
+              <div class="ic"><svg width="16" height="16"><use href="#i-heart"/></svg></div>
+              <div class="info"><div class="name">Rate Findemy Studio</div></div>
+              <svg width="14" height="14" class="arrow"><use href="#i-chev-r"/></svg>
+            </div>
+          </div>
+
+          <button class="signout-btn"><svg width="14" height="14"><use href="#i-logout"/></svg> Sign out</button>
+          <div class="set-foot">Findemy Studio · v 1.0</div>
+
+          <div class="nav-bar admin">
+            <span class="nav-item"><svg><use href="#i-mail"/></svg>Inbox</span>
+            <span class="nav-item"><svg><use href="#i-cal"/></svg>Schedule</span>
+            <span class="nav-item"><svg><use href="#i-users"/></svg>Students</span>
+            <span class="nav-item active"><span class="ic-aca">R</span>Studio</span>
+          </div>
+        </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-10-reviews">
+      <span class="num">10</span>
+      <h2>Reviews</h2>
+      <article class="phone">
+    <div class="island"></div>
+        <div class="screen s-reviews">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="signals">
+              <span class="signal-dots"><i></i><i></i><i></i><i></i></span>
+              <svg width="14" height="10"><use href="#i-wifi"/></svg>
+              <span class="battery"><i></i></span>
+            </span>
+          </div>
+
+          <div class="rev-top">
+            <div class="row">
+              <div class="h">Reviews</div>
+              <button class="icbtn"><svg width="14" height="14"><use href="#i-sliders"/></svg></button>
+            </div>
+            <div class="rev-summary">
+              <div>
+                <div class="big">4.<em>9</em></div>
+                <div class="stars">★★★★★</div>
+                <div class="l">84 reviews</div>
+              </div>
+              <div class="bars">
+                <div class="bar-row"><span>5</span><div class="bar"><i style="width:80%"></i></div><span>67</span></div>
+                <div class="bar-row"><span>4</span><div class="bar"><i style="width:14%"></i></div><span>10</span></div>
+                <div class="bar-row"><span>3</span><div class="bar"><i style="width:6%"></i></div><span>4</span></div>
+                <div class="bar-row"><span>2</span><div class="bar"><i style="width:3%"></i></div><span>2</span></div>
+                <div class="bar-row"><span>1</span><div class="bar"><i style="width:1%"></i></div><span>1</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rev-tabs">
+            <span class="tab on">All</span>
+            <span class="tab alert">Needs reply · 1</span>
+            <span class="tab">Replied</span>
+            <span class="tab">5★</span>
+            <span class="tab">≤3★</span>
+          </div>
+
+          <div class="rev-card flag">
+            <div class="head">
+              <div class="av md plum">D</div>
+              <div class="info">
+                <div class="name">Dev A.</div>
+                <div class="meta">5 Apr · Guitar · 2 sessions</div>
+              </div>
+              <div class="stars">★★★ ☆☆</div>
+            </div>
+            <div class="body">"Lessons are good but late starts most days. Twice my class started 15 min late."</div>
+            <div class="respond-cta"><svg width="12" height="12"><use href="#i-edit"/></svg> Respond now — protect your rating</div>
+          </div>
+
+          <div class="rev-card">
+            <div class="head">
+              <div class="av md ink">A</div>
+              <div class="info">
+                <div class="name">Aman M.</div>
+                <div class="meta">16 Apr · Vocals · 84 sessions</div>
+              </div>
+              <div class="stars">★★★★★</div>
+            </div>
+            <div class="body">"Best music academy in Indiranagar. Patient teaching, focus on fundamentals — exactly what I'd been looking for."</div>
+            <div class="reply">
+              <b>YOUR REPLY · 16 Apr</b>
+              Means a lot, Aman — keep at the riyaaz.
+            </div>
+          </div>
+
+          <div class="rev-card">
+            <div class="head">
+              <div class="av md jade">S</div>
+              <div class="info">
+                <div class="name">Saanvi K.</div>
+                <div class="meta">14 Apr · Guitar · trial</div>
+              </div>
+              <div class="stars">★★★★★</div>
+            </div>
+            <div class="body">"Loved my trial class with Rohan. Booking the monthly now."</div>
+          </div>
+
+          <div class="rev-card">
+            <div class="head">
+              <div class="av md rose">R</div>
+              <div class="info">
+                <div class="name">Riya N.</div>
+                <div class="meta">10 Apr · Bharatanatyam · trial</div>
+              </div>
+              <div class="stars">★★★★ ☆</div>
+            </div>
+            <div class="body">"Great teaching but the studio is too small for group classes."</div>
+            <div class="reply">
+              <b>YOUR REPLY · 11 Apr</b>
+              Thanks Riya — moving to a bigger Indiranagar location next month.
+            </div>
+          </div>
+
+          <div class="nav-bar admin">
+            <span class="nav-item"><svg><use href="#i-mail"/></svg>Inbox</span>
+            <span class="nav-item"><svg><use href="#i-cal"/></svg>Schedule</span>
+            <span class="nav-item"><svg><use href="#i-users"/></svg>Students</span>
+            <span class="nav-item active"><span class="ic-aca">R</span>Studio</span>
+          </div>
+        </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-11-review-respond">
+      <span class="num">11</span>
+      <h2>Review respond</h2>
+      <article class="phone">
+    <div class="island"></div>
+        <div class="screen s-respond">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="signals">
+              <span class="signal-dots"><i></i><i></i><i></i><i></i></span>
+              <svg width="14" height="10"><use href="#i-wifi"/></svg>
+              <span class="battery"><i></i></span>
+            </span>
+          </div>
+
+          <div class="respond-top">
+            <button class="x"><svg width="14" height="14"><use href="#i-x"/></svg></button>
+            <div class="h">Respond</div>
+            <button class="send">Send</button>
+          </div>
+
+          <div class="review-quote">
+            <div class="head">
+              <div class="av md plum">D</div>
+              <div class="info">
+                <div class="name">Dev A.</div>
+                <div class="meta">5 Apr · Guitar · 2 sessions</div>
+              </div>
+              <div class="stars">★★★ ☆☆</div>
+            </div>
+            <div class="body">"Lessons are good but late starts most days. Twice my class started 15 min late."</div>
+          </div>
+
+          <div class="tone-row">
+            <span class="tone-chip"><svg width="12" height="12"><use href="#i-sparkle"/></svg> Suggest reply</span>
+            <span class="tone-chip">Apologize</span>
+            <span class="tone-chip">Explain</span>
+            <span class="tone-chip">Invite back</span>
+          </div>
+
+          <div class="respond-field">
+            <div class="label">YOUR REPLY</div>
+            <textarea>Hi Dev — appreciate the honest feedback. We had a scheduling overlap on those two days; both instructors are now back in their slots. Coffee on us when you're back?</textarea>
+            <div class="count">162 / 500</div>
+          </div>
+
+          <div class="tip-card">
+            <div class="ic"><svg width="14" height="14"><use href="#i-shield"/></svg></div>
+            <div class="copy"><b>Tip:</b> Replies to negative reviews boost trust by 31% on Findemy. Keep it warm, take responsibility, offer a fix.</div>
+          </div>
+        </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-12-earnings">
+      <span class="num">12</span>
+      <h2>Earnings</h2>
+      <article class="phone">
+    <div class="island"></div>
+        <div class="screen s-earnings">
+          <div class="status-bar on-dark">
+            <span class="time">9:41</span>
+            <span class="signals">
+              <span class="signal-dots"><i></i><i></i><i></i><i></i></span>
+              <svg width="14" height="10"><use href="#i-wifi"/></svg>
+              <span class="battery"><i></i></span>
+            </span>
+          </div>
+
+          <div class="earn-top">
+            <div class="row">
+              <div class="h">Earn<em>ings</em></div>
+              <button class="icbtn-d">Apr <svg width="11" height="11" style="margin-left:3px"><use href="#i-chev-d"/></svg></button>
+            </div>
+            <div class="earn-tabs">
+              <span class="t">Week</span>
+              <span class="t on">Month</span>
+              <span class="t">Year</span>
+            </div>
+            <div class="earn-big">
+              <div class="l">APRIL 2026</div>
+              <div class="v">₹38,<em>400</em></div>
+              <div class="delta">▲ ₹4,200 vs March</div>
+            </div>
+          </div>
+
+          <div class="payout-card">
+            <div style="width:38px;height:38px;border-radius:10px;background:rgba(20,16,14,0.18);display:grid;place-items:center"><svg width="16" height="16"><use href="#i-cal"/></svg></div>
+            <div class="info">
+              <div class="l">NEXT PAYOUT</div>
+              <div class="v">₹18,200</div>
+              <div class="s">Apr 30 · HDFC ··4821</div>
+            </div>
+            <svg width="14" height="14"><use href="#i-chev-r"/></svg>
+          </div>
+
+          <div class="earn-section">
+            <div class="h">Breakdown</div>
+            <div class="breakdown-row">
+              <div class="ic persimmon">₹</div>
+              <div class="info">
+                <div class="name">Trial fees</div>
+                <div class="sub">14 trials · ₹150 avg</div>
+              </div>
+              <div class="v">₹2,100</div>
+            </div>
+            <div class="breakdown-row">
+              <div class="ic jade">₹</div>
+              <div class="info">
+                <div class="name">Monthly fees</div>
+                <div class="sub">12 enrolled students</div>
+              </div>
+              <div class="v">₹28,800</div>
+            </div>
+            <div class="breakdown-row">
+              <div class="ic marigold">₹</div>
+              <div class="info">
+                <div class="name">Workshop · Drum Circle</div>
+                <div class="sub">14 attendees · Apr 12</div>
+              </div>
+              <div class="v">₹7,500</div>
+            </div>
+          </div>
+
+          <div class="earn-section">
+            <div class="h">Recent transactions</div>
+            <div class="txn-row">
+              <div class="info">
+                <div class="name">Priya Sharma</div>
+                <div class="sub">Guitar Monthly · Apr 3</div>
+              </div>
+              <div class="v">+₹2,200</div>
+            </div>
+            <div class="txn-row">
+              <div class="info">
+                <div class="name">Saanvi K.</div>
+                <div class="sub">Trial fee · Apr 14</div>
+              </div>
+              <div class="v">+₹150</div>
+            </div>
+            <div class="txn-row">
+              <div class="info">
+                <div class="name">Platform fee</div>
+                <div class="sub">Findemy commission · Apr 14</div>
+              </div>
+              <div class="v out">−₹12</div>
+            </div>
+            <div class="txn-row">
+              <div class="info">
+                <div class="name">Aman Mukherjee</div>
+                <div class="sub">Vocals Monthly · Apr 5</div>
+              </div>
+              <div class="v">+₹2,800</div>
+            </div>
+            <div class="txn-row">
+              <div class="info">
+                <div class="name">Festive credit · Findemy</div>
+                <div class="sub">Promotional · Apr 1</div>
+              </div>
+              <div class="v">+₹500</div>
+            </div>
+          </div>
+
+          <div class="nav-bar admin">
+            <span class="nav-item"><svg><use href="#i-mail"/></svg>Inbox</span>
+            <span class="nav-item"><svg><use href="#i-cal"/></svg>Schedule</span>
+            <span class="nav-item"><svg><use href="#i-users"/></svg>Students</span>
+            <span class="nav-item active"><span class="ic-aca">R</span>Studio</span>
+          </div>
+        </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-13-profile-edit">
+      <span class="num">13</span>
+      <h2>Profile edit</h2>
+      <article class="phone">
+    <div class="island"></div>
+        <div class="screen s-profile">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="signals">
+              <span class="signal-dots"><i></i><i></i><i></i><i></i></span>
+              <svg width="14" height="10"><use href="#i-wifi"/></svg>
+              <span class="battery"><i></i></span>
+            </span>
+          </div>
+
+          <div class="prof-top">
+            <button class="back"><svg width="16" height="16"><use href="#i-chev-l"/></svg></button>
+            <div class="h">Academy profile</div>
+            <button class="save">Save</button>
+          </div>
+
+          <div class="cover-edit art-1 block-print">
+            <div class="verified-pill"><svg width="9" height="9"><use href="#i-check"/></svg> Verified</div>
+            <button class="change"><svg width="11" height="11"><use href="#i-camera"/></svg> Change cover</button>
+          </div>
+
+          <div class="prof-name-card">
+            <div class="av lg" style="background:var(--ink);color:var(--marigold)">R</div>
+            <div class="info">
+              <h2>Raaga Music Academy</h2>
+              <div class="sub"><svg width="10" height="10" style="vertical-align:-1px"><use href="#i-mappin"/></svg> Indiranagar, Bengaluru</div>
+            </div>
+            <button class="edit-btn"><svg width="13" height="13"><use href="#i-edit"/></svg></button>
+          </div>
+
+          <div class="prof-fields">
+            <div class="prof-field">
+              <div class="ic"><svg width="14" height="14"><use href="#i-text"/></svg></div>
+              <div class="info">
+                <div class="l">TAGLINE</div>
+                <div class="v">12 years of Hindustani · Carnatic · Guitar</div>
+              </div>
+              <svg width="14" height="14" class="arrow"><use href="#i-chev-r"/></svg>
+            </div>
+            <div class="prof-field">
+              <div class="ic"><svg width="14" height="14"><use href="#i-info"/></svg></div>
+              <div class="info">
+                <div class="l">ABOUT</div>
+                <div class="v">Founded in 2014 by Aman Mukherjee, Raaga is a small-batch academy…</div>
+              </div>
+              <svg width="14" height="14" class="arrow"><use href="#i-chev-r"/></svg>
+            </div>
+            <div class="prof-field">
+              <div class="ic"><svg width="14" height="14"><use href="#i-mappin"/></svg></div>
+              <div class="info">
+                <div class="l">ADDRESS</div>
+                <div class="v">237, 100 Feet Rd · Indiranagar · 560038</div>
+              </div>
+              <svg width="14" height="14" class="arrow"><use href="#i-chev-r"/></svg>
+            </div>
+            <div class="prof-field">
+              <div class="ic"><svg width="14" height="14"><use href="#i-phone"/></svg></div>
+              <div class="info">
+                <div class="l">CONTACT</div>
+                <div class="v">+91 98450 47291 · raaga@findemy.in</div>
+              </div>
+              <svg width="14" height="14" class="arrow"><use href="#i-chev-r"/></svg>
+            </div>
+            <div class="prof-field">
+              <div class="ic"><svg width="14" height="14"><use href="#i-image"/></svg></div>
+              <div class="info">
+                <div class="l">PHOTOS</div>
+                <div class="v">8 photos · 1 cover</div>
+              </div>
+              <svg width="14" height="14" class="arrow"><use href="#i-chev-r"/></svg>
+            </div>
+          </div>
+
+          <div class="spec-chips">
+            <div class="l">SPECIALITIES</div>
+            <div class="row">
+              <span class="chip active">Hindustani</span>
+              <span class="chip active">Carnatic</span>
+              <span class="chip active">Guitar</span>
+              <span class="chip active">Tabla</span>
+              <span class="chip add">+ Add</span>
+            </div>
+          </div>
+        </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-14-settings">
+      <span class="num">14</span>
+      <h2>Settings</h2>
+      <article class="phone">
+    <div class="island"></div>
+        <div class="screen s-settings">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="signals">
+              <span class="signal-dots"><i></i><i></i><i></i><i></i></span>
+              <svg width="14" height="10"><use href="#i-wifi"/></svg>
+              <span class="battery"><i></i></span>
+            </span>
+          </div>
+
+          <div class="set-top">
+            <button class="back"><svg width="16" height="16"><use href="#i-chev-l"/></svg></button>
+            <div class="h">Notifications</div>
+          </div>
+
+          <div class="set-section-h">NEW TRIAL REQUESTS</div>
+          <div class="set-list">
+            <div class="set-row">
+              <div class="ic"><svg width="14" height="14"><use href="#i-bell"/></svg></div>
+              <div class="info">
+                <div class="name">Push notifications</div>
+                <div class="sub">Instant alert on your phone</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+            <div class="set-row">
+              <div class="ic"><svg width="14" height="14"><use href="#i-mail"/></svg></div>
+              <div class="info">
+                <div class="name">Email</div>
+                <div class="sub">aman@raaga.in</div>
+              </div>
+              <div class="toggle"></div>
+            </div>
+            <div class="set-row">
+              <div class="ic" style="background:var(--jade-soft);color:var(--jade)"><svg width="14" height="14"><use href="#i-wa"/></svg></div>
+              <div class="info">
+                <div class="name">WhatsApp</div>
+                <div class="sub">+91 98450 47291</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+          </div>
+
+          <div class="set-section-h">TODAY'S CLASSES</div>
+          <div class="set-list">
+            <div class="set-row">
+              <div class="ic"><svg width="14" height="14"><use href="#i-clock"/></svg></div>
+              <div class="info">
+                <div class="name">Reminder 30 min before</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+            <div class="set-row">
+              <div class="ic"><svg width="14" height="14"><use href="#i-check"/></svg></div>
+              <div class="info">
+                <div class="name">Attendance reminder</div>
+                <div class="sub">15 min after class ends</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+          </div>
+
+          <div class="set-section-h">REVIEWS &amp; ACTIVITY</div>
+          <div class="set-list">
+            <div class="set-row">
+              <div class="ic"><svg width="14" height="14"><use href="#i-star"/></svg></div>
+              <div class="info">
+                <div class="name">New review</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+            <div class="set-row">
+              <div class="ic"><svg width="14" height="14"><use href="#i-medal"/></svg></div>
+              <div class="info">
+                <div class="name">Leaderboard updates</div>
+                <div class="sub">Weekly digest</div>
+              </div>
+              <div class="toggle"></div>
+            </div>
+            <div class="set-row">
+              <div class="ic"><svg width="14" height="14"><use href="#i-play"/></svg></div>
+              <div class="info">
+                <div class="name">Reels tagging your studio</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+          </div>
+
+          <div class="set-section-h">QUIET HOURS</div>
+          <div class="set-list">
+            <div class="set-row">
+              <div class="ic"><svg width="14" height="14"><use href="#i-moon"/></svg></div>
+              <div class="info">
+                <div class="name">Don't disturb</div>
+                <div class="sub">10 PM — 7 AM · daily</div>
+              </div>
+              <svg width="14" height="14" class="arrow"><use href="#i-chev-r"/></svg>
+            </div>
+          </div>
+        </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-15-publish-availability">
+      <span class="num">15</span>
+      <h2>Publish slots</h2>
+      <article class="phone">
+    <div class="screen s-publish">
+      <div class="bar">
+        <div class="bar-time">9:41</div>
+        <div class="bar-status">
+          <svg viewBox="0 0 16 12" width="16" height="12" aria-hidden="true"><circle cx="2" cy="10" r="1.5" fill="currentColor"/><circle cx="6" cy="8.5" r="1.5" fill="currentColor"/><circle cx="10" cy="6.5" r="1.5" fill="currentColor"/><circle cx="14" cy="4" r="1.5" fill="currentColor"/></svg>
+          <svg viewBox="0 0 14 12" width="14" height="12" aria-hidden="true"><path d="M7 11 .8 4.6a8.8 8.8 0 0 1 12.4 0L7 11Z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M7 11 3 6.9a5.6 5.6 0 0 1 8 0L7 11Z" fill="currentColor"/></svg>
+          <svg viewBox="0 0 24 12" width="24" height="12" aria-hidden="true"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" fill="none" stroke="currentColor"/><rect x="2" y="2" width="17" height="8" rx="1.2" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="0.6" fill="currentColor"/></svg>
+        </div>
+      </div>
+
+      <header class="publish-top">
+        <button class="publish-back" aria-label="Back"><svg width="20" height="20" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
+        <div class="publish-top-text">
+          <h1>Publish slots</h1>
+          <p>Week of 14 Apr</p>
+        </div>
+        <button class="publish-week" aria-label="Change week"><svg width="18" height="18" aria-hidden="true"><use href="#i-cal"/></svg></button>
+      </header>
+
+      <div class="publish-week-strip">
+        <button class="publish-day"><span class="publish-day-name">Mon</span><span class="publish-day-num">14</span><span class="publish-day-dots"><i></i><i></i></span></button>
+        <button class="publish-day publish-day-active"><span class="publish-day-name">Tue</span><span class="publish-day-num">15</span><span class="publish-day-dots"><i></i><i></i><i></i></span></button>
+        <button class="publish-day"><span class="publish-day-name">Wed</span><span class="publish-day-num">16</span><span class="publish-day-dots"><i></i></span></button>
+        <button class="publish-day"><span class="publish-day-name">Thu</span><span class="publish-day-num">17</span><span class="publish-day-dots"></span></button>
+        <button class="publish-day"><span class="publish-day-name">Fri</span><span class="publish-day-num">18</span><span class="publish-day-dots"><i></i><i></i></span></button>
+        <button class="publish-day"><span class="publish-day-name">Sat</span><span class="publish-day-num">19</span><span class="publish-day-dots"><i></i></span></button>
+        <button class="publish-day publish-day-off"><span class="publish-day-name">Sun</span><span class="publish-day-num">20</span><span class="publish-day-dots-off">off</span></button>
+      </div>
+
+      <div class="publish-templates">
+        <button class="chip"><svg width="14" height="14" aria-hidden="true"><use href="#i-clock"/></svg> Same as last week</button>
+        <button class="chip">Mon-Wed-Fri 6PM</button>
+      </div>
+
+      <div class="publish-grid-wrap">
+        <div class="publish-grid">
+          <div class="publish-row"><span class="publish-hour">3 PM</span><div class="publish-slot publish-slot-empty">+</div></div>
+          <div class="publish-row"><span class="publish-hour">4 PM</span><div class="publish-slot publish-slot-booked"><b>Trial · Priya S.</b><span>Guitar · Beginner</span></div></div>
+          <div class="publish-row"><span class="publish-hour">5 PM</span><div class="publish-slot publish-slot-open"><b>Open</b><span>Guitar · Beginner</span></div></div>
+          <div class="publish-row"><span class="publish-hour">6 PM</span><div class="publish-slot publish-slot-open publish-slot-editing"><b>Open · editing</b><span>Tabla · Any level</span></div></div>
+          <div class="publish-row"><span class="publish-hour">7 PM</span><div class="publish-slot publish-slot-empty">+</div></div>
+          <div class="publish-row"><span class="publish-hour">8 PM</span><div class="publish-slot publish-slot-empty">+</div></div>
+        </div>
+      </div>
+
+      <section class="slot-drawer">
+        <div class="slot-drawer-handle"></div>
+        <p class="slot-drawer-title">Tue 15 Apr · 6:00 – 7:00 PM</p>
+        <div class="slot-drawer-row">
+          <span class="slot-drawer-label">Instrument</span>
+          <div class="slot-drawer-chips">
+            <span class="chip chip-on">Tabla</span>
+            <span class="chip">Guitar</span>
+            <span class="chip">Vocals</span>
+          </div>
+        </div>
+        <div class="slot-drawer-row">
+          <span class="slot-drawer-label">Level</span>
+          <div class="slot-drawer-chips">
+            <span class="chip chip-on">Any</span>
+            <span class="chip">Beginner</span>
+            <span class="chip">Intermediate</span>
+          </div>
+        </div>
+        <div class="slot-drawer-row">
+          <span class="slot-drawer-label">Max trials</span>
+          <div class="slot-drawer-stepper">
+            <button>−</button><b>1</b><button>+</button>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block">Publish slot</button>
+      </section>
+    </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-16-attendance-otp">
+      <span class="num">16</span>
+      <h2>Mark attendance</h2>
+      <article class="phone">
+    <div class="screen s-attend">
+      <div class="bar">
+        <div class="bar-time">9:41</div>
+        <div class="bar-status">
+          <svg viewBox="0 0 16 12" width="16" height="12" aria-hidden="true"><circle cx="2" cy="10" r="1.5" fill="currentColor"/><circle cx="6" cy="8.5" r="1.5" fill="currentColor"/><circle cx="10" cy="6.5" r="1.5" fill="currentColor"/><circle cx="14" cy="4" r="1.5" fill="currentColor"/></svg>
+          <svg viewBox="0 0 14 12" width="14" height="12" aria-hidden="true"><path d="M7 11 .8 4.6a8.8 8.8 0 0 1 12.4 0L7 11Z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M7 11 3 6.9a5.6 5.6 0 0 1 8 0L7 11Z" fill="currentColor"/></svg>
+          <svg viewBox="0 0 24 12" width="24" height="12" aria-hidden="true"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" fill="none" stroke="currentColor"/><rect x="2" y="2" width="17" height="8" rx="1.2" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="0.6" fill="currentColor"/></svg>
+        </div>
+      </div>
+
+      <header class="attend-top">
+        <button class="attend-back" aria-label="Back"><svg width="20" height="20" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
+        <h1>Mark attendance</h1>
+      </header>
+
+      <section class="attend-recap card">
+        <div class="attend-recap-row">
+          <div class="attend-avatar" aria-hidden="true">P</div>
+          <div class="attend-meta">
+            <p class="attend-name">Priya Sharma</p>
+            <p class="attend-sub">Trial · Guitar · Beginner</p>
+          </div>
+          <span class="spill now">NOW</span>
+        </div>
+        <div class="attend-recap-line">
+          <svg width="14" height="14" aria-hidden="true"><use href="#i-clock"/></svg>
+          <span>Sat 19 Apr · 4:00 – 5:00 PM</span>
+        </div>
+      </section>
+
+      <p class="attend-instruct">
+        Ask <b>Priya</b> to open Findemy and read out the OTP from her trial card.
+      </p>
+
+      <div class="otp-row attend-otp">
+        <div class="otp-cell otp-filled">7</div>
+        <div class="otp-cell otp-filled">4</div>
+        <div class="otp-cell otp-filled">2</div>
+        <div class="otp-cell otp-filled">9</div>
+        <div class="otp-cell">1</div>
+        <div class="otp-cell"></div>
+      </div>
+
+      <div class="attend-attempts">
+        <svg width="12" height="12" aria-hidden="true"><use href="#i-info"/></svg>
+        <span>2 attempts remaining</span>
+      </div>
+
+      <button class="btn btn-primary btn-block attend-verify">Verify &amp; mark attended</button>
+
+      <button class="attend-noshow">Couldn't verify · mark no-show</button>
+    </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-17-workshops">
+      <span class="num">17</span>
+      <h2>Workshops list</h2>
+      <article class="phone">
+    <div class="screen s-workshops">
+      <div class="bar">
+        <div class="bar-time">9:41</div>
+        <div class="bar-status">
+          <svg viewBox="0 0 16 12" width="16" height="12" aria-hidden="true"><circle cx="2" cy="10" r="1.5" fill="currentColor"/><circle cx="6" cy="8.5" r="1.5" fill="currentColor"/><circle cx="10" cy="6.5" r="1.5" fill="currentColor"/><circle cx="14" cy="4" r="1.5" fill="currentColor"/></svg>
+          <svg viewBox="0 0 14 12" width="14" height="12" aria-hidden="true"><path d="M7 11 .8 4.6a8.8 8.8 0 0 1 12.4 0L7 11Z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M7 11 3 6.9a5.6 5.6 0 0 1 8 0L7 11Z" fill="currentColor"/></svg>
+          <svg viewBox="0 0 24 12" width="24" height="12" aria-hidden="true"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" fill="none" stroke="currentColor"/><rect x="2" y="2" width="17" height="8" rx="1.2" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="0.6" fill="currentColor"/></svg>
+        </div>
+      </div>
+
+      <div class="ws-mgr-top">
+        <h1>Workshops</h1>
+        <button class="ws-new-btn"><svg width="12" height="12" aria-hidden="true"><use href="#i-plus"/></svg> New</button>
+      </div>
+
+      <div class="ws-tabs">
+        <button class="ws-tab on">Upcoming</button>
+        <button class="ws-tab">Live</button>
+        <button class="ws-tab">Past</button>
+      </div>
+
+      <div class="ws-mgr-list">
+        <div class="ws-mgr-card">
+          <div class="ws-mgr-card-top">
+            <span class="ws-mgr-card-title">Raaga Intro Masterclass — Beginner's Guide</span>
+            <span class="spill upcoming">Upcoming</span>
+          </div>
+          <div class="ws-mgr-card-meta">
+            <span><svg width="11" height="11" style="display:inline;vertical-align:-1px" aria-hidden="true"><use href="#i-clock"/></svg> Sun 27 Apr · 3 PM · 2 hrs</span>
+            <span><svg width="11" height="11" style="display:inline;vertical-align:-1px" aria-hidden="true"><use href="#i-loc"/></svg> Offline · Indiranagar</span>
+          </div>
+          <div class="ws-mgr-card-footer">
+            <span class="ws-mgr-card-reg">4 / 12 registered · ₹399</span>
+            <button class="ws-mgr-edit">Edit</button>
+          </div>
+        </div>
+
+        <div class="ws-mgr-card">
+          <div class="ws-mgr-card-top">
+            <span class="ws-mgr-card-title">Guitar Chord Camp — Weekend Crash Course</span>
+            <span class="spill upcoming">Upcoming</span>
+          </div>
+          <div class="ws-mgr-card-meta">
+            <span><svg width="11" height="11" style="display:inline;vertical-align:-1px" aria-hidden="true"><use href="#i-clock"/></svg> Sat 3 May · 10 AM · 3 hrs</span>
+            <span><svg width="11" height="11" style="display:inline;vertical-align:-1px" aria-hidden="true"><use href="#i-loc"/></svg> Offline · Indiranagar</span>
+          </div>
+          <div class="ws-mgr-card-footer">
+            <span class="ws-mgr-card-reg">12 / 20 registered · ₹599</span>
+            <button class="ws-mgr-edit">Edit</button>
+          </div>
+        </div>
+
+        <div class="ws-mgr-card">
+          <div class="ws-mgr-card-top">
+            <span class="ws-mgr-card-title">Online Tabla Demo — Watch &amp; Ask Session</span>
+            <span class="spill active">Live soon</span>
+          </div>
+          <div class="ws-mgr-card-meta">
+            <span><svg width="11" height="11" style="display:inline;vertical-align:-1px" aria-hidden="true"><use href="#i-clock"/></svg> Wed 7 May · 7 PM · 1 hr</span>
+            <span><svg width="11" height="11" style="display:inline;vertical-align:-1px" aria-hidden="true"><use href="#i-video"/></svg> Online · Zoom</span>
+          </div>
+          <div class="ws-mgr-card-footer">
+            <span class="ws-mgr-card-reg">28 registered · Free</span>
+            <button class="ws-mgr-edit">Edit</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-bar admin">
+        <span class="nav-item"><svg><use href="#i-home"/></svg>Inbox</span>
+        <span class="nav-item"><svg><use href="#i-cal"/></svg>Schedule</span>
+        <span class="nav-item"><svg><use href="#i-users"/></svg>Students</span>
+        <span class="nav-item active"><svg><use href="#i-store"/></svg>Studio</span>
+      </div>
+    </div>
+  </article>
+    </section>
+
+    <section class="stage-row" id="screen-18-workshop-create">
+      <span class="num">18</span>
+      <h2>Workshop create</h2>
+      <article class="phone">
+    <div class="screen s-ws-create">
+      <div class="bar">
+        <div class="bar-time">9:41</div>
+        <div class="bar-status">
+          <svg viewBox="0 0 16 12" width="16" height="12" aria-hidden="true"><circle cx="2" cy="10" r="1.5" fill="currentColor"/><circle cx="6" cy="8.5" r="1.5" fill="currentColor"/><circle cx="10" cy="6.5" r="1.5" fill="currentColor"/><circle cx="14" cy="4" r="1.5" fill="currentColor"/></svg>
+          <svg viewBox="0 0 14 12" width="14" height="12" aria-hidden="true"><path d="M7 11 .8 4.6a8.8 8.8 0 0 1 12.4 0L7 11Z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M7 11 3 6.9a5.6 5.6 0 0 1 8 0L7 11Z" fill="currentColor"/></svg>
+          <svg viewBox="0 0 24 12" width="24" height="12" aria-hidden="true"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" fill="none" stroke="currentColor"/><rect x="2" y="2" width="17" height="8" rx="1.2" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="0.6" fill="currentColor"/></svg>
+        </div>
+      </div>
+
+      <div class="ws-create-top">
+        <button class="ws-create-back" aria-label="Back"><svg width="20" height="20" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
+        <h1>New workshop</h1>
+      </div>
+
+      <div class="ws-form">
+        <div>
+          <span class="ws-form-label">Workshop type</span>
+          <div class="ws-type-grid">
+            <button class="ws-type-btn on">
+              <span class="ic"><svg width="14" height="14"><use href="#i-users"/></svg></span>
+              Offline
+            </button>
+            <button class="ws-type-btn">
+              <span class="ic"><svg width="14" height="14"><use href="#i-video"/></svg></span>
+              Online
+            </button>
+            <button class="ws-type-btn">
+              <span class="ic"><svg width="14" height="14"><use href="#i-medal"/></svg></span>
+              Masterclass
+            </button>
+            <button class="ws-type-btn">
+              <span class="ic"><svg width="14" height="14"><use href="#i-play"/></svg></span>
+              Demo Session
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <span class="ws-form-label">Title</span>
+          <div class="input">
+            <input type="text" placeholder="e.g. Guitar Chord Camp — Weekend Crash Course" value="Raaga Intro Masterclass"/>
+          </div>
+        </div>
+
+        <div>
+          <span class="ws-form-label">Description</span>
+          <div class="input" style="align-items:flex-start">
+            <textarea rows="3" placeholder="What will students learn?">A beginner-friendly intro to Hindustani music theory and ragas. No prior experience needed.</textarea>
+          </div>
+        </div>
+
+        <div class="ws-date-row">
+          <div>
+            <span class="ws-form-label">Date</span>
+            <div class="input">
+              <svg width="14" height="14" style="color:var(--mist);flex-shrink:0"><use href="#i-cal"/></svg>
+              <input type="text" placeholder="Pick date" value="Sun 27 Apr"/>
+            </div>
+          </div>
+          <div>
+            <span class="ws-form-label">Time</span>
+            <div class="input">
+              <svg width="14" height="14" style="color:var(--mist);flex-shrink:0"><use href="#i-clock"/></svg>
+              <input type="text" placeholder="Start time" value="3:00 PM"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="ws-date-row">
+          <div>
+            <span class="ws-form-label">Duration</span>
+            <div class="input">
+              <input type="text" placeholder="e.g. 2 hours" value="2 hrs"/>
+            </div>
+          </div>
+          <div>
+            <span class="ws-form-label">Capacity</span>
+            <div class="input">
+              <input type="number" placeholder="Max students" value="12"/>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <span class="ws-form-label">Price</span>
+          <div class="input">
+            <span class="pre">₹</span>
+            <input type="number" placeholder="0 for free" value="399"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="ws-create-foot">
+        <button class="btn btn-primary btn-block">Publish workshop <svg width="14" height="14"><use href="#i-arrow-r"/></svg></button>
+        <button class="btn btn-ghost btn-block">Save as draft</button>
+      </div>
+    </div>
+  </article>
+    </section>
+  </main>
+</body>
+</html>

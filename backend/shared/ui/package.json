@@ -1,0 +1,23 @@
+{
+  "name": "@findemy/ui",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@findemy/config": "workspace:*",
+    "@types/react": "^19.1.0",
+    "typescript": "^5.6.0"
+  }
+}

@@ -1,0 +1,9 @@
+baseline 2026-06-06
+types: build OK
+api-client: build OK
+api typecheck errors: 0
+admin typecheck errors: 0
+
+api vitest (MOCK mode) baseline 2026-06-06: 37 pass / 8 fail
+  pre-existing failures (auth OTP verify -> 401 cascade): auth(2) verify+refresh, attendance(3) me/dashboard/inbox, booking(3) academies/booking/order
+  these are NOT touched by the admin-pending-features work (auth/booking/mock fixtures unchanged)

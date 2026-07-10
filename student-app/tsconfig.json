@@ -1,0 +1,25 @@
+{
+  "extends": "@findemy/config/tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@findemy/ui": ["../backend/shared/ui/src/index.ts"],
+      "@findemy/types": ["../backend/shared/types/src/index.ts"],
+      "@findemy/api-client": ["../backend/shared/api-client/src/index.ts"]
+    },
+    "noEmit": true,
+    "allowJs": true,
+    "resolveJsonModule": true
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}

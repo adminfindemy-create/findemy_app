@@ -1,0 +1,44 @@
+{
+  "extends": "@findemy/config/tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2022",
+    "lib": [
+      "ES2022"
+    ],
+    // noUnusedLocals/noUnusedParameters are intentionally off: the admin tsconfig
+    // path-maps to packages/ui and packages/api-client sources, so enabling them
+    // floods the shared packages (which import React under the legacy pattern) with
+    // non-bug errors. Lint (biome) covers unused symbols within this app instead.
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@findemy/ui": [
+        "../backend/shared/ui/src/index.ts"
+      ],
+      "@findemy/types": [
+        "../backend/shared/types/src/index.ts"
+      ],
+      "@findemy/api-client": [
+        "../backend/shared/api-client/src/index.ts"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

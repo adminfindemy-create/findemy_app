@@ -1,0 +1,32 @@
+Findemy student-app prototype — image credits
+==============================================
+
+All photos in assets/img/ are from Unsplash (https://unsplash.com),
+free to use under the Unsplash License. Downloaded and bundled locally
+so the prototype renders fully offline.
+
+Each file maps to an Unsplash photo id (images.unsplash.com/photo-<id>):
+
+music-studio     1511379938547-c1f69419868d
+piano            1520523839897-bd0b52f945a0
+dance-studio     1508700115892-45ecd05ae2ad
+dance-modern     1547153760-18fc86324498
+hiphop           1535525153412-5a42439a210d
+art-painting     1513364776144-60967b0f800f
+oil-paint        1493612276216-ee3925520721
+pottery          1565193566173-7a0ee3dbe261
+pottery2         1610701596007-11502861dcfa
+yoga             1545205597-3d9d02c29597
+yoga2            1588286840104-8957b019727f
+concert-rock     1501386761578-eac5c94b800a
+crowd            1540039155733-5bb30b53aa14
+studio-interior  1577412647305-991150c7d163
+canvas-art       1452860606245-08befc0ff44b
+meetup           1511795409834-ef04bbd61622
+academy-cover    1519682337058-a94d519337bc
+guitar-class     1510915361894-db8b60106cb1
+coach1           1500648767791-00dcc994a43e
+coach2           1494790108377-be9c29b29330
+coach3           1507003211169-0a1dd7228f2d
+coach4           1438761681033-6461ffad8d80
+user             1599566150163-29194dcaad36

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Findemy — Academy Booking Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ─── Reset & Shell ─── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#1a1614;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:24px;font-family:'Geist',sans-serif}
+.phone{width:390px;height:844px;background:#F1ECE2;border-radius:52px;overflow:hidden;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.7);border:11px solid #2a2520;flex-shrink:0}
+.screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;transition:transform .38s cubic-bezier(.4,0,.2,1),opacity .38s;scroll-behavior:smooth}
+.screen.hidden{transform:translateX(100%);opacity:0;pointer-events:none}
+.screen.exit-left{transform:translateX(-100%);opacity:0;pointer-events:none}
+
+/* ─── Status bar ─── */
+.status{display:flex;justify-content:space-between;align-items:center;padding:12px 22px 0;font-size:12px;font-weight:600;position:absolute;top:0;left:0;right:0;z-index:10;pointer-events:none}
+.status.over-dark{color:#FAF6EE}.status.over-light{color:#14110F}
+
+/* ─── Block-print cover ─── */
+.cover{height:320px;position:relative;overflow:hidden;flex-shrink:0;background:#FBE9D6}
+.cover-art{position:absolute;inset:0}
+.cover-disc{position:absolute;width:300px;height:300px;border-radius:50%;background:#D8492A;opacity:.18;top:-60px;right:-80px}
+.cover-diamond{position:absolute;width:120px;height:120px;background:#5B2B14;opacity:.12;bottom:40px;left:30px;transform:rotate(45deg)}
+.cover-stripe{position:absolute;width:180%;height:2px;background:#D8492A;opacity:.15;top:140px;left:-40%;transform:rotate(-8deg)}
+.cover-dots{position:absolute;bottom:30px;right:20px;display:flex;gap:6px}
+.cover-dots span{width:5px;height:5px;border-radius:50%;background:#D8492A;opacity:.3}
+.cover-letter{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-family:'Instrument Serif',serif;font-size:100px;font-style:italic;color:#D8492A;opacity:.12;line-height:1;user-select:none}
+.cover-topbar{position:absolute;top:0;left:0;right:0;padding:44px 16px 0;display:flex;justify-content:space-between;align-items:center;z-index:5}
+.icon-btn{width:38px;height:38px;border-radius:19px;background:rgba(20,16,14,.55);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;color:#FAF6EE;font-size:16px}
+.icon-btn-group{display:flex;gap:8px}
+
+/* ─── Academy floating card ─── */
+.aca-card{margin:0 16px;margin-top:-36px;background:#FAF6EE;border:1px solid #DDD3BC;border-radius:24px;padding:22px;position:relative;box-shadow:0 8px 28px rgba(60,30,10,.14);z-index:3}
+.verified-badge{position:absolute;top:-14px;left:22px;background:#1E5C5A;border-radius:999px;padding:4px 10px;font-size:10px;font-weight:700;color:#FAF6EE;letter-spacing:.4px}
+.aca-name{font-family:'Instrument Serif',serif;font-size:30px;color:#14110F;line-height:32px;letter-spacing:-.3px;margin-top:6px}
+.aca-address{font-size:13px;color:#8B7F73;margin-top:6px;margin-bottom:16px}
+
+/* ─── Stats row ─── */
+.stats-row{display:flex;border-top:1px solid #DDD3BC;border-bottom:1px solid #DDD3BC;padding:14px 0}
+.stat-cell{flex:1;text-align:center}
+.stat-cell:not(:last-child){border-right:1px solid #DDD3BC}
+.stat-val{font-family:'Instrument Serif',serif;font-size:22px;color:#14110F;line-height:1}
+.stat-val.em{color:#D8492A;font-style:italic}
+.stat-lbl{font-size:9px;color:#8B7F73;letter-spacing:1.2px;text-transform:uppercase;font-weight:500;margin-top:3px}
+
+/* ─── Coach chips ─── */
+.coach-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.coach-chip{display:flex;align-items:center;gap:6px;background:#EDE6D8;border-radius:999px;padding:5px 10px 5px 5px}
+.coach-av{width:22px;height:22px;border-radius:11px;background:#D8492A;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#FAF6EE;flex-shrink:0}
+.coach-nm{font-size:12px;font-weight:600;color:#14110F}
+.coach-sp{font-size:11px;color:#8B7F73}
+
+/* ─── Section heading ─── */
+.sec{padding:28px 24px 0}
+.sec-title{font-family:'Instrument Serif',serif;font-size:22px;color:#14110F;margin-bottom:14px}
+
+/* ─── Review cards ─── */
+.review-card{background:#FAF6EE;border:1px solid #DDD3BC;border-radius:14px;padding:14px;margin-bottom:10px}
+.review-meta{display:flex;align-items:center;gap:0;margin-bottom:6px}
+.review-stars .filled{color:#E8A33D;font-size:14px}
+.review-stars .empty{color:#DDD3BC;font-size:14px}
+.review-author{font-size:12px;color:#8B7F73;margin-left:8px}
+.review-text{font-size:13px;color:#3A332D;line-height:19px}
+.load-more{text-align:center;padding:14px 0;font-size:12px;color:#D8492A;font-weight:700;cursor:pointer}
+
+/* ─── Batch cards ─── */
+.batch-card{background:#FAF6EE;border:1px solid #DDD3BC;border-radius:14px;padding:14px;margin-bottom:10px;transition:border-color .2s}
+.batch-card:hover{border-color:#D8492A}
+.batch-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+.batch-thumb{width:64px;height:64px;border-radius:12px;overflow:hidden;flex-shrink:0;position:relative;background:#FBE9D6}
+.batch-thumb-art{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-size:28px;font-style:italic;color:#D8492A;opacity:.6}
+.seats-pill{position:absolute;top:4px;right:4px;border-radius:999px;padding:2px 6px;font-size:9px;font-weight:700;line-height:14px}
+.seats-pill.ok{background:#C9DCD8;color:#1E5C5A}
+.seats-pill.low{background:#FBE3D9;color:#D8492A}
+.batch-body{flex:1;min-width:0}
+.batch-title{font-family:'Instrument Serif',serif;font-size:16px;color:#14110F;line-height:19px}
+.batch-level-pill{display:inline-block;background:#EDE6D8;border-radius:999px;padding:2px 8px;font-size:9px;font-weight:700;color:#8B7F73;letter-spacing:.4px;text-transform:uppercase;margin-top:4px}
+.batch-coaches{font-size:11px;color:#8B7F73;margin-top:5px;line-height:15px}
+.batch-price{font-size:12px;font-weight:600;margin-top:6px}
+.batch-price .trial{color:#D8492A}
+.batch-price .mo{color:#8B7F73}
+.batch-cta-row{display:flex;gap:8px;margin-top:10px}
+
+/* ─── Buttons ─── */
+.btn{display:inline-flex;align-items:center;justify-content:center;border:none;border-radius:10px;font-family:'Geist',sans-serif;font-weight:700;cursor:pointer;transition:opacity .15s,transform .1s;line-height:1}
+.btn:active{transform:scale(.97);opacity:.88}
+.btn-primary{background:#D8492A;color:#FAF6EE;padding:10px 16px;font-size:13px;flex:1}
+.btn-soft{background:#FBE3D9;color:#D8492A;padding:10px 16px;font-size:13px;flex:1}
+.btn-block{display:flex;width:100%;padding:14px;font-size:15px;border-radius:10px;justify-content:center}
+
+/* ─── Workshop cards ─── */
+.ws-card{background:#FAF6EE;border:1px solid #DDD3BC;border-radius:14px;padding:12px;margin-bottom:10px;display:flex;gap:12px;align-items:center;cursor:pointer}
+.ws-date{width:40px;text-align:center;flex-shrink:0}
+.ws-month{font-size:10px;font-weight:700;color:#D8492A;text-transform:uppercase;letter-spacing:.5px}
+.ws-day{font-family:'Instrument Serif',serif;font-size:24px;color:#14110F;line-height:1.1}
+.ws-info{flex:1}
+.ws-title{font-size:14px;font-weight:600;color:#14110F;margin-bottom:3px}
+.ws-meta{font-size:12px;color:#8B7F73}
+.ws-price{font-size:13px;font-weight:700;color:#14110F;flex-shrink:0}
+
+/* ─── BOTTOM SHEET ─── */
+.backdrop{position:absolute;inset:0;background:rgba(20,16,14,.45);z-index:20;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(2px)}
+.backdrop.open{opacity:1;pointer-events:all}
+.sheet{position:absolute;bottom:0;left:0;right:0;background:#FAF6EE;border-radius:24px 24px 0 0;z-index:21;transform:translateY(102%);transition:transform .42s cubic-bezier(.4,0,.2,1);max-height:88%}
+.sheet.open{transform:translateY(0)}
+.sheet-handle{width:36px;height:4px;background:#DDD3BC;border-radius:2px;margin:14px auto 0}
+.sheet-inner{padding:16px 22px 44px;overflow-y:auto;max-height:calc(88vh - 60px)}
+
+/* Step track */
+.step-track{display:flex;gap:5px;margin-bottom:20px;align-items:center}
+.step-seg{height:3px;border-radius:2px;transition:all .3s}
+.step-seg.done,.step-seg.active{background:#D8492A;flex:1}
+.step-seg.idle{background:#DDD3BC;width:16px}
+.step-num{font-size:11px;color:#8B7F73;font-weight:600;letter-spacing:.5px;margin-left:auto;flex-shrink:0}
+
+.sh-step{display:none}.sh-step.on{display:block}
+.sh-title{font-family:'Instrument Serif',serif;font-size:26px;color:#14110F;line-height:28px;letter-spacing:-.3px;margin-bottom:4px}
+.sh-title em{color:#D8492A;font-style:italic}
+.sh-sub{font-size:13px;color:#8B7F73;margin-bottom:20px;line-height:18px}
+
+/* Step 1 */
+.info-card{background:#EDE6D8;border-radius:14px;padding:14px;margin-bottom:14px}
+.info-label{font-size:10px;font-weight:700;color:#8B7F73;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px}
+.info-row{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid #DDD3BC}
+.info-row:last-child{border-bottom:none;padding-bottom:0}
+.info-key{font-size:13px;color:#8B7F73}
+.info-val{font-size:13px;font-weight:600;color:#14110F;text-align:right;max-width:58%}
+.included-box{background:#FAF6EE;border:1px solid #C9DCD8;border-radius:12px;padding:14px;margin-bottom:20px}
+.included-ttl{font-size:11px;font-weight:700;color:#1E5C5A;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+.included-row{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#3A332D;margin-bottom:7px;line-height:18px}
+.included-row:last-child{margin-bottom:0}
+.included-dot{width:6px;height:6px;border-radius:3px;background:#1E5C5A;flex-shrink:0;margin-top:6px}
+
+/* Step 2 */
+.date-strip{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:18px;-webkit-overflow-scrolling:touch}
+.date-strip::-webkit-scrollbar{display:none}
+.date-chip{min-width:50px;height:62px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border:1.5px solid #DDD3BC;background:#FAF6EE;transition:all .2s;flex-shrink:0;gap:2px}
+.date-chip.sel{background:#D8492A;border-color:#D8492A}
+.date-chip.sel .dc-d,.date-chip.sel .dc-n{color:#FAF6EE}
+.dc-d{font-size:10px;font-weight:600;color:#8B7F73;text-transform:uppercase;letter-spacing:.4px}
+.dc-n{font-family:'Instrument Serif',serif;font-size:20px;color:#14110F;line-height:1}
+.slot-lbl{font-size:11px;font-weight:700;color:#8B7F73;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px}
+.slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.slot-chip{padding:10px 4px;border-radius:10px;text-align:center;cursor:pointer;border:1.5px solid #DDD3BC;background:#FAF6EE;transition:all .2s}
+.slot-chip.sel{border-color:#D8492A;background:#FBE3D9}
+.slot-chip.full{opacity:.38;cursor:not-allowed}
+.slot-t{font-size:13px;font-weight:600;color:#14110F}
+.slot-s{font-size:11px;color:#8B7F73;margin-top:2px}
+.slot-chip.sel .slot-t{color:#D8492A}
+
+/* Step 3 */
+.timer-badge{display:inline-flex;align-items:center;gap:5px;background:#FBE3D9;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;color:#D8492A;margin-bottom:14px}
+.summary-card{background:#EDE6D8;border-radius:14px;overflow:hidden;margin-bottom:16px}
+.summary-head{display:flex;gap:10px;align-items:center;padding:14px;border-bottom:1px solid #DDD3BC}
+.summary-cover{width:40px;height:40px;border-radius:10px;background:#FBE9D6;display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-size:18px;font-style:italic;color:#D8492A;flex-shrink:0}
+.summary-aca{font-size:14px;font-weight:600;color:#14110F}
+.summary-prog{font-size:12px;color:#8B7F73;margin-top:2px}
+.fee-row{display:flex;justify-content:space-between;padding:8px 14px;font-size:14px;color:#3A332D}
+.fee-row.credit{color:#1E5C5A}
+.fee-row.total{font-family:'Instrument Serif',serif;font-size:20px;color:#14110F;padding:10px 14px 14px}
+.fee-divider{height:1px;background:#DDD3BC;margin:4px 14px}
+.rzp-note{text-align:center;font-size:11px;color:#8B7F73;margin-top:10px;line-height:16px}
+
+/* ─── Confirmation screen ─── */
+#sc-confirm{background:#F1ECE2}
+.conf-top-status{background:#F1ECE2;padding:12px 22px 0;display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:#14110F;position:sticky;top:0;z-index:5}
+.conf-hero{padding:32px 24px 26px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.conf-mark{width:56px;height:56px;border-radius:28px;background:#1E5C5A;display:flex;align-items:center;justify-content:center;font-size:26px;color:#FAF6EE;font-weight:700}
+.conf-title{font-family:'Instrument Serif',serif;font-size:38px;color:#14110F;line-height:40px;letter-spacing:-.6px;margin-top:18px}
+.conf-title em{color:#D8492A;font-style:italic}
+.conf-sub{font-size:13px;color:#3A332D;line-height:19px;margin-top:10px;padding:0 16px}
+.conf-sub strong{color:#14110F;font-weight:700}
+.booking-id-pill{margin-top:18px;background:#FAF6EE;border:1px solid #DDD3BC;border-radius:999px;padding:6px 14px;font-size:11px;color:#8B7F73;letter-spacing:1.4px}
+
+/* Ticket */
+.ticket{margin:0 24px;background:#FAF6EE;border:1px solid #DDD3BC;border-radius:20px;padding:18px;position:relative}
+.perf-l,.perf-r{position:absolute;width:24px;height:24px;border-radius:12px;background:#F1ECE2;top:50%;transform:translateY(-50%)}
+.perf-l{left:-12px}.perf-r{right:-12px}
+.ticket-head{display:flex;gap:12px;align-items:center}
+.ticket-cover{width:52px;height:52px;border-radius:12px;background:#FBE9D6;display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-size:24px;font-style:italic;color:#D8492A;flex-shrink:0}
+.ticket-aca{font-size:15px;font-weight:600;color:#14110F}
+.ticket-addr{font-size:12px;color:#8B7F73;margin-top:2px}
+.dashed{border-top:1px dashed #DDD3BC;margin:16px 0}
+.ticket-body{display:flex;flex-wrap:wrap}
+.tb{width:50%;margin-bottom:14px}
+.tb-lbl{font-size:10px;letter-spacing:1.2px;color:#8B7F73;font-weight:600;text-transform:uppercase;margin-bottom:4px}
+.tb-val{font-family:'Instrument Serif',serif;font-size:18px;color:#14110F;line-height:22px}
+.tb-sub{font-size:11px;color:#8B7F73;margin-top:2px}
+.ticket-foot{display:flex;justify-content:space-between;align-items:center}
+.ticket-foot-lbl{font-size:10px;letter-spacing:1.4px;color:#8B7F73;font-weight:500;text-transform:uppercase}
+.ticket-foot-brand{font-family:'Instrument Serif',serif;font-style:italic;font-size:16px;color:#D8492A}
+
+/* OTP */
+.otp-block{margin:18px 24px 0;background:#FAF6EE;border:1px solid #DDD3BC;border-radius:20px;padding:22px;text-align:center}
+.otp-lbl{font-size:10px;letter-spacing:1.6px;color:#8B7F73;font-weight:600;text-transform:uppercase;margin-bottom:12px}
+.otp-code{font-family:'Instrument Serif',serif;font-style:italic;font-size:44px;color:#D8492A;letter-spacing:6px;margin-bottom:12px;line-height:1}
+.otp-hint{font-size:11px;color:#8B7F73;line-height:16px;padding:0 8px}
+
+/* Actions */
+.actions-row{display:flex;gap:10px;padding:0 24px;margin-top:18px}
+.action-btn{flex:1;padding:12px;text-align:center;background:#FAF6EE;border:1px solid #DDD3BC;border-radius:14px;font-size:13px;font-weight:600;color:#14110F;cursor:pointer}
+
+/* What to bring */
+.bring-sec{padding:26px 24px 0}
+.bring-title{font-family:'Instrument Serif',serif;font-size:22px;color:#14110F;margin-bottom:12px}
+.bring-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+.bring-dot{width:6px;height:6px;border-radius:3px;background:#D8492A;flex-shrink:0;margin-top:7px}
+.bring-text{font-size:13px;color:#3A332D;line-height:19px;flex:1}
+.done-wrap{padding:24px;padding-bottom:40px}
+</style>
+</head>
+<body>
+<div class="phone">
+
+<!-- ══════════════════════════════════════
+     SCREEN 1 — Academy Detail (enhanced)
+══════════════════════════════════════ -->
+<div class="screen" id="sc-academy">
+  <div class="status over-dark"><span>9:41</span><span>●●●</span></div>
+
+  <!-- Block-print cover -->
+  <div class="cover">
+    <div class="cover-art">
+      <div class="cover-disc"></div>
+      <div class="cover-diamond"></div>
+      <div class="cover-stripe"></div>
+      <div class="cover-dots"><span></span><span></span><span></span><span></span></div>
+      <div class="cover-letter">H</div>
+    </div>
+    <div class="cover-topbar">
+      <button class="icon-btn">‹</button>
+      <div class="icon-btn-group">
+        <button class="icon-btn">↑</button>
+        <button class="icon-btn" onclick="toggleHeart()" id="heart-btn"><span id="heart-icon">♡</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating academy card -->
+  <div class="aca-card">
+    <div class="verified-badge">✓ Verified</div>
+    <div class="aca-name">Harmony Music Studio</div>
+    <div class="aca-address">📍 Koramangala, Bengaluru · 1.4 km</div>
+    <div class="stats-row">
+      <div class="stat-cell"><div class="stat-val em">4.8</div><div class="stat-lbl">Rating</div></div>
+      <div class="stat-cell"><div class="stat-val">128</div><div class="stat-lbl">Reviews</div></div>
+      <div class="stat-cell"><div class="stat-val">12</div><div class="stat-lbl">Years</div></div>
+      <div class="stat-cell"><div class="stat-val">340+</div><div class="stat-lbl">Students</div></div>
+    </div>
+    <div class="coach-row">
+      <div class="coach-chip"><div class="coach-av">R</div><span class="coach-nm">Rahul Kumar</span><span class="coach-sp">· Guitar</span></div>
+      <div class="coach-chip"><div class="coach-av">P</div><span class="coach-nm">Priya Joshi</span><span class="coach-sp">· Vocals</span></div>
+      <div class="coach-chip"><div class="coach-av">A</div><span class="coach-nm">Arjun Singh</span></div>
+    </div>
+  </div>
+
+  <!-- ── Reviews ── -->
+  <div class="sec">
+    <div class="sec-title">What students say</div>
+
+    <div class="review-card">
+      <div class="review-meta">
+        <span class="review-stars"><span class="filled">★★★★★</span></span>
+        <span class="review-author">Meera S.</span>
+      </div>
+      <div class="review-text">Rahul sir is incredibly patient. I picked up chords in my very first session — never imagined that was possible. The studio vibe is warm and welcoming.</div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-meta">
+        <span class="review-stars"><span class="filled">★★★★</span><span class="empty">★</span></span>
+        <span class="review-author">Kiran D.</span>
+      </div>
+      <div class="review-text">Great for beginners. Booking is easy and the trial is genuinely worth it. Only wish they had more evening slots on weekdays.</div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-meta">
+        <span class="review-stars"><span class="filled">★★★★★</span></span>
+        <span class="review-author">Tanvi R.</span>
+      </div>
+      <div class="review-text">Priya ma'am's vocal training is top-notch. The OTP system for attendance is clever — no register-signing nonsense.</div>
+    </div>
+
+    <div class="load-more">Load more reviews</div>
+  </div>
+
+  <!-- ── Programs & Batches (inline — replaces Offerings screen) ── -->
+  <div class="sec">
+    <div class="sec-title">Programs &amp; Batches</div>
+
+    <div class="batch-card">
+      <div class="batch-head">
+        <div class="batch-thumb">
+          <div class="batch-thumb-art">G</div>
+          <div class="seats-pill ok">8 left</div>
+        </div>
+        <div class="batch-body">
+          <div class="batch-title">Guitar — Beginner</div>
+          <div class="batch-level-pill">Beginner</div>
+          <div class="batch-coaches">Rahul Kumar · Mon, Wed, Fri · 6:00 PM · 45 min</div>
+          <div class="batch-price"><span class="trial">Trials ₹199</span><span class="mo"> · ₹1,200/mo</span></div>
+        </div>
+      </div>
+      <div class="batch-cta-row">
+        <button class="btn btn-primary" onclick="openSheet('Guitar — Beginner','Rahul Kumar','Mon, Wed, Fri · 6:00 PM',199,1200)">Book Trial · ₹199</button>
+        <button class="btn btn-soft" onclick="openEnroll()">Enroll</button>
+      </div>
+    </div>
+
+    <div class="batch-card">
+      <div class="batch-head">
+        <div class="batch-thumb">
+          <div class="batch-thumb-art">V</div>
+          <div class="seats-pill low">3 left</div>
+        </div>
+        <div class="batch-body">
+          <div class="batch-title">Vocals — Intermediate</div>
+          <div class="batch-level-pill">Intermediate</div>
+          <div class="batch-coaches">Priya Joshi · Tue, Thu · 7:30 PM · 60 min</div>
+          <div class="batch-price"><span class="trial">Trials ₹299</span><span class="mo"> · ₹1,500/mo</span></div>
+        </div>
+      </div>
+      <div class="batch-cta-row">
+        <button class="btn btn-primary" onclick="openSheet('Vocals — Intermediate','Priya Joshi','Tue, Thu · 7:30 PM',299,1500)">Book Trial · ₹299</button>
+        <button class="btn btn-soft" onclick="openEnroll()">Enroll</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Workshops (inline) ── -->
+  <div class="sec" style="padding-bottom:100px">
+    <div class="sec-title">Upcoming Workshops</div>
+
+    <div class="ws-card">
+      <div class="ws-date"><div class="ws-month">Jun</div><div class="ws-day">15</div></div>
+      <div class="ws-info">
+        <div class="ws-title">Bollywood Music Masterclass</div>
+        <div class="ws-meta">3:00 PM · 2 hrs · In studio</div>
+      </div>
+      <div class="ws-price">₹499</div>
+    </div>
+
+    <div class="ws-card">
+      <div class="ws-date"><div class="ws-month">Jun</div><div class="ws-day">22</div></div>
+      <div class="ws-info">
+        <div class="ws-title">Intro to Music Theory</div>
+        <div class="ws-meta">11:00 AM · 1.5 hrs · Online</div>
+      </div>
+      <div class="ws-price" style="color:#1E5C5A">Free</div>
+    </div>
+  </div>
+
+  <!-- ── Bottom sheet ── -->
+  <div class="backdrop" id="backdrop" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-inner">
+
+      <div class="step-track">
+        <div class="step-seg active" id="seg1"></div>
+        <div class="step-seg idle"   id="seg2"></div>
+        <div class="step-seg idle"   id="seg3"></div>
+        <span class="step-num" id="step-num">1 / 3</span>
+      </div>
+
+      <!-- STEP 1 — Confirm batch -->
+      <div class="sh-step on" id="sh1">
+        <div class="sh-title">Confirm <em>batch</em></div>
+        <div class="sh-sub">Review your selection before picking a time slot.</div>
+
+        <div class="info-card">
+          <div class="info-label">Your batch</div>
+          <div class="info-row"><span class="info-key">Program</span><span class="info-val" id="s1-prog">—</span></div>
+          <div class="info-row"><span class="info-key">Coach</span><span class="info-val" id="s1-coach">—</span></div>
+          <div class="info-row"><span class="info-key">Schedule</span><span class="info-val" id="s1-sched">—</span></div>
+          <div class="info-row"><span class="info-key">Trial fee</span><span class="info-val" id="s1-fee" style="color:#D8492A">—</span></div>
+          <div class="info-row"><span class="info-key">Location</span><span class="info-val">In studio</span></div>
+        </div>
+
+        <div class="included-box">
+          <div class="included-ttl">What's included</div>
+          <div class="included-row"><div class="included-dot"></div>45-minute hands-on trial session</div>
+          <div class="included-row"><div class="included-dot"></div>Instrument provided at no extra cost</div>
+          <div class="included-row"><div class="included-dot"></div>One-on-one feedback from your coach</div>
+          <div class="included-row"><div class="included-dot"></div>No commitment to enroll after trial</div>
+        </div>
+
+        <button class="btn btn-primary btn-block" onclick="goStep(2)">Pick your slot →</button>
+      </div>
+
+      <!-- STEP 2 — Date + Slot -->
+      <div class="sh-step" id="sh2">
+        <div class="sh-title">Pick a <em>slot</em></div>
+        <div class="sh-sub">Choose a date and available time.</div>
+
+        <div class="date-strip" id="date-strip"></div>
+
+        <div class="slot-lbl">Available times</div>
+        <div class="slots-grid">
+          <div class="slot-chip sel" onclick="pickSlot(this,'6:00 PM')"><div class="slot-t">6:00 PM</div><div class="slot-s">4 left</div></div>
+          <div class="slot-chip"     onclick="pickSlot(this,'6:45 PM')"><div class="slot-t">6:45 PM</div><div class="slot-s">7 left</div></div>
+          <div class="slot-chip full"                                  ><div class="slot-t">7:30 PM</div><div class="slot-s">Full</div></div>
+          <div class="slot-chip"     onclick="pickSlot(this,'8:15 PM')"><div class="slot-t">8:15 PM</div><div class="slot-s">2 left</div></div>
+          <div class="slot-chip"     onclick="pickSlot(this,'9:00 PM')"><div class="slot-t">9:00 PM</div><div class="slot-s">5 left</div></div>
+        </div>
+
+        <button class="btn btn-primary btn-block" onclick="goStep(3)">Review &amp; pay →</button>
+      </div>
+
+      <!-- STEP 3 — Review & Pay -->
+      <div class="sh-step" id="sh3">
+        <div class="sh-title">Review &amp; <em>pay</em></div>
+        <div class="timer-badge">⏱ Slot held · <span id="timer">9:59</span></div>
+
+        <div class="summary-card">
+          <div class="summary-head">
+            <div class="summary-cover">H</div>
+            <div>
+              <div class="summary-aca">Harmony Music Studio</div>
+              <div class="summary-prog" id="s3-prog">Guitar — Beginner · 6:00 PM</div>
+            </div>
+          </div>
+          <div class="fee-row"><span>Trial session</span><span id="fee-trial">₹199</span></div>
+          <div class="fee-row"><span>Platform fee</span><span>₹12</span></div>
+          <div class="fee-row credit"><span>Festive credit 🎉</span><span>−₹50</span></div>
+          <div class="fee-divider"></div>
+          <div class="fee-row total"><span>Total</span><span id="fee-total">₹161</span></div>
+        </div>
+
+        <button class="btn btn-primary btn-block" id="pay-btn" onclick="simulatePay()">Pay ₹161 &amp; confirm trial</button>
+        <div class="rzp-note">🔒 Secured by Razorpay &nbsp;·&nbsp; Full refund if cancelled 24 hr before class</div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /sc-academy -->
+
+
+<!-- ══════════════════════════════════════
+     SCREEN 2 — Confirmation
+══════════════════════════════════════ -->
+<div class="screen hidden" id="sc-confirm">
+  <div class="conf-top-status"><span>9:41</span><span>●●●</span></div>
+
+  <div class="conf-hero">
+    <div class="conf-mark">✓</div>
+    <div class="conf-title">You're <em>booked</em>.</div>
+    <div class="conf-sub">You're all set. We've sent confirmation to <strong>+91 98450 47291</strong>.</div>
+    <div class="booking-id-pill">BOOKING · FDM-A7F291</div>
+  </div>
+
+  <div class="ticket">
+    <div class="perf-l"></div>
+    <div class="perf-r"></div>
+    <div class="ticket-head">
+      <div class="ticket-cover">H</div>
+      <div>
+        <div class="ticket-aca">Harmony Music Studio</div>
+        <div class="ticket-addr">📍 Koramangala, Bengaluru</div>
+      </div>
+    </div>
+    <div class="dashed"></div>
+    <div class="ticket-body">
+      <div class="tb"><div class="tb-lbl">Date</div><div class="tb-val" id="t-date">Wed 4 Jun</div><div class="tb-sub" id="t-year">2025</div></div>
+      <div class="tb"><div class="tb-lbl">Time</div><div class="tb-val" id="t-time">6:00 PM</div><div class="tb-sub">45 minutes</div></div>
+      <div class="tb"><div class="tb-lbl">Class</div><div class="tb-val" id="t-class">Guitar · Trial</div><div class="tb-sub" id="t-coach">with Rahul Kumar</div></div>
+      <div class="tb"><div class="tb-lbl">Paid</div><div class="tb-val" id="t-paid">₹161</div><div class="tb-sub">UPI · GPay</div></div>
+    </div>
+    <div class="dashed"></div>
+    <div class="ticket-foot">
+      <span class="ticket-foot-lbl">SHOW AT RECEPTION</span>
+      <span class="ticket-foot-brand">Findemy</span>
+    </div>
+  </div>
+
+  <div class="otp-block">
+    <div class="otp-lbl">YOUR TRIAL OTP</div>
+    <div class="otp-code">7 4 2 9 1 6</div>
+    <div class="otp-hint">Show to your instructor at class. Active 15 min before class start.</div>
+  </div>
+
+  <div class="actions-row">
+    <div class="action-btn">📍 Get directions</div>
+    <div class="action-btn">📅 Add to calendar</div>
+  </div>
+
+  <div class="bring-sec">
+    <div class="bring-title">What to bring</div>
+    <div class="bring-row"><div class="bring-dot"></div><div class="bring-text">Your instrument (rentals available · ₹50 add-on at desk).</div></div>
+    <div class="bring-row"><div class="bring-dot"></div><div class="bring-text">Comfortable seating attire — you'll be playing for 45 minutes.</div></div>
+    <div class="bring-row"><div class="bring-dot"></div><div class="bring-text">Arrive 10 minutes early for tuning &amp; intros.</div></div>
+    <div class="bring-row"><div class="bring-dot"></div><div class="bring-text">Free reschedule up to 6 hours before class.</div></div>
+  </div>
+
+  <div class="done-wrap">
+    <button class="btn btn-primary btn-block" onclick="resetFlow()">Done</button>
+  </div>
+</div><!-- /sc-confirm -->
+
+</div><!-- /phone -->
+
+<script>
+const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+let selBatch='', selCoach='', selSched='', trialFee=199;
+let selSlot='6:00 PM', timerRef=null;
+
+/* Date strip */
+const strip = document.getElementById('date-strip');
+for(let i=0;i<14;i++){
+  const d=new Date(); d.setDate(d.getDate()+i);
+  const c=document.createElement('div');
+  c.className='date-chip'+(i===0?' sel':'');
+  c.innerHTML=`<span class="dc-d">${DAYS[d.getDay()]}</span><span class="dc-n">${d.getDate()}</span>`;
+  c.onclick=function(){strip.querySelectorAll('.date-chip').forEach(x=>x.classList.remove('sel'));this.classList.add('sel')};
+  strip.appendChild(c);
+}
+
+function toggleHeart(){
+  const ic=document.getElementById('heart-icon');
+  ic.textContent=ic.textContent==='♡'?'♥':'♡';
+  ic.style.color=ic.textContent==='♥'?'#D8492A':'#FAF6EE';
+}
+
+function openSheet(batch,coach,sched,fee,monthly){
+  selBatch=batch; selCoach=coach; selSched=sched; trialFee=fee;
+  const total=fee+12-50;
+  document.getElementById('s1-prog').textContent=batch;
+  document.getElementById('s1-coach').textContent=coach;
+  document.getElementById('s1-sched').textContent=sched;
+  document.getElementById('s1-fee').textContent='₹'+fee;
+  document.getElementById('s3-prog').textContent=batch+' · '+sched.split('·')[1].trim();
+  document.getElementById('fee-trial').textContent='₹'+fee;
+  document.getElementById('fee-total').textContent='₹'+total;
+  document.getElementById('pay-btn').textContent='Pay ₹'+total+' & confirm trial';
+  document.getElementById('backdrop').classList.add('open');
+  document.getElementById('sheet').classList.add('open');
+  goStep(1);
+}
+
+function closeSheet(){
+  document.getElementById('backdrop').classList.remove('open');
+  document.getElementById('sheet').classList.remove('open');
+  if(timerRef){clearInterval(timerRef);timerRef=null;}
+}
+
+function goStep(n){
+  [1,2,3].forEach(i=>{
+    document.getElementById('sh'+i).className='sh-step'+(i===n?' on':'');
+    const s=document.getElementById('seg'+i);
+    s.className='step-seg '+(i<n?'done':i===n?'active':'idle');
+  });
+  document.getElementById('step-num').textContent=n+' / 3';
+  document.querySelector('.sheet-inner').scrollTop=0;
+  if(n===3) startTimer(); else{if(timerRef){clearInterval(timerRef);timerRef=null;}}
+}
+
+function startTimer(){
+  let s=599; const el=document.getElementById('timer');
+  if(timerRef) clearInterval(timerRef);
+  timerRef=setInterval(()=>{
+    if(s<=0){clearInterval(timerRef);el.textContent='0:00';return;}
+    s--; el.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+  },1000);
+}
+
+function pickSlot(el,t){
+  if(el.classList.contains('full')) return;
+  document.querySelectorAll('.slot-chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel'); selSlot=t;
+}
+
+function openEnroll(){
+  alert('Direct enrollment flow: POST /batches/:id/enroll — no payment needed. Will be a confirm modal in the native app.');
+}
+
+function simulatePay(){
+  if(timerRef){clearInterval(timerRef);timerRef=null;}
+  closeSheet();
+  const d=new Date(); d.setDate(d.getDate()+2);
+  document.getElementById('t-date').textContent=DAYS[d.getDay()]+' '+d.getDate()+' '+MONTHS[d.getMonth()];
+  document.getElementById('t-year').textContent=d.getFullYear();
+  document.getElementById('t-time').textContent=selSlot;
+  document.getElementById('t-class').textContent=selBatch.split('—')[0].trim()+' · Trial';
+  document.getElementById('t-coach').textContent='with '+selCoach;
+  document.getElementById('t-paid').textContent='₹'+(trialFee+12-50);
+  document.getElementById('sc-academy').classList.add('exit-left');
+  document.getElementById('sc-confirm').classList.remove('hidden');
+  document.getElementById('sc-confirm').scrollTop=0;
+}
+
+function resetFlow(){
+  document.getElementById('sc-academy').classList.remove('exit-left');
+  document.getElementById('sc-confirm').classList.add('hidden');
+}
+</script>
+</body>
+</html>

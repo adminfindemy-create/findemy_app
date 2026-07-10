@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Findemy · Academy App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital@1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* cyrillic-ext */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* vietnamese */
+
+:root{
+  --paper:#FFFFFF; --paper-warm:#F5F5F5; --card:#FFFFFF;
+  --ink:#1A1611; --ink-2:#463F36; --muted:#6E655A; --faint:#8A8071;
+  --hairline:#E8E1D2;
+  --persimmon:#EC5A2B; --persimmon-deep:#D24A20; --persimmon-soft:#FBE3D8;
+  --jade:#1E6F66; --jade-soft:#D8E6E1;
+  --gold:#C8862A; --gold-soft:#F3E4C6;
+  --rose:#C0392B; --rose-soft:#F7DAD5;
+  --serif:'Libre Caslon Display', Georgia, 'Times New Roman', serif;
+  --serif-i:'Libre Caslon Text', Georgia, serif;
+  --sans:'Plus Jakarta Sans', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --shadow-sm:0 2px 6px rgba(60,30,10,.05);
+  --shadow:0 14px 34px -16px rgba(60,30,10,.22);
+  --shadow-lg:0 26px 50px -20px rgba(40,20,10,.30);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+html,body{margin:0;height:100%}
+body{
+  font-family:var(--sans);color:var(--ink);
+  background:radial-gradient(1200px 600px at 50% -10%, #2a2a33 0%, #16161c 55%, #0e0e12 100%);
+  display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;
+}
+
+/* a11y */
+:focus{outline:none}
+:focus-visible{outline:3px solid var(--persimmon);outline-offset:2px;border-radius:8px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* phone frame */
+.phone{
+  position:relative;width:412px;height:min(884px, calc(100vh - 48px));
+  background:var(--paper);border-radius:46px;overflow:hidden;
+  box-shadow:var(--shadow-lg), 0 0 0 11px #0b0b0e, 0 0 0 13px #2c2c32;
+  display:flex;flex-direction:column;
+}
+.statusbar{
+  position:absolute;top:0;left:0;right:0;height:46px;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 30px 0;font-size:13px;font-weight:700;color:var(--ink);pointer-events:none;
+}
+.statusbar.on-dark{color:#fff}
+.statusbar .sb-icons{display:flex;gap:6px;align-items:center}
+.statusbar .sb-icons svg{width:16px;height:16px}
+
+/* screens / router */
+.screens{position:relative;flex:1;overflow:hidden}
+.screen{
+  position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+  padding:54px 18px 128px;display:none;scroll-behavior:smooth;background:var(--paper);
+}
+.screen.flush{padding:0 0 128px}
+.screen.has-bar{padding:0;flex-direction:column;overflow:hidden}
+.screen.has-bar.active{display:flex}
+.screen.has-bar .scroller{flex:1;overflow-y:auto}
+.screen.has-bar .scroller::-webkit-scrollbar{width:0}
+.screen.has-bar .action-bar{position:static}
+.screen::-webkit-scrollbar{width:0}
+.screen.active{display:block}
+.screen.in-right{animation:inRight .34s cubic-bezier(.2,.8,.2,1)}
+.screen.in-left{animation:inLeft .34s cubic-bezier(.2,.8,.2,1)}
+.screen.in-fade{animation:inFade .3s ease}
+@keyframes inRight{from{opacity:.4;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes inLeft{from{opacity:.4;transform:translateX(-28px)}to{opacity:1;transform:none}}
+@keyframes inFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* type helpers */
+.kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.display{font-family:var(--serif);font-weight:400;line-height:.98;letter-spacing:-.01em}
+.serif-i{font-family:var(--serif-i);font-style:italic;font-weight:400}
+.muted{color:var(--muted)}
+.hl{position:relative;display:inline-block;z-index:0}
+.hl::after{content:"";position:absolute;left:-2px;right:-4px;bottom:6px;height:13px;background:var(--persimmon-soft);z-index:-1;border-radius:3px}
+
+/* header row */
+.head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-top:6px}
+.icon-btn{
+  width:46px;height:46px;border-radius:50%;background:#fff;border:1px solid var(--hairline);
+  display:grid;place-items:center;box-shadow:var(--shadow-sm);flex:none;cursor:pointer;color:var(--ink);
+}
+.icon-btn svg{width:20px;height:20px}
+.icon-btn.solid{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* back button (overlay + plain) */
+.backbtn{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);border:1px solid var(--hairline);display:grid;place-items:center;cursor:pointer;color:var(--ink);box-shadow:var(--shadow-sm)}
+.backbtn svg{width:20px;height:20px}
+.topbar{display:flex;align-items:center;gap:12px;margin-top:6px;margin-bottom:6px}
+.topbar .title{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.topbar .spacer{flex:1}
+
+/* hero */
+.hero .kicker{margin-bottom:8px}
+.hero h1{margin:0;font-family:var(--serif);font-size:46px;line-height:.94;letter-spacing:-.015em;font-weight:400}
+.hero h1 .l1{font-style:italic;display:block;color:var(--ink-2)}
+
+/* avatar circle */
+.avatar{width:46px;height:46px;border-radius:50%;overflow:hidden;flex:none;border:1px solid var(--hairline);background:var(--persimmon);display:grid;place-items:center;color:#fff;font-family:var(--serif);font-style:italic;font-size:22px}
+.avatar img{width:100%;height:100%;object-fit:cover}
+
+/* search */
+.search{margin:20px 0 12px;display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--hairline);border-radius:999px;padding:15px 18px;box-shadow:var(--shadow)}
+.search svg{width:20px;height:20px;color:var(--persimmon);flex:none}
+.search input{border:0;outline:0;background:transparent;font-family:var(--sans);font-size:16px;width:100%;color:var(--ink)}
+.search input::placeholder{color:var(--faint)}
+.search .filt{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--paper-warm);position:relative;border:0;cursor:pointer;color:var(--ink-2)}
+.search .filt svg{width:16px;height:16px;color:var(--ink-2)}
+.search .filt .badge{position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:var(--persimmon);border:2px solid #fff;display:none}
+.search .filt.on .badge{display:block}
+
+/* location chips */
+.loc-row{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+.loc-chip{display:flex;gap:7px;align-items:center;background:var(--paper-warm);border-radius:999px;padding:9px 15px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.loc-chip svg{width:14px;height:14px;color:var(--persimmon)}
+.loc-chip.online{background:transparent;color:var(--jade)}
+.loc-chip.online .dot{width:8px;height:8px;border-radius:50%;background:var(--jade)}
+
+/* pills */
+.pills{display:flex;gap:10px;overflow-x:auto;padding:2px 0 6px;margin:0 -18px 6px;padding-left:18px;padding-right:18px}
+.pills::-webkit-scrollbar{height:0}
+.pill{flex:none;display:flex;gap:8px;align-items:center;background:#fff;border:1px solid var(--hairline);border-radius:999px;padding:11px 17px;font-size:14px;font-weight:600;color:var(--ink-2);cursor:pointer;box-shadow:var(--shadow-sm);white-space:nowrap}
+.pill svg{width:16px;height:16px;flex:none}
+.pill.active,.pill[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* section head */
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;margin:24px 0 14px}
+.section-head .st{font-size:23px;font-weight:800;letter-spacing:-.02em}
+.section-head .sk{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-top:5px}
+.see-all{background:#fff;border:1px solid var(--hairline);border-radius:999px;padding:9px 16px;font-size:12.5px;font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm)}
+
+/* horizontal carousel */
+.h-scroll{display:flex;gap:14px;overflow-x:auto;margin:0 -18px;padding:4px 18px 8px}
+.h-scroll::-webkit-scrollbar{height:0}
+
+/* photo cover helper */
+.ph{position:relative;overflow:hidden;background:var(--paper-warm)}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.ph .scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.06) 45%,rgba(0,0,0,.62))}
+.ph .scrim-top{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28),rgba(0,0,0,0) 40%)}
+
+/* studio compact card */
+.studio-card{flex:none;width:206px;cursor:pointer}
+.studio-card .cover{height:212px;border-radius:24px;box-shadow:var(--shadow);display:flex;align-items:flex-end;padding:16px}
+.studio-card .cover .cat{position:absolute;top:14px;left:14px;background:rgba(20,16,14,.55);backdrop-filter:blur(6px);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.12em;padding:7px 12px;border-radius:999px;z-index:2}
+.studio-card .cover .nm{position:relative;color:#fff;font-size:20px;font-weight:800;line-height:1.05;text-shadow:0 2px 10px rgba(0,0,0,.5);z-index:2}
+.studio-card .meta{display:flex;align-items:center;gap:9px;margin-top:11px;font-size:13px;font-weight:600}
+.studio-card .meta .star{color:var(--persimmon);display:flex;align-items:center;gap:4px}
+.studio-card .meta .star svg{width:14px;height:14px}
+.studio-card .meta .sep{color:var(--faint)}
+
+/* near-you large card */
+.near-card{background:#fff;border:1px solid var(--hairline);border-radius:26px;padding:14px;display:flex;gap:14px;box-shadow:var(--shadow);margin-bottom:16px;cursor:pointer}
+.near-card .thumb{width:104px;height:122px;border-radius:18px;flex:none}
+.near-card .body{flex:1;min-width:0;display:flex;flex-direction:column}
+.near-card .cat{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--persimmon);display:flex;align-items:center;gap:6px}
+.near-card .cat svg{width:13px;height:13px;color:var(--jade)}
+.near-card .nm{font-size:20px;font-weight:800;line-height:1.05;margin:4px 0 6px;letter-spacing:-.01em}
+.near-card .loc{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-2);font-weight:500}
+.near-card .loc svg{width:13px;height:13px;color:var(--persimmon)}
+.near-card .rate{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;margin-top:6px}
+.near-card .rate .star{color:var(--persimmon);display:flex;gap:4px;align-items:center}
+.near-card .rate .star svg{width:14px;height:14px}
+.near-card .rate .rev{color:var(--faint);font-weight:500}
+.near-card .foot{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--hairline);margin-top:11px;padding-top:11px}
+.near-card .price .lbl{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:700;display:block}
+.near-card .price .amt{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+
+/* heart */
+.heart{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);display:grid;place-items:center;cursor:pointer;border:0;position:absolute;top:10px;right:10px;color:var(--ink);box-shadow:var(--shadow-sm);z-index:3}
+.heart::after{content:"";position:absolute;inset:-5px}
+.heart svg{width:17px;height:17px}
+.heart.on{color:var(--persimmon)}
+.heart.on svg path{fill:var(--persimmon)}
+
+/* buttons */
+.btn{border:0;border-radius:999px;padding:15px 20px;font-family:var(--sans);font-size:15px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;width:100%}
+.btn svg{width:18px;height:18px}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-primary{background:var(--persimmon);color:#fff;box-shadow:0 12px 26px -10px rgba(236,90,43,.6)}
+.btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--hairline)}
+.btn-soft{background:var(--persimmon-soft);color:var(--persimmon-deep)}
+.btn-jade{background:var(--jade);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.btn-row{display:flex;gap:10px}
+.btn-row .btn{flex:1}
+.cta-dark{background:var(--ink);color:#fff;border:0;border-radius:999px;padding:13px 18px;font-family:var(--sans);font-size:13.5px;font-weight:700;display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.cta-dark svg{width:16px;height:16px}
+
+/* generic card / list rows */
+.card{background:#fff;border:1px solid var(--hairline);border-radius:22px;box-shadow:var(--shadow-sm)}
+.row-card{background:#fff;border:1px solid var(--hairline);border-radius:20px;padding:14px;display:flex;gap:13px;box-shadow:var(--shadow-sm);margin-bottom:12px;cursor:pointer;align-items:center}
+.row-card .thumb{width:74px;height:74px;border-radius:15px;flex:none}
+.row-card .rc-body{flex:1;min-width:0}
+.row-card .rc-ttl{font-size:16px;font-weight:800;letter-spacing:-.01em;line-height:1.1}
+.row-card .rc-sub{font-size:12.5px;color:var(--muted);font-weight:500;margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.row-card .rc-sub svg{width:13px;height:13px;color:var(--persimmon)}
+.row-card .rc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.row-card .rc-price{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.row-card .rc-price.free{color:var(--jade)}
+.row-card .chev{color:var(--faint);flex:none}
+.row-card .chev svg{width:18px;height:18px}
+
+/* badges */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:999px}
+.badge svg{width:12px;height:12px}
+.b-class{background:var(--paper-warm);color:var(--ink-2)}
+.b-workshop{background:var(--gold-soft);color:var(--gold)}
+.b-event{background:var(--persimmon-soft);color:var(--persimmon-deep)}
+.b-comp{background:var(--persimmon);color:#fff}
+.b-online{background:var(--jade-soft);color:var(--jade)}
+.b-jade{background:var(--jade-soft);color:var(--jade)}
+.b-rose{background:var(--rose-soft);color:var(--rose)}
+.b-gold{background:var(--gold-soft);color:var(--gold)}
+.b-ink{background:var(--ink);color:#fff}
+
+/* stat row */
+.stats{display:flex;gap:12px;margin:18px 0}
+.stat{flex:1;background:#fff;border:1px solid var(--hairline);border-radius:18px;padding:14px 10px;box-shadow:var(--shadow-sm);text-align:center}
+.stat .n{font-family:var(--serif);font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
+.stat .n .star{color:var(--persimmon)}
+.stat .t{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:6px}
+
+/* segmented tabs (within screen) */
+.seg{display:flex;gap:8px;background:var(--paper-warm);border-radius:999px;padding:5px;margin:8px 0 16px}
+.seg button{flex:1;border:0;background:transparent;border-radius:999px;padding:11px;font-family:var(--sans);font-weight:700;font-size:13.5px;color:var(--ink-2);cursor:pointer}
+.seg button.active{background:#fff;color:var(--ink);box-shadow:var(--shadow-sm)}
+
+/* about / text blocks */
+.block{margin:18px 0}
+.block h3{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:700;margin:0 0 10px}
+.about{font-size:14.5px;line-height:1.6;color:var(--ink-2)}
+
+/* coach row */
+.coach{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--hairline)}
+.coach:last-child{border-bottom:0}
+.coach .pic{width:48px;height:48px;border-radius:50%;overflow:hidden;flex:none}
+.coach .pic img{width:100%;height:100%;object-fit:cover}
+.coach .cn{font-size:15px;font-weight:700}
+.coach .cr{font-size:12.5px;color:var(--muted);margin-top:2px}
+
+/* review */
+.review{padding:14px 0;border-bottom:1px solid var(--hairline)}
+.review:last-child{border-bottom:0}
+.review .rh{display:flex;align-items:center;gap:10px}
+.review .rh .pic{width:36px;height:36px;border-radius:50%;overflow:hidden;flex:none}
+.review .rh .pic img{width:100%;height:100%;object-fit:cover}
+.review .rn{font-size:13.5px;font-weight:700}
+.review .stars{display:flex;gap:2px;margin-left:auto;color:var(--persimmon)}
+.review .stars svg{width:13px;height:13px}
+.review .rt{font-size:13.5px;line-height:1.55;color:var(--ink-2);margin-top:8px}
+
+/* sticky bottom action bar (within a flush screen) */
+.action-bar{position:absolute;left:0;right:0;bottom:0;z-index:55;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-top:1px solid var(--hairline);padding:14px 18px calc(16px + env(safe-area-inset-bottom));display:flex;gap:12px;align-items:center}
+.action-bar .price-lead{flex:none}
+.action-bar .price-lead .l{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:700;display:block}
+.action-bar .price-lead .v{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums}
+.action-bar .btn{flex:1}
+
+/* step bar */
+.stepbar{display:flex;align-items:center;gap:8px;margin:6px 0 18px}
+.stepbar .dot{flex:1;height:5px;border-radius:99px;background:var(--hairline)}
+.stepbar .dot.on{background:var(--persimmon)}
+.step-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:4px}
+
+/* calendar */
+.cal{background:#fff;border:1px solid var(--hairline);border-radius:22px;padding:16px;box-shadow:var(--shadow-sm)}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cal-head .m{font-size:16px;font-weight:800}
+.cal-head button{width:34px;height:34px;border-radius:50%;border:1px solid var(--hairline);background:#fff;display:grid;place-items:center;cursor:pointer}
+.cal-head button svg{width:16px;height:16px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal-grid .dow{font-size:10.5px;color:var(--faint);font-weight:700;padding:4px 0;text-transform:uppercase}
+.cal-grid .day{aspect-ratio:1;display:grid;place-items:center;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-variant-numeric:tabular-nums;border:0;background:transparent;color:var(--ink)}
+.cal-grid .day.muted{color:var(--faint);opacity:.5;pointer-events:none}
+.cal-grid .day.sel{background:var(--persimmon);color:#fff}
+.cal-grid .day.has::after{content:"";display:block;width:5px;height:5px;border-radius:50%;background:var(--jade);position:absolute;transform:translateY(13px)}
+.cal-grid .day{position:relative}
+
+/* slot list */
+.slot-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.slot{border:1px solid var(--hairline);border-radius:16px;padding:13px;text-align:left;cursor:pointer;background:#fff;font-family:var(--sans);color:var(--ink);width:100%}
+.slot .t{display:block;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.slot .c{display:block;font-size:11.5px;color:var(--muted);font-weight:600;margin-top:3px}
+.slot.sel{background:var(--ink);border-color:var(--ink)}
+.slot.sel .t,.slot.sel .c{color:#fff}
+
+/* slot-grid (sheet) */
+.slot-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px}
+.slot-grid .slot{text-align:center}
+.slot-grid .slot .d{display:block;font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.slot-grid .slot .t{font-size:14px;margin-top:3px}
+.slot-grid .slot.sel .d{color:#fff}
+
+/* summary card */
+.summary{background:#fff;border:1px solid var(--hairline);border-radius:20px;padding:16px;box-shadow:var(--shadow-sm)}
+.sum-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--hairline)}
+.sum-row:last-child{border-bottom:0}
+.sum-row .ic{width:38px;height:38px;border-radius:11px;background:var(--persimmon-soft);display:grid;place-items:center;flex:none}
+.sum-row .ic svg{width:18px;height:18px;color:var(--persimmon)}
+.sum-row .l{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.sum-row .v{font-size:14.5px;font-weight:700;margin-top:1px}
+.sum-thumb{width:46px;height:46px;border-radius:12px;flex:none}
+
+/* total line */
+.total{display:flex;align-items:center;justify-content:space-between;padding:16px 0 4px}
+.total .tl{font-size:14px;color:var(--muted);font-weight:600}
+.total .tv{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+
+/* payment methods */
+.pay-method{display:flex;align-items:center;gap:13px;background:#fff;border:1.5px solid var(--hairline);border-radius:18px;padding:15px;margin-bottom:11px;cursor:pointer;width:100%;text-align:left;font-family:var(--sans)}
+.pay-method .pm-ic{width:42px;height:42px;border-radius:12px;background:var(--paper-warm);display:grid;place-items:center;flex:none;color:var(--ink)}
+.pay-method .pm-ic svg{width:20px;height:20px}
+.pay-method .pm-nm{font-size:14.5px;font-weight:700}
+.pay-method .pm-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.pay-method .pm-radio{width:22px;height:22px;border-radius:50%;border:2px solid var(--hairline);margin-left:auto;flex:none;display:grid;place-items:center}
+.pay-method.sel{border-color:var(--persimmon);background:#fff}
+.pay-method.sel .pm-radio{border-color:var(--persimmon)}
+.pay-method.sel .pm-radio::after{content:"";width:11px;height:11px;border-radius:50%;background:var(--persimmon)}
+.pay-method.disabled{opacity:.5;pointer-events:none}
+.pay-method .pm-tag{margin-left:auto;font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.08em}
+
+/* package selector */
+.pkg{display:flex;align-items:center;gap:13px;background:#fff;border:1.5px solid var(--hairline);border-radius:18px;padding:15px;margin-bottom:11px;cursor:pointer;width:100%;text-align:left;font-family:var(--sans);position:relative}
+.pkg .pk-radio{width:22px;height:22px;border-radius:50%;border:2px solid var(--hairline);flex:none;display:grid;place-items:center}
+.pkg.sel{border-color:var(--persimmon)}
+.pkg.sel .pk-radio{border-color:var(--persimmon)}
+.pkg.sel .pk-radio::after{content:"";width:11px;height:11px;border-radius:50%;background:var(--persimmon)}
+.pkg .pk-nm{font-size:15px;font-weight:800}
+.pkg .pk-sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+.pkg .pk-price{margin-left:auto;text-align:right;flex:none}
+.pkg .pk-price .a{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+.pkg .pk-price .per{font-size:11px;color:var(--muted)}
+.pkg .pk-flag{position:absolute;top:-9px;right:14px;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:var(--jade);color:#fff}
+.pkg .pk-flag.gold{background:var(--gold)}
+
+/* confirmation */
+.confirm-wrap{text-align:center;padding-top:30px}
+.confirm-tick{width:84px;height:84px;border-radius:50%;background:var(--jade);display:grid;place-items:center;margin:0 auto 18px;box-shadow:0 18px 40px -16px rgba(30,111,102,.7)}
+.confirm-tick svg{width:42px;height:42px;color:#fff}
+.confirm-wrap h2{font-family:var(--serif);font-size:34px;margin:0 0 6px;font-weight:400}
+.confirm-wrap .csub{font-size:14px;color:var(--muted);margin:0 0 22px}
+.otp-box{background:var(--ink);color:#fff;border-radius:18px;padding:16px;margin:18px 0;text-align:center}
+.otp-box .l{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6);font-weight:700}
+.otp-box .v{font-size:30px;font-weight:800;letter-spacing:.3em;font-variant-numeric:tabular-nums;margin-top:6px}
+
+/* booking detail state toggles */
+.bk-banner{display:flex;align-items:center;gap:10px;border-radius:16px;padding:13px 15px;font-size:13px;font-weight:700;margin:14px 0;line-height:1.35}
+.bk-banner svg{width:18px;height:18px;flex:none}
+.ord-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--hairline)}
+.ord-row:last-child{border-bottom:0}
+.ord-row .ok{font-size:13px;color:var(--muted);font-weight:600}
+.ord-row .ov{font-size:13.5px;font-weight:700;text-align:right}
+#screen-booking-detail[data-state="completed"] .when-upcoming{display:none}
+#screen-booking-detail[data-state="upcoming"] .when-completed{display:none}
+#screen-booking-detail[data-online="1"] .when-offline{display:none}
+#screen-booking-detail[data-online="0"] .when-online{display:none}
+#screen-booking-detail:not([data-trial="1"]) .when-trial{display:none}
+#screen-class-detail[data-status="hold"] .when-active{display:none}
+#screen-class-detail[data-status="active"] .when-hold{display:none}
+#screen-class-detail[data-online="1"] .when-offline{display:none}
+#screen-class-detail[data-online="0"] .when-online{display:none}
+/* mode-aware batch & trial (in-studio vs online) */
+#screen-batch[data-mode="online"] .when-studio{display:none}
+#screen-batch[data-mode="studio"] .when-online{display:none}
+#screen-trial[data-mode="online"] .when-studio{display:none}
+#screen-trial[data-mode="studio"] .when-online{display:none}
+
+/* forms */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.5px;font-weight:700;color:var(--ink-2);margin-bottom:7px}
+.field label .req{color:var(--persimmon)}
+.input{width:100%;border:1.5px solid var(--hairline);border-radius:14px;padding:14px 15px;font-family:var(--sans);font-size:16px;background:#fff;color:var(--ink);min-height:50px}
+.input:focus{border-color:var(--persimmon);outline:none}
+.input::placeholder{color:var(--faint)}
+.input-group{display:flex;align-items:center;border:1.5px solid var(--hairline);border-radius:14px;background:#fff;overflow:hidden}
+.input-group .pre{padding:14px 12px 14px 15px;font-weight:700;color:var(--ink-2);border-right:1px solid var(--hairline);background:var(--paper)}
+.input-group input{border:0;outline:0;flex:1;padding:14px 15px;font-family:var(--sans);font-size:16px;background:transparent}
+.helper{font-size:11.5px;color:var(--muted);margin-top:6px}
+
+/* otp input */
+.otp-input{display:flex;gap:9px;justify-content:space-between;margin:6px 0 4px}
+.otp-input input{width:48px;height:56px;text-align:center;font-size:22px;font-weight:800;border:1.5px solid var(--hairline);border-radius:14px;background:#fff;font-variant-numeric:tabular-nums}
+.otp-input input:focus{border-color:var(--persimmon);outline:none}
+
+/* category tiles (auth) */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0}
+.cat-tile{height:96px;border-radius:20px;display:flex;align-items:flex-end;padding:13px;cursor:pointer}
+.cat-tile .cn{position:relative;color:#fff;font-weight:800;font-size:16px;z-index:2;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.cat-tile.sel{outline:3px solid var(--persimmon);outline-offset:2px}
+
+/* interests chips */
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+.chip{border:1.5px solid var(--hairline);background:#fff;border-radius:999px;padding:11px 16px;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink-2)}
+.chip.sel{background:var(--persimmon);color:#fff;border-color:var(--persimmon)}
+
+/* profile menu */
+.pmenu{background:#fff;border:1px solid var(--hairline);border-radius:20px;box-shadow:var(--shadow-sm);overflow:hidden;margin-top:12px}
+.pmenu .prow{display:flex;align-items:center;gap:14px;padding:16px;font-weight:600;cursor:pointer;border-bottom:1px solid var(--hairline)}
+.pmenu .prow:last-child{border-bottom:0}
+.pmenu .prow svg{width:20px;height:20px;color:var(--persimmon)}
+.pmenu .prow .chev{margin-left:auto;color:var(--faint)}
+.pmenu .prow.danger{color:var(--rose)}
+.pmenu .prow.danger svg{color:var(--rose)}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:18px 0}
+.quick{background:#fff;border:1px solid var(--hairline);border-radius:18px;padding:16px 8px;text-align:center;cursor:pointer;box-shadow:var(--shadow-sm)}
+.quick .qic{width:40px;height:40px;border-radius:12px;background:var(--persimmon-soft);display:grid;place-items:center;margin:0 auto 8px}
+.quick .qic svg{width:19px;height:19px;color:var(--persimmon)}
+.quick .ql{font-size:11.5px;font-weight:700;line-height:1.2}
+/* profile stats */
+.pstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:6px}
+.pstat{background:#fff;border:1px solid var(--hairline);border-radius:16px;padding:13px 8px;text-align:center;box-shadow:var(--shadow-sm)}
+.pstat .v{font-family:var(--serif);font-size:22px;line-height:1}
+.pstat .t{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-top:5px}
+.psec{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:700;margin:18px 0 8px}
+
+/* notice banner */
+.notice{display:flex;gap:11px;align-items:center;background:var(--gold-soft);border-radius:16px;padding:13px 14px;margin-bottom:16px}
+.notice svg{width:20px;height:20px;color:var(--gold);flex:none}
+.notice .nt{font-size:12.5px;color:var(--ink-2);font-weight:600;line-height:1.35}
+.notice .nx{margin-left:auto;color:var(--gold);cursor:pointer;flex:none}
+
+/* empty state */
+.empty{text-align:center;padding:50px 20px}
+.empty .eic{width:70px;height:70px;border-radius:50%;background:var(--paper-warm);display:grid;place-items:center;margin:0 auto 16px}
+.empty .eic svg{width:30px;height:30px;color:var(--faint)}
+.empty h3{font-family:var(--serif);font-size:24px;margin:0 0 6px;font-weight:400}
+.empty p{font-size:13.5px;color:var(--muted);margin:0 auto 18px;max-width:240px;line-height:1.5}
+
+/* spotlight event */
+.spotlight{position:relative;border-radius:26px;overflow:hidden;padding:18px;color:#fff;min-height:230px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow);margin-bottom:18px}
+.spotlight .sp-badge{display:inline-flex;align-items:center;gap:6px;background:var(--persimmon);color:#fff;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;border-radius:999px;width:fit-content;position:relative;z-index:2}
+.spotlight .sp-badge svg{width:12px;height:12px}
+.spotlight .sp-mid{position:relative;z-index:2}
+.spotlight .sp-by{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.75);font-weight:700}
+.spotlight .sp-nm{font-family:var(--serif);font-size:30px;line-height:1.02;margin-top:4px;font-weight:400;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+.spotlight .sp-foot{position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.spotlight .sp-meta{font-size:12.5px;color:rgba(255,255,255,.85);font-weight:600}
+.spotlight .sp-prize{background:rgba(255,255,255,.16);backdrop-filter:blur(6px);border-radius:14px;padding:9px 13px;text-align:center;flex:none}
+.spotlight .sp-prize .l{font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:700;display:block}
+.spotlight .sp-prize .v{font-size:15px;font-weight:800}
+
+/* bottom nav */
+.tabbar{position:absolute;left:50%;transform:translateX(-50%);bottom:18px;z-index:50;display:flex;align-items:center;gap:4px;padding:9px;border-radius:999px;box-shadow:var(--shadow-lg);transition:.3s}
+.tabbar.dark{background:rgba(22,18,15,.92);backdrop-filter:blur(14px)}
+.tabbar.light{background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border:1px solid var(--hairline)}
+.tabbar.hidden{opacity:0;pointer-events:none;transform:translateX(-50%) translateY(20px)}
+.tab{border:0;background:transparent;display:flex;align-items:center;gap:8px;border-radius:999px;padding:12px;cursor:pointer;color:var(--faint);transition:.25s;font-family:var(--sans);font-weight:700;font-size:14px}
+.tabbar.dark .tab{color:rgba(255,255,255,.55)}
+.tab svg{width:21px;height:21px}
+.tab .lbl{display:none;white-space:nowrap}
+.tab.active{background:var(--persimmon);color:#fff;padding:12px 20px}
+.tab.active .lbl{display:inline}
+
+/* bottom sheet */
+.backdrop{position:absolute;inset:0;z-index:70;background:rgba(20,16,14,.5);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:.3s}
+.backdrop.show{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:71;background:#fff;border-radius:30px 30px 0 0;padding:10px 22px calc(22px + env(safe-area-inset-bottom));transform:translateY(110%);transition:transform .36s cubic-bezier(.2,.8,.2,1);box-shadow:0 -20px 50px -20px rgba(0,0,0,.4);max-height:88%;overflow-y:auto}
+.sheet.show{transform:translateY(0)}
+.sheet{max-height:90%;overflow-y:auto}
+.sheet::-webkit-scrollbar{width:0}
+.sheet .grab{width:44px;height:5px;border-radius:99px;background:var(--hairline);margin:4px auto 16px}
+.sheet .sh-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+.sheet h3{font-family:var(--serif);font-style:italic;font-size:28px;margin:0;font-weight:400}
+.sheet .sh-sub{font-size:12.5px;color:var(--muted);margin:0 0 18px;font-weight:500}
+.sheet .x{position:relative;width:38px;height:38px;border-radius:50%;border:1px solid var(--hairline);background:#fff;display:grid;place-items:center;cursor:pointer;flex:none}
+.sheet .x::after{content:"";position:absolute;inset:-4px}
+.sheet .x svg{width:16px;height:16px}
+.opt{display:flex;align-items:center;gap:12px;border:1.5px solid var(--hairline);border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer;width:100%;text-align:left;font-family:var(--sans);background:#fff}
+.opt .o-nm{font-size:14.5px;font-weight:700}
+.opt .o-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.opt .o-radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--hairline);margin-left:auto;flex:none;display:grid;place-items:center}
+.opt.sel{border-color:var(--persimmon)}
+.opt.sel .o-radio{border-color:var(--persimmon)}
+.opt.sel .o-radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--persimmon)}
+.filter-group{margin-bottom:18px}
+.filter-group .fg-h{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-bottom:10px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
+.toggle{width:48px;height:28px;border-radius:999px;background:var(--hairline);position:relative;cursor:pointer;border:0;flex:none}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.2s;box-shadow:var(--shadow-sm)}
+.toggle.on{background:var(--jade)}
+.toggle.on::after{left:23px}
+.seg-choice{display:flex;gap:8px}
+.seg-choice button{flex:1;border:1.5px solid var(--hairline);background:#fff;border-radius:12px;padding:11px;font-family:var(--sans);font-weight:700;font-size:13px;cursor:pointer;color:var(--ink-2)}
+.seg-choice button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* star rating */
+.star-rate{display:flex;gap:8px;justify-content:center;margin:14px 0}
+.star-rate button{border:0;background:transparent;cursor:pointer;color:var(--hairline);padding:2px}
+.star-rate button svg{width:38px;height:38px}
+.star-rate button.on{color:var(--persimmon)}
+.rate-caption{text-align:center;font-size:14px;font-weight:700;color:var(--ink-2);min-height:20px}
+
+/* press feedback + transitions */
+.studio-card,.near-card,.row-card,.pill,.slot,.pay-method,.pkg,.opt,.btn,.cta-dark,.see-all,.icon-btn,.tab,.heart,.quick,.pmenu .prow,.chip,.cat-tile{transition:transform .18s ease, background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease}
+.studio-card:active,.near-card:active,.row-card:active,.pill:active,.slot:active,.pay-method:active,.pkg:active,.opt:active,.quick:active,.chip:active,.cat-tile:active{transform:scale(.978)}
+.btn:active,.cta-dark:active,.see-all:active,.icon-btn:active,.heart:active{transform:scale(.95)}
+
+/* toast */
+.toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);z-index:80;background:var(--ink);color:#fff;padding:13px 20px;border-radius:999px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:9px;box-shadow:var(--shadow-lg);white-space:nowrap;max-width:88%}
+.toast svg{width:16px;height:16px;color:var(--jade);flex:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* misc utility */
+.mt8{margin-top:8px}.mt16{margin-top:16px}.mt24{margin-top:24px}
+.center{text-align:center}
+.divider{height:1px;background:var(--hairline);margin:18px 0}
+.policy{background:var(--paper-warm);border-radius:16px;padding:14px;font-size:12.5px;color:var(--ink-2);line-height:1.5}
+.policy b{color:var(--ink)}
+
+@media (max-width:460px){
+  body{padding:0;align-items:stretch}
+  .phone{width:100%;height:100dvh;border-radius:0;box-shadow:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+}
+
+/* devanagari */
+
+/* devanagari */
+
+/* devanagari */
+
+/* devanagari */
+
+/* devanagari */
+
+/* cyrillic */
+
+/* vietnamese */
+
+/* cyrillic */
+
+/* vietnamese */
+
+/* cyrillic */
+
+/* vietnamese */
+
+/* cyrillic */
+
+/* vietnamese */
+
+/* arabic */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* hebrew */
+
+/* arabic */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* hebrew */
+
+/* arabic */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* hebrew */
+
+/* arabic */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* hebrew */
+
+/* arabic */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* hebrew */
+
+/* vietnamese */
+
+/* vietnamese */
+
+/* vietnamese */
+
+/* vietnamese */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* math */
+
+/* symbols */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* math */
+
+/* symbols */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* math */
+
+/* symbols */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* math */
+
+/* symbols */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* greek */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* greek */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* greek */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* greek */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* greek */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* vietnamese */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* greek-ext */
+
+/* greek */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* greek-ext */
+
+/* greek */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* greek-ext */
+
+/* greek */
+
+/* cyrillic-ext */
+
+/* cyrillic */
+
+/* greek-ext */
+
+/* greek */
+
+/* ===== ACADEMY-APP ADDITIONS (compose the shared kit) ===== */
+/* dark dashboard summary card */
+.dash{background:var(--ink);color:var(--paper);border-radius:22px;padding:18px 18px 16px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.dash .dk{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);font-weight:700}
+.dash .dn{font-family:var(--serif);font-size:40px;line-height:1;margin:2px 0 2px;font-weight:400}
+.dash .dl{font-size:13.5px;color:rgba(255,255,255,.78);font-weight:600}
+.dash .dcal{position:absolute;top:16px;right:16px;width:44px;height:44px;border-radius:13px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center}
+.dash .dcal svg{width:22px;height:22px;color:var(--persimmon)}
+.dash .drow{display:flex;gap:22px;margin-top:14px;border-top:1px solid rgba(255,255,255,.12);padding-top:12px}
+.dash .drow .v{font-family:var(--serif);font-size:19px}
+.dash .drow .t{font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+.dash .up{color:#7BD0A0;font-weight:700;font-size:12.5px}
+/* week strip */
+.weekstrip{display:flex;gap:7px;overflow-x:auto;padding:2px 0 6px;-webkit-overflow-scrolling:touch}
+.weekstrip::-webkit-scrollbar{display:none}
+.daycell{flex:0 0 auto;width:46px;text-align:center;padding:9px 0;border-radius:14px;background:var(--card);border:1px solid var(--hairline);cursor:pointer}
+.daycell .dw{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.daycell .dd{font-family:var(--serif);font-size:18px;margin-top:2px}
+.daycell.on{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.daycell.on .dw{color:rgba(255,255,255,.6)}
+.daycell.off{opacity:.42}
+.daycell .dot{width:5px;height:5px;border-radius:50%;background:var(--persimmon);margin:4px auto 0}
+/* schedule class row */
+.sch{display:flex;gap:12px;background:var(--card);border:1px solid var(--hairline);border-radius:16px;padding:13px 14px;box-shadow:var(--shadow-sm);align-items:center}
+.sch .rail{display:flex;flex-direction:column;align-items:center;min-width:54px}
+.sch .rail .tm{font-family:var(--serif);font-size:15px}
+.sch .rail .tm2{font-size:11px;color:var(--faint);font-weight:600}
+.sch .cdot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.sch .nm{font-size:14.5px;font-weight:700}
+.sch .sub{font-size:12.5px;color:var(--muted);font-weight:500;margin-top:1px}
+.pill-st{font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:4px 9px;border-radius:999px}
+.pill-st.now{background:var(--persimmon);color:#fff}
+.pill-st.done{background:var(--jade-soft);color:var(--jade)}
+.pill-st.cancel{background:var(--rose-soft);color:var(--rose);text-decoration:line-through}
+.pill-st.up{background:var(--paper-warm);color:var(--muted)}
+/* attendance roster row */
+.att{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--hairline)}
+.att:last-child{border-bottom:0}
+.att .nm{font-size:14px;font-weight:600;flex:1}
+.att .sub{font-size:12px;color:var(--faint);font-weight:500}
+/* attendance — qr check-in */
+.att-chk{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;white-space:nowrap}
+.att-chk svg{width:15px;height:15px}
+.att-chk.in{color:var(--jade)}
+.att-chk.out{color:var(--faint)}
+.qr-launch{padding:18px;text-align:center;background:var(--ink);color:#fff;border:0}
+.qr-launch .kicker{color:rgba(255,255,255,.55)}
+.qr-count{font-size:15px;font-weight:700;margin:7px 0 3px}
+.qr-count .big{font-family:var(--serif);font-size:30px;font-weight:400;margin-right:4px;font-variant-numeric:tabular-nums}
+.muted2{font-size:12.5px;color:rgba(255,255,255,.62);font-weight:500;line-height:1.45;margin-bottom:14px}
+.qr-frame{background:#fff;border:1px solid var(--hairline);border-radius:22px;padding:22px;box-shadow:var(--shadow-sm);display:inline-flex;flex-direction:column;align-items:center}
+.qr-svg{width:230px;height:230px;fill:var(--ink)}
+.qr-live{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:700;color:var(--jade);margin:18px 0 2px}
+.qr-dot{width:9px;height:9px;border-radius:50%;background:var(--jade);animation:qrpulse 1.6s ease-out infinite}
+@keyframes qrpulse{0%{box-shadow:0 0 0 0 rgba(58,138,82,.45)}70%{box-shadow:0 0 0 8px rgba(58,138,82,0)}100%{box-shadow:0 0 0 0 rgba(58,138,82,0)}}
+@media (prefers-reduced-motion:reduce){.qr-dot,.live-dot{animation:none}}
+/* online — live class host */
+.live-pill{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:999px;background:var(--rose-soft);color:var(--rose)}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--rose);animation:livepulse 1.4s ease-out infinite}
+@keyframes livepulse{0%{box-shadow:0 0 0 0 rgba(193,58,58,.5)}70%{box-shadow:0 0 0 7px rgba(193,58,58,0)}100%{box-shadow:0 0 0 0 rgba(193,58,58,0)}}
+.live-stage{position:relative;border-radius:22px;overflow:hidden;background:#14110F;height:188px;display:flex;align-items:center;justify-content:center}
+.live-stage .cam{width:74px;height:74px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.8)}
+.live-stage .cam svg{width:32px;height:32px}
+.live-faces{position:absolute;bottom:12px;left:12px;display:flex}
+.live-faces .av{width:34px;height:34px;font-size:12px;border:2px solid #14110F;margin-right:-10px}
+.live-self{position:absolute;top:12px;right:12px;font-size:10.5px;font-weight:700;color:rgba(255,255,255,.85);background:rgba(0,0,0,.4);padding:4px 9px;border-radius:999px}
+/* attendance tier badge */
+.tier{font-size:10.5px;font-weight:800;letter-spacing:.03em;padding:3px 8px;border-radius:999px;text-transform:uppercase}
+.tier.t-active{background:var(--jade-soft);color:var(--jade)}
+.tier.t-irr{background:var(--gold-soft);color:var(--gold)}
+.tier.t-inactive{background:var(--paper-warm);color:var(--faint)}
+/* reviews summary */
+.revsum{display:flex;gap:16px;align-items:center;background:var(--card);border:1px solid var(--hairline);border-radius:18px;padding:16px;box-shadow:var(--shadow-sm)}
+.revsum .big{font-family:var(--serif);font-size:44px;line-height:1}
+.brks{flex:1;display:flex;flex-direction:column;gap:4px}
+.brk{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);font-weight:600}
+.brk .bar{flex:1;height:6px;border-radius:999px;background:var(--paper-warm);overflow:hidden}
+.brk .bar i{display:block;height:100%;background:var(--gold)}
+/* day toggle (new batch) */
+.daytoggle{display:flex;gap:6px}
+.daytoggle button{flex:1;height:40px;border-radius:12px;border:1.5px solid var(--hairline);background:var(--card);font-weight:700;font-size:13px;color:var(--muted);cursor:pointer;font-family:var(--sans)}
+.daytoggle button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+/* capacity stepper */
+.stepper{display:flex;align-items:center;gap:14px;background:var(--card);border:1.5px solid var(--hairline);border-radius:12px;padding:8px 14px;justify-content:space-between}
+.stepper button{width:30px;height:30px;border-radius:9px;border:0;background:var(--paper-warm);font-size:18px;cursor:pointer;font-weight:700;color:var(--ink)}
+.stepper .val{font-family:var(--serif);font-size:20px}
+/* earnings */
+.earn-tx{display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid var(--hairline)}
+.earn-tx:last-child{border-bottom:0}
+.earn-tx .amt{margin-left:auto;font-weight:800;font-feature-settings:'tnum'}
+.earn-tx .amt.in{color:var(--jade)}
+.earn-tx .amt.out{color:var(--rose)}
+.bell{position:relative}
+.bell .dotn{position:absolute;top:-2px;right:-2px;width:9px;height:9px;border-radius:50%;background:var(--persimmon);border:2px solid var(--paper)}
+.av{width:42px;height:42px;border-radius:13px;background:var(--persimmon);display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--serif);font-style:italic;font-size:16px;flex:0 0 auto}
+
+</style>
+</head>
+<body style="font-family: var(--sans); background-color: rgb(244, 239, 239)">
+<div class="phone">
+  <div class="statusbar" id="statusbar" aria-hidden="true">
+    <span>9:41</span>
+    <span class="sb-icons">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 17h2v-5H2v5zm4 0h2V9H6v8zm4 0h2V5h-2v12zm4 0h2v-9h-2v9zm4 0h2V7h-2v10z"></path></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4C7 4 2.7 6 0 9l12 15L24 9c-2.7-3-7-5-12-5z"></path></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2.5"></rect><rect x="4" y="9" width="13" height="6" rx="1" fill="currentColor"></rect><path d="M22 10v4" stroke-linecap="round"></path></svg>
+    </span>
+  </div>
+  <main class="screens" id="screens">
+  <!-- ============ WELCOME ============ -->
+  <section class="screen flush" id="screen-welcome" style="background:linear-gradient(180deg,#FCFBF7 0%,#FCFBF7 40%,#F3EADB 100%);color:var(--ink);padding:64px 22px 40px;display:flex;flex-direction:column">
+    <div style="text-align:center">
+      <div style="font-family:var(--serif);font-size:30px;letter-spacing:-.01em">Findemy</div>
+      <span class="badge b-ink" style="margin-top:8px;display:inline-block">FOR ACADEMIES</span>
+    </div>
+    <h1 style="font-family:var(--serif);font-size:42px;line-height:.98;margin:26px 0 0;font-weight:400;text-align:center">Run your <span class="serif-i" style="color:var(--persimmon)">studio</span>, fill your classes.</h1>
+    <p style="color:var(--muted);font-size:14.5px;line-height:1.5;margin:12px auto 0;max-width:290px;text-align:center">Get discovered by learners nearby. Manage trials, batches, attendance & enrolments — all in one place.</p>
+    <div class="cat-grid" style="margin-top:26px">
+      <div class="cat-tile ph"><img src="assets/img/music-studio.jpg" alt=""><div class="scrim"></div><span class="cn">Trials</span></div>
+      <div class="cat-tile ph"><img src="assets/img/guitar-class.jpg" alt=""><div class="scrim"></div><span class="cn">Batches</span></div>
+      <div class="cat-tile ph"><img src="assets/img/piano.jpg" alt=""><div class="scrim"></div><span class="cn">Students</span></div>
+      <div class="cat-tile ph"><img src="assets/img/studio-interior.jpg" alt=""><div class="scrim"></div><span class="cn">Earnings</span></div>
+    </div>
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:11px">
+      <button class="btn btn-primary" data-go="login"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"></rect><path d="M11 18h2" stroke-linecap="round"></path></svg>Log in to your studio</button>
+      <button class="btn btn-ghost" data-go="signup">List your academy</button>
+      <p class="center muted" style="font-size:12px;margin-top:2px">By continuing you agree to Findemy's Partner Terms.</p>
+    </div>
+  </section>
+
+  <!-- ============ LOGIN ============ -->
+  <section class="screen" id="screen-login">
+    <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
+    <span class="badge b-ink" style="margin-bottom:8px;display:inline-block">STUDIO</span>
+    <h1 style="font-family:var(--serif);font-size:32px;font-weight:400;line-height:1.05;margin:0 0 4px">Welcome back.</h1>
+    <p class="muted" style="font-size:14px;margin-bottom:22px">Log in with the phone number registered to your academy.</p>
+    <div class="field"><label class="fg-h" for="lg-ph">Phone number</label><div class="input-group"><span>+91</span><input class="input" id="lg-ph" inputmode="numeric" placeholder="98765 43210"></div></div>
+    <button class="btn btn-dark mt8" data-go="otp">Get OTP</button>
+    <div class="notice" style="background:var(--jade-soft);margin-top:18px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--jade)" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z" stroke-linejoin="round"></path></svg><span style="font-size:12.5px;color:var(--jade);font-weight:600">OTP-only sign in · one login per academy</span></div>
+    <p class="center muted mt24" style="font-size:13px">New to Findemy? <b style="color:var(--persimmon);cursor:pointer" data-go="signup">List your academy</b></p>
+  </section>
+
+  <!-- ============ SIGNUP ============ -->
+  <section class="screen" id="screen-signup">
+    <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
+    <h1 style="font-family:var(--serif);font-size:32px;font-weight:400;line-height:1.05;margin:0 0 4px">List your academy.</h1>
+    <p class="muted" style="font-size:14px;margin-bottom:22px">A few basics to get started — you can complete your profile after.</p>
+    <div class="field"><label class="fg-h" for="su-aca">Academy name</label><input class="input" id="su-aca" placeholder="e.g. The Rhythm House"></div>
+    <div class="field"><label class="fg-h" for="su-ph">Phone number</label><div class="input-group"><span>+91</span><input class="input" id="su-ph" inputmode="numeric" placeholder="98765 43210"></div></div>
+    <div class="field"><label class="fg-h">Primary category</label><div class="chips"><button class="chip sel">Music</button><button class="chip">Dance</button><button class="chip">Arts</button><button class="chip">Yoga</button><button class="chip">Fitness</button></div></div>
+    <button class="btn btn-primary mt8" data-go="otp">Send OTP</button>
+    <p class="center muted mt24" style="font-size:13px">Already listed? <b style="color:var(--persimmon)" data-go="login">Log in</b></p>
+  </section>
+
+  <!-- ============ OTP ============ -->
+  <section class="screen" id="screen-otp">
+    <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
+    <h1 style="font-family:var(--serif);font-size:30px;font-weight:400;margin:0 0 4px">Verify it's you.</h1>
+    <p class="muted" style="font-size:14px;margin-bottom:26px">Enter the 6-digit code sent to <b>+91 98765 43210</b>.</p>
+    <div class="otp-input" style="display:flex;gap:9px;justify-content:space-between"><input inputmode="numeric" maxlength="1" aria-label="Digit 1"><input inputmode="numeric" maxlength="1"><input inputmode="numeric" maxlength="1"><input inputmode="numeric" maxlength="1"><input inputmode="numeric" maxlength="1"><input inputmode="numeric" maxlength="1"></div>
+    <p class="center muted mt24" style="font-size:13px">Didn't get it? <b style="color:var(--persimmon)">Resend in 0:24</b></p>
+    <button class="btn btn-dark mt24" data-go="onboarding">Verify</button>
+  </section>
+
+  <!-- ============ ONBOARDING ============ -->
+  <section class="screen" id="screen-onboarding">
+    <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
+    <h1 style="font-family:var(--serif);font-size:30px;font-weight:400;margin:0 0 4px">Tell learners about <span class="serif-i" style="color:var(--persimmon)">The Rhythm House</span>.</h1>
+    <p class="muted" style="font-size:14px;margin-bottom:20px">This is what students see when they discover you.</p>
+    <div class="field"><label class="fg-h" for="ob-loc">Location / area</label><input class="input" id="ob-loc" value="Hauz Khas, Delhi"></div>
+    <div class="field"><label class="fg-h" for="ob-tag">Tagline</label><input class="input" id="ob-tag" value="A warm, gear-rich space for guitar, keys & vocals."></div>
+    <div class="field"><label class="fg-h">Modes offered</label><div class="chips"><button class="chip sel">In-studio</button><button class="chip sel">Online</button><button class="chip">Home visit</button></div></div>
+    <button class="btn btn-dark mt8" data-tab="inbox">Save & open dashboard</button>
+    <button class="btn btn-ghost mt8" data-tab="inbox">Skip for now</button>
+  </section>
+
+  <!-- ============ HOME / INBOX (dashboard) ============ -->
+  <section class="screen" id="screen-inbox">
+    <div class="head-row">
+      <div class="hero"><div class="kicker" style="color:var(--persimmon)">MANAGEMENT</div><h1 style="font-size:34px"><span class="hl" style="font-family:var(--serif)">Studio Dashboard</span></h1></div>
+      <button class="see-all bell" data-toast="No new notifications" aria-label="Notifications"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="dotn"></span></button>
+    </div>
+
+    <!-- dark summary -->
+    <div class="dash" style="margin:6px 0 18px">
+      <div class="dcal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 9h18M8 3v4M16 3v4" stroke-linecap="round"></path></svg></div>
+      <div class="dk">Today · Fri 21 June</div>
+      <div class="dn">3</div>
+      <div class="dl">classes active today</div>
+      <div class="drow"><div><div class="v">2</div><div class="t">New trials</div></div><div><div class="v">38</div><div class="t">Students</div></div><div><div class="v">₹4.2k</div><div class="t">Today <span class="up">▲</span></div></div></div>
+    </div>
+
+    <!-- new trials -->
+    <div class="section-head"><h2>New trial bookings</h2><span class="badge b-rose">2 new</span></div>
+    <div class="row-card" style="display:flex;gap:13px;align-items:center;margin-bottom:10px" data-go="trial" data-set='{"tName":"Guitar — Trial","tCoach":"Arjun Sharma","tWhen":"Today · 5:00 PM","tWho":"Aarav (student app)","tPay":"₹150 · Paid","tMode":"In-studio","tCode":"4 9 2 7","_mode":"studio"}'>
+      <div class="av">A</div>
+      <div style="flex:1;min-width:0"><div style="display:flex;gap:7px;align-items:center"><span class="nm" style="font-size:14.5px;font-weight:700">Guitar — Trial</span><span class="badge b-jade" style="font-size:9.5px">AUTO-CONFIRMED</span></div><div class="sub" style="font-size:12.5px;color:var(--muted);font-weight:500">Today · 5:00 PM · Arjun Sharma · ₹150</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="row-card" style="display:flex;gap:13px;align-items:center;margin-bottom:10px" data-go="trial" data-set='{"tName":"Vocals — Trial","tCoach":"Meera Nair","tWhen":"Tomorrow · 6:30 PM","tWho":"Aarav (student app)","tPay":"₹200 · Paid","tMode":"Online · live session","tCode":"8 2 6 0","_mode":"online"}'>
+      <div class="av">A</div>
+      <div style="flex:1;min-width:0"><div style="display:flex;gap:7px;align-items:center"><span class="nm" style="font-size:14.5px;font-weight:700">Vocals — Trial</span><span class="badge b-online" style="font-size:9.5px">Online</span></div><div class="sub" style="font-size:12.5px;color:var(--muted);font-weight:500">Tomorrow · 6:30 PM · Meera Nair · ₹200</div></div>
+      <span class="chev">›</span>
+    </div>
+
+    <!-- recent activity -->
+    <div class="section-head" style="margin-top:18px"><h2>Recent activity</h2></div>
+    <div class="card" style="padding:4px 14px">
+      <div class="coach" style="cursor:default"><div class="pic" style="background:var(--jade-soft);color:var(--jade);display:flex;align-items:center;justify-content:center;font-weight:800">★</div><div style="flex:1"><div class="cn">New 5★ review from Ananya R.</div><div class="cr">Guitar · Arjun Sharma · 2h ago</div></div><button class="see-all" data-go="reviews">Respond</button></div>
+      <div class="coach" style="cursor:default"><div class="pic" style="background:var(--persimmon-soft);color:var(--persimmon-deep);display:flex;align-items:center;justify-content:center;font-weight:800">₹</div><div style="flex:1"><div class="cn">Ananya R. enrolled in Guitar — Beginner</div><div class="cr">Quarterly · ₹8,640 · 5h ago</div></div><button class="see-all" data-go="students">View</button></div>
+      <div class="coach" style="cursor:default"><div class="pic" style="background:var(--gold-soft);color:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:800">!</div><div style="flex:1"><div class="cn">A review needs your reply</div><div class="cr">Priya S. · 3★ · 1d ago</div></div><button class="see-all" data-go="reviews">Reply</button></div>
+    </div>
+
+    <!-- earnings mini -->
+    <div class="card" style="margin-top:14px;display:flex;align-items:center;gap:14px;cursor:pointer" data-go="earnings">
+      <div class="av" style="background:var(--ink)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2"><path d="M4 19V5M4 19h16M8 16V9M12 16v-4M16 16V7" stroke-linecap="round"></path></svg></div>
+      <div style="flex:1"><div style="font-weight:700;font-size:14px">This month's earnings</div><div class="muted" style="font-size:12.5px">₹62,400 captured · <span style="color:var(--jade);font-weight:700">▲ 18%</span> vs last</div></div>
+      <span class="chev">›</span>
+    </div>
+  </section>
+
+  <!-- ============ SCHEDULE ============ -->
+  <section class="screen" id="screen-schedule">
+    <div class="head-row"><div class="hero"><div class="kicker" style="color:var(--persimmon)">TIMETABLE</div><h1 style="font-size:34px"><span class="hl" style="font-family:var(--serif)">Schedule</span></h1></div></div>
+    <div class="weekstrip" style="margin-bottom:14px">
+      <div class="daycell"><div class="dw">Mon</div><div class="dd">17</div><div class="dot"></div></div>
+      <div class="daycell"><div class="dw">Tue</div><div class="dd">18</div></div>
+      <div class="daycell"><div class="dw">Wed</div><div class="dd">19</div><div class="dot"></div></div>
+      <div class="daycell off"><div class="dw">Thu</div><div class="dd">20</div></div>
+      <div class="daycell on"><div class="dw">Fri</div><div class="dd">21</div><div class="dot"></div></div>
+      <div class="daycell"><div class="dw">Sat</div><div class="dd">22</div></div>
+      <div class="daycell off"><div class="dw">Sun</div><div class="dd">23</div></div>
+    </div>
+
+    <div class="section-head"><h2>Friday, 21 June</h2><span class="muted" style="font-size:12.5px;font-weight:600">3 classes</span></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="sch" data-go="batch" data-set='{"bName":"Guitar — Beginner","bCoach":"Arjun Sharma","bTime":"5:00–6:30 PM","bDays":"Mon · Wed · Fri","bCount":"12","bCap":"15","bTrials":"3","_mode":"studio"}'>
+        <div class="rail"><div class="tm">5:00</div><div class="tm2">PM</div></div>
+        <div class="cdot" style="background:#5C2A4A"></div>
+        <div style="flex:1;min-width:0"><div class="nm">Guitar — Beginner</div><div class="sub">Arjun Sharma · 12 students · Studio A</div></div>
+        <span class="pill-st now">Now</span>
+      </div>
+      <div class="sch" data-go="batch" data-set='{"bName":"Vocals — All Levels","bCoach":"Meera Nair","bTime":"6:30–8:00 PM","bDays":"Tue · Thu","bCount":"8","bCap":"12","bTrials":"4","_mode":"online"}'>
+        <div class="rail"><div class="tm">6:30</div><div class="tm2">PM</div></div>
+        <div class="cdot" style="background:#5C2A4A"></div>
+        <div style="flex:1;min-width:0"><div class="nm">Vocals — All Levels</div><div class="sub">Meera Nair · 8 students · <span style="color:var(--jade);font-weight:700">Online</span></div></div>
+        <span class="pill-st up">Upcoming</span>
+      </div>
+      <div class="sch" style="opacity:.75">
+        <div class="rail"><div class="tm">8:00</div><div class="tm2">PM</div></div>
+        <div class="cdot" style="background:#8A8A33"></div>
+        <div style="flex:1;min-width:0"><div class="nm">Keys & Piano</div><div class="sub" style="color:var(--rose)">Cancelled · +1 make-good session (count preserved)</div></div>
+        <span class="pill-st cancel">Cancelled</span>
+      </div>
+    </div>
+
+    <div class="section-head" style="margin-top:20px"><h2>Trials today</h2></div>
+    <div class="sch" data-go="trial" data-set='{"tName":"Guitar — Trial","tCoach":"Arjun Sharma","tWhen":"Today · 5:00 PM","tWho":"Aarav (student app)","tPay":"₹150 · Paid","tMode":"In-studio","tCode":"4 9 2 7","_mode":"studio"}'>
+      <div class="rail"><div class="tm">5:00</div><div class="tm2">PM</div></div>
+      <div class="cdot" style="background:var(--persimmon)"></div>
+      <div style="flex:1;min-width:0"><div class="nm">Guitar — Trial · Aarav</div><div class="sub">Trial · verify OTP at class</div></div>
+      <span class="chev">›</span>
+    </div>
+
+    <button class="btn btn-soft mt16" data-sheet="cancel-class"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M9 9l6 6M15 9l-6 6" stroke-linecap="round"></path></svg>Cancel a class</button>
+  </section>
+
+  <!-- ============ STUDENTS ============ -->
+  <section class="screen" id="screen-students">
+    <div class="head-row"><div class="hero"><div class="kicker" style="color:var(--persimmon)">ROSTER</div><h1 style="font-size:34px"><span class="hl" style="font-family:var(--serif)">Students</span></h1></div><button class="see-all bell" data-sheet="filters" aria-label="Filter"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18l-7 8v6l-4 2v-8z" stroke-linejoin="round"></path></svg></button></div>
+    <div class="search" style="margin-bottom:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4-4" stroke-linecap="round"></path></svg><input placeholder="Search students…"></div>
+    <div class="pills" data-pillgroup="">
+      <button class="pill active">All · 38</button><button class="pill">Active</button><button class="pill">Irregular</button><button class="pill">Inactive</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div class="row-card" style="display:flex;gap:12px;align-items:center" data-go="student" data-set='{"sName":"Ananya R.","sBatch":"Guitar — Beginner","sCoach":"Arjun Sharma","sSince":"Enrolled May 2026","sPlan":"Quarterly · renews 12 Aug","sAtt":"92","sTier":"Active","sInitial":"A"}'>
+        <div class="av">A</div><div style="flex:1;min-width:0"><div class="nm" style="font-weight:700;font-size:14px">Ananya R.</div><div class="sub" style="font-size:12.5px;color:var(--muted)">Guitar — Beginner · 92% attendance</div></div><span class="tier t-active">Active</span>
+      </div>
+      <div class="row-card" style="display:flex;gap:12px;align-items:center" data-go="student" data-set='{"sName":"Karan M.","sBatch":"Vocals — All Levels","sCoach":"Meera Nair","sSince":"Enrolled Apr 2026","sPlan":"Monthly · renews 28 Jun","sAtt":"64","sTier":"Irregular","sInitial":"K"}'>
+        <div class="av">K</div><div style="flex:1;min-width:0"><div class="nm" style="font-weight:700;font-size:14px">Karan M.</div><div class="sub" style="font-size:12.5px;color:var(--muted)">Vocals — All Levels · 64% attendance</div></div><span class="tier t-irr">Irregular</span>
+      </div>
+      <div class="row-card" style="display:flex;gap:12px;align-items:center" data-go="student" data-set='{"sName":"Priya S.","sBatch":"Keys & Piano","sCoach":"Rohan Das","sSince":"Enrolled Mar 2026","sPlan":"Monthly · renews 5 Jul","sAtt":"41","sTier":"Inactive","sInitial":"P"}'>
+        <div class="av">P</div><div style="flex:1;min-width:0"><div class="nm" style="font-weight:700;font-size:14px">Priya S.</div><div class="sub" style="font-size:12.5px;color:var(--muted)">Keys & Piano · 41% attendance</div></div><span class="tier t-inactive">Inactive</span>
+      </div>
+      <div class="row-card" style="display:flex;gap:12px;align-items:center" data-go="student" data-set='{"sName":"Ishaan T.","sBatch":"Guitar — Beginner","sCoach":"Arjun Sharma","sSince":"Enrolled May 2026","sPlan":"Monthly · renews 2 Jul","sAtt":"88","sTier":"Active","sInitial":"I"}'>
+        <div class="av">I</div><div style="flex:1;min-width:0"><div class="nm" style="font-weight:700;font-size:14px">Ishaan T.</div><div class="sub" style="font-size:12.5px;color:var(--muted)">Guitar — Beginner · 88% attendance</div></div><span class="tier t-active">Active</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STUDENT DETAIL ============ -->
+  <section class="screen" id="screen-student">
+    <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
+    <div style="display:flex;gap:14px;align-items:center;margin-bottom:18px">
+      <div class="av" style="width:58px;height:58px;border-radius:18px;font-size:22px" data-bind="sInitial">A</div>
+      <div><h1 style="font-family:var(--serif);font-size:26px;font-weight:400;line-height:1" data-bind="sName">Ananya R.</h1><div class="muted" style="font-size:13px;font-weight:600;margin-top:3px" data-bind="sSince">Enrolled May 2026</div></div>
+    </div>
+    <div class="summary">
+      <div class="sum-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 9h18" stroke-linecap="round"></path></svg></div><div><div class="l">Batch</div><div class="v" data-bind="sBatch">Guitar — Beginner</div></div></div>
+      <div class="sum-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke-linecap="round"></path></svg></div><div><div class="l">Coach</div><div class="v" data-bind="sCoach">Arjun Sharma</div></div></div>
+      <div class="sum-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7M3 5v3h3" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><div><div class="l">Plan</div><div class="v" data-bind="sPlan">Quarterly · renews 12 Aug</div></div></div>
+      <div class="sum-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4M21 12a9 9 0 1 1-6.2-8.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><div><div class="l">Attendance</div><div class="v"><span data-bind="sAtt">92</span>% this term</div></div></div>
+    </div>
+    <div class="btn-row mt16"><button class="btn btn-ghost" data-toast="Opening chat (demo)">Message</button><button class="btn btn-dark" data-go="batch" data-set='{"bName":"Guitar — Beginner","bCoach":"Arjun Sharma","bTime":"5:00–6:30 PM","bDays":"Mon · Wed · Fri","bCount":"12","bCap":"15","bTrials":"3","_mode":"studio"}'>View batch</button></div>
+  </section>
+
+  <!-- ============ STUDIO (hub) ============ -->
+  <section class="screen" id="screen-studio">
+    <div class="head-row"><div class="hero"><div class="kicker" style="color:var(--persimmon)">YOUR ACADEMY</div><h1 style="font-size:34px"><span class="hl" style="font-family:var(--serif)">Studio</span></h1></div></div>
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:13px">
+      <div style="height:104px;position:relative">
+        <img src="assets/img/academy-cover.jpg" alt="" style="width:100%;height:100%;object-fit:cover">
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(20,17,15,.5))"></div>
+        <span class="badge b-jade" style="position:absolute;top:11px;right:11px"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Verified</span>
+      </div>
+      <div style="padding:13px 16px 15px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+        <div style="min-width:0"><div style="font-family:var(--serif);font-size:23px;line-height:1.05">The Rhythm House</div><div class="muted" style="font-size:12.5px;font-weight:600;margin-top:4px"><span class="star" style="color:var(--persimmon)">★</span> 4.9 · 84 reviews · Hauz Khas, Delhi</div></div>
+        <button class="see-all" data-go="edit-profile" style="flex:none">Edit</button>
+      </div>
+    </div>
+
+    <div class="pstats">
+      <div class="pstat"><div class="v">38</div><div class="t">Students</div></div>
+      <div class="pstat"><div class="v">3</div><div class="t">Batches</div></div>
+      <div class="pstat"><div class="v">₹62.4k</div><div class="t">Earned</div></div>
+    </div>
+
+    <div class="psec">Manage</div>
+    <div class="pmenu" style="margin-top:0">
+      <div class="prow" data-go="edit-profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke-linecap="round"></path></svg>Academy profile<span class="chev">›</span></div>
+      <div class="prow" data-go="earnings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M4 19h16M8 16V9M12 16v-4M16 16V7" stroke-linecap="round"></path></svg>Earnings & payouts<span class="chev">₹62.4k ›</span></div>
+      <div class="prow" data-go="reviews"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17l-6 3 1.5-6.5L2 9l6.5-.5L12 2l3.5 6.5L22 9l-5.5 4.5L18 20z" stroke-linejoin="round"></path></svg>Reviews<span class="chev">4.9 · 1 to reply ›</span></div>
+      <div class="prow" data-go="workshops"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6 6 .5-4.5 4L18 19l-6-3.5L6 19l1.5-6.5L3 8.5 9 8z" stroke-linejoin="round"></path></svg>Workshops<span class="chev">2 upcoming ›</span></div>
+      <div class="prow" data-go="coaches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"></circle><path d="M3 20c0-3 3-5 6-5s6 2 6 5M16 4a3 3 0 0 1 0 6M21 20c0-2-1.5-3.5-3.5-4.2" stroke-linecap="round"></path></svg>Coaches<span class="chev">3 ›</span></div>
+      <div class="prow" data-go="batches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18" stroke-linecap="round"></path></svg>Batches<span class="chev">3 ›</span></div>
+    </div>
+
+    <div class="psec">Account</div>
+    <div class="pmenu" style="margin-top:0">
+      <div class="prow" data-go="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path><path d="M19 12a7 7 0 0 0-.1-1l2-1.6-2-3.4-2.4 1a7 7 0 0 0-1.7-1L14.5 2h-5l-.3 2.6a7 7 0 0 0-1.7 1l-2.4-1-2 3.4L3 11a7 7 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 1.7 1l.3 2.4h5l.3-2.4a7 7 0 0 0 1.7-1l2.4 1 2-3.4-2-1.6c.1-.3.1-.7.1-1z" stroke-linejoin="round"></path></svg>Notifications & settings<span class="chev">›</span></div>
+      <div class="prow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z" stroke-linejoin="round"></path></svg>Verification / KYC<span class="chev"><span class="badge b-jade" style="font-size:9px">Verified</span> ›</span></div>
+      <div class="prow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2" width="12" height="20" rx="3"></rect><path d="M11 18h2" stroke-linecap="round"></path></svg>Login phone<span class="chev">+91 98765 ›</span></div>
+      <div class="prow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"></circle><path d="M3 20c0-3 3-5 6-5s6 2 6 5" stroke-linecap="round"></path></svg>Team access<span class="chev" style="color:var(--faint)">Coming in v2</span></div>
+    </div>
+    <button class="btn btn-ghost mt16" style="color:var(--rose)" data-tab="welcome" data-toast="Signed out">Sign out</button>
+    <p class="center muted" style="font-size:11.5px;margin-top:10px">Findemy for Academies · v1.0.0</p>
+  </section>
+
+  <!-- ============ TRIAL DETAIL ============ -->
+  <section class="screen has-bar" id="screen-trial" data-mode="studio">
+    <div class="scroller" style="padding:54px 18px 18px">
+      <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><span class="badge b-jade">CONFIRMED</span><span class="badge b-online when-online" style="margin-left:6px">Online</span></div>
+      <div class="kicker" style="color:var(--persimmon)">TRIAL BOOKING</div>
+      <h1 style="font-family:var(--serif);font-size:30px;font-weight:400;margin:4px 0 2px" data-bind="tName">Guitar — Trial</h1>
+      <div class="muted" style="font-size:13.5px;font-weight:600;margin-bottom:16px"><span data-bind="tWhen">Today · 5:00 PM</span><span class="when-studio"> · 1.2 km away</span><span class="when-online"> · Findemy video room</span></div>
+      <div class="summary">
+        <div class="sum-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke-linecap="round"></path></svg></div><div><div class="l">Student</div><div class="v" data-bind="tWho">Aarav (student app)</div></div></div>
+        <div class="sum-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 9h18" stroke-linecap="round"></path></svg></div><div><div class="l">Coach</div><div class="v" data-bind="tCoach">Arjun Sharma</div></div></div>
+        <div class="sum-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"></path></svg></div><div><div class="l">Mode</div><div class="v" data-bind="tMode">In-studio</div></div></div>
+        <div class="sum-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke-linecap="round"></path></svg></div><div><div class="l">Payment</div><div class="v" data-bind="tPay">₹150 · Paid</div></div></div>
+      </div>
+      <div class="notice when-studio" style="margin-top:16px;background:var(--jade-soft)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--jade)" stroke-width="2"><path d="M9 11l3 3L22 4" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="font-size:12.5px;color:var(--jade);font-weight:600">Auto-confirmed. Verify the student's OTP when they arrive.</span></div>
+      <div class="notice when-online" style="margin-top:16px;background:var(--jade-soft)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--jade)" stroke-width="2"><path d="M9 11l3 3L22 4" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="font-size:12.5px;color:var(--jade);font-weight:600">Auto-confirmed. Start the live class, then verify the student's OTP in the session.</span></div>
+      <button class="btn btn-soft when-online mt16" style="color:var(--jade)" data-go="live-class" data-set='{"lvName":"Vocals — Trial","lvWhen":"Tomorrow · 6:30 PM","lvJoined":"1","lvTotal":"1"}'><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="14" height="12" rx="2"></rect><path d="M16 10l6-3v10l-6-3" stroke-linecap="round" stroke-linejoin="round"></path></svg>Start live class</button>
+    </div>
+    <div class="action-bar"><button class="btn btn-dark" data-go="attendance-otp" data-set='{"oName":"Guitar — Trial","oWho":"Aarav","oCode":"4 9 2 7"}'>Mark attendance →</button></div>
+  </section>
+
+  <!-- ============ ATTENDANCE OTP ============ -->
+  <section class="screen" id="screen-attendance-otp">
+    <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><h2 style="font-size:17px;font-weight:800">Verify attendance</h2></div>
+    <div class="card" style="display:flex;gap:13px;align-items:center;margin-bottom:18px">
+      <div class="av">A</div><div><div style="font-weight:700;font-size:14.5px" data-bind="oName">Guitar — Trial</div><div class="muted" style="font-size:12.5px;font-weight:600"><span data-bind="oWho">Aarav</span> · Today · 5:00 PM <span class="pill-st now" style="margin-left:4px">Now</span></div></div>
+    </div>
+    <p class="muted" style="font-size:14px;margin-bottom:16px">Ask the student for the 4-digit code in their app and enter it to confirm they attended.</p>
+    <div class="otp-input" style="display:flex;gap:12px;justify-content:center;margin:8px 0 22px"><input inputmode="numeric" maxlength="1" value="4" aria-label="Digit 1"><input inputmode="numeric" maxlength="1" value="9"><input inputmode="numeric" maxlength="1" value="2"><input inputmode="numeric" maxlength="1" value="7"></div>
+    <button class="btn btn-jade" data-back="" data-toast="Attendance verified ✓ — trial complete">Verify & mark present</button>
+    <button class="btn btn-ghost mt8" style="color:var(--rose)" data-back="" data-toast="Marked as no-show">Couldn't verify · mark no-show</button>
+  </section>
+
+  <!-- ============ ATTENDANCE QR (regular-class check-in) ============ -->
+  <section class="screen" id="screen-attendance-qr">
+    <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><h2 style="font-size:17px;font-weight:800">Check-in QR</h2></div>
+    <div style="text-align:center;padding-top:4px">
+      <div class="kicker" style="color:var(--persimmon)" data-bind="qBatch">Guitar — Beginner</div>
+      <div class="muted" style="font-size:13px;font-weight:600;margin-bottom:18px" data-bind="qTime">Today · 5:00–6:30 PM</div>
+      <div class="qr-frame"><svg class="qr-svg" viewBox="0 0 25 25" shape-rendering="crispEdges" aria-label="Check-in QR code" role="img"><rect x="0" y="0" width="1" height="1"/><rect x="1" y="0" width="1" height="1"/><rect x="2" y="0" width="1" height="1"/><rect x="3" y="0" width="1" height="1"/><rect x="4" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="6" y="0" width="1" height="1"/><rect x="8" y="0" width="1" height="1"/><rect x="9" y="0" width="1" height="1"/><rect x="10" y="0" width="1" height="1"/><rect x="12" y="0" width="1" height="1"/><rect x="16" y="0" width="1" height="1"/><rect x="18" y="0" width="1" height="1"/><rect x="19" y="0" width="1" height="1"/><rect x="20" y="0" width="1" height="1"/><rect x="21" y="0" width="1" height="1"/><rect x="22" y="0" width="1" height="1"/><rect x="23" y="0" width="1" height="1"/><rect x="24" y="0" width="1" height="1"/><rect x="0" y="1" width="1" height="1"/><rect x="6" y="1" width="1" height="1"/><rect x="9" y="1" width="1" height="1"/><rect x="12" y="1" width="1" height="1"/><rect x="15" y="1" width="1" height="1"/><rect x="16" y="1" width="1" height="1"/><rect x="18" y="1" width="1" height="1"/><rect x="24" y="1" width="1" height="1"/><rect x="0" y="2" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="9" y="2" width="1" height="1"/><rect x="11" y="2" width="1" height="1"/><rect x="13" y="2" width="1" height="1"/><rect x="15" y="2" width="1" height="1"/><rect x="16" y="2" width="1" height="1"/><rect x="18" y="2" width="1" height="1"/><rect x="20" y="2" width="1" height="1"/><rect x="21" y="2" width="1" height="1"/><rect x="22" y="2" width="1" height="1"/><rect x="24" y="2" width="1" height="1"/><rect x="0" y="3" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/><rect x="4" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="10" y="3" width="1" height="1"/><rect x="11" y="3" width="1" height="1"/><rect x="14" y="3" width="1" height="1"/><rect x="16" y="3" width="1" height="1"/><rect x="18" y="3" width="1" height="1"/><rect x="20" y="3" width="1" height="1"/><rect x="21" y="3" width="1" height="1"/><rect x="22" y="3" width="1" height="1"/><rect x="24" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="3" y="4" width="1" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="6" y="4" width="1" height="1"/><rect x="10" y="4" width="1" height="1"/><rect x="11" y="4" width="1" height="1"/><rect x="12" y="4" width="1" height="1"/><rect x="15" y="4" width="1" height="1"/><rect x="18" y="4" width="1" height="1"/><rect x="20" y="4" width="1" height="1"/><rect x="21" y="4" width="1" height="1"/><rect x="22" y="4" width="1" height="1"/><rect x="24" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="6" y="5" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="12" y="5" width="1" height="1"/><rect x="13" y="5" width="1" height="1"/><rect x="14" y="5" width="1" height="1"/><rect x="18" y="5" width="1" height="1"/><rect x="24" y="5" width="1" height="1"/><rect x="0" y="6" width="1" height="1"/><rect x="1" y="6" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="4" y="6" width="1" height="1"/><rect x="5" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="8" y="6" width="1" height="1"/><rect x="10" y="6" width="1" height="1"/><rect x="12" y="6" width="1" height="1"/><rect x="14" y="6" width="1" height="1"/><rect x="16" y="6" width="1" height="1"/><rect x="18" y="6" width="1" height="1"/><rect x="19" y="6" width="1" height="1"/><rect x="20" y="6" width="1" height="1"/><rect x="21" y="6" width="1" height="1"/><rect x="22" y="6" width="1" height="1"/><rect x="23" y="6" width="1" height="1"/><rect x="24" y="6" width="1" height="1"/><rect x="9" y="7" width="1" height="1"/><rect x="10" y="7" width="1" height="1"/><rect x="11" y="7" width="1" height="1"/><rect x="13" y="7" width="1" height="1"/><rect x="15" y="7" width="1" height="1"/><rect x="16" y="7" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="6" y="8" width="1" height="1"/><rect x="7" y="8" width="1" height="1"/><rect x="8" y="8" width="1" height="1"/><rect x="11" y="8" width="1" height="1"/><rect x="12" y="8" width="1" height="1"/><rect x="13" y="8" width="1" height="1"/><rect x="15" y="8" width="1" height="1"/><rect x="16" y="8" width="1" height="1"/><rect x="18" y="8" width="1" height="1"/><rect x="1" y="9" width="1" height="1"/><rect x="9" y="9" width="1" height="1"/><rect x="11" y="9" width="1" height="1"/><rect x="12" y="9" width="1" height="1"/><rect x="18" y="9" width="1" height="1"/><rect x="19" y="9" width="1" height="1"/><rect x="21" y="9" width="1" height="1"/><rect x="23" y="9" width="1" height="1"/><rect x="24" y="9" width="1" height="1"/><rect x="0" y="10" width="1" height="1"/><rect x="1" y="10" width="1" height="1"/><rect x="2" y="10" width="1" height="1"/><rect x="3" y="10" width="1" height="1"/><rect x="4" y="10" width="1" height="1"/><rect x="5" y="10" width="1" height="1"/><rect x="6" y="10" width="1" height="1"/><rect x="8" y="10" width="1" height="1"/><rect x="9" y="10" width="1" height="1"/><rect x="12" y="10" width="1" height="1"/><rect x="23" y="10" width="1" height="1"/><rect x="0" y="11" width="1" height="1"/><rect x="1" y="11" width="1" height="1"/><rect x="2" y="11" width="1" height="1"/><rect x="3" y="11" width="1" height="1"/><rect x="4" y="11" width="1" height="1"/><rect x="8" y="11" width="1" height="1"/><rect x="9" y="11" width="1" height="1"/><rect x="12" y="11" width="1" height="1"/><rect x="13" y="11" width="1" height="1"/><rect x="15" y="11" width="1" height="1"/><rect x="16" y="11" width="1" height="1"/><rect x="24" y="11" width="1" height="1"/><rect x="1" y="12" width="1" height="1"/><rect x="3" y="12" width="1" height="1"/><rect x="6" y="12" width="1" height="1"/><rect x="7" y="12" width="1" height="1"/><rect x="8" y="12" width="1" height="1"/><rect x="10" y="12" width="1" height="1"/><rect x="14" y="12" width="1" height="1"/><rect x="15" y="12" width="1" height="1"/><rect x="16" y="12" width="1" height="1"/><rect x="21" y="12" width="1" height="1"/><rect x="23" y="12" width="1" height="1"/><rect x="24" y="12" width="1" height="1"/><rect x="1" y="13" width="1" height="1"/><rect x="2" y="13" width="1" height="1"/><rect x="3" y="13" width="1" height="1"/><rect x="5" y="13" width="1" height="1"/><rect x="7" y="13" width="1" height="1"/><rect x="12" y="13" width="1" height="1"/><rect x="13" y="13" width="1" height="1"/><rect x="14" y="13" width="1" height="1"/><rect x="15" y="13" width="1" height="1"/><rect x="16" y="13" width="1" height="1"/><rect x="20" y="13" width="1" height="1"/><rect x="21" y="13" width="1" height="1"/><rect x="23" y="13" width="1" height="1"/><rect x="2" y="14" width="1" height="1"/><rect x="5" y="14" width="1" height="1"/><rect x="6" y="14" width="1" height="1"/><rect x="7" y="14" width="1" height="1"/><rect x="11" y="14" width="1" height="1"/><rect x="13" y="14" width="1" height="1"/><rect x="15" y="14" width="1" height="1"/><rect x="16" y="14" width="1" height="1"/><rect x="21" y="14" width="1" height="1"/><rect x="22" y="14" width="1" height="1"/><rect x="24" y="14" width="1" height="1"/><rect x="3" y="15" width="1" height="1"/><rect x="4" y="15" width="1" height="1"/><rect x="5" y="15" width="1" height="1"/><rect x="9" y="15" width="1" height="1"/><rect x="16" y="15" width="1" height="1"/><rect x="24" y="15" width="1" height="1"/><rect x="2" y="16" width="1" height="1"/><rect x="6" y="16" width="1" height="1"/><rect x="7" y="16" width="1" height="1"/><rect x="9" y="16" width="1" height="1"/><rect x="10" y="16" width="1" height="1"/><rect x="16" y="16" width="1" height="1"/><rect x="17" y="16" width="1" height="1"/><rect x="18" y="16" width="1" height="1"/><rect x="19" y="16" width="1" height="1"/><rect x="20" y="16" width="1" height="1"/><rect x="21" y="16" width="1" height="1"/><rect x="23" y="16" width="1" height="1"/><rect x="24" y="16" width="1" height="1"/><rect x="8" y="17" width="1" height="1"/><rect x="12" y="17" width="1" height="1"/><rect x="13" y="17" width="1" height="1"/><rect x="14" y="17" width="1" height="1"/><rect x="16" y="17" width="1" height="1"/><rect x="20" y="17" width="1" height="1"/><rect x="22" y="17" width="1" height="1"/><rect x="23" y="17" width="1" height="1"/><rect x="0" y="18" width="1" height="1"/><rect x="1" y="18" width="1" height="1"/><rect x="2" y="18" width="1" height="1"/><rect x="3" y="18" width="1" height="1"/><rect x="4" y="18" width="1" height="1"/><rect x="5" y="18" width="1" height="1"/><rect x="6" y="18" width="1" height="1"/><rect x="9" y="18" width="1" height="1"/><rect x="10" y="18" width="1" height="1"/><rect x="11" y="18" width="1" height="1"/><rect x="12" y="18" width="1" height="1"/><rect x="13" y="18" width="1" height="1"/><rect x="15" y="18" width="1" height="1"/><rect x="16" y="18" width="1" height="1"/><rect x="18" y="18" width="1" height="1"/><rect x="20" y="18" width="1" height="1"/><rect x="21" y="18" width="1" height="1"/><rect x="22" y="18" width="1" height="1"/><rect x="24" y="18" width="1" height="1"/><rect x="0" y="19" width="1" height="1"/><rect x="6" y="19" width="1" height="1"/><rect x="15" y="19" width="1" height="1"/><rect x="16" y="19" width="1" height="1"/><rect x="20" y="19" width="1" height="1"/><rect x="21" y="19" width="1" height="1"/><rect x="22" y="19" width="1" height="1"/><rect x="24" y="19" width="1" height="1"/><rect x="0" y="20" width="1" height="1"/><rect x="2" y="20" width="1" height="1"/><rect x="3" y="20" width="1" height="1"/><rect x="4" y="20" width="1" height="1"/><rect x="6" y="20" width="1" height="1"/><rect x="9" y="20" width="1" height="1"/><rect x="11" y="20" width="1" height="1"/><rect x="12" y="20" width="1" height="1"/><rect x="14" y="20" width="1" height="1"/><rect x="16" y="20" width="1" height="1"/><rect x="17" y="20" width="1" height="1"/><rect x="18" y="20" width="1" height="1"/><rect x="19" y="20" width="1" height="1"/><rect x="20" y="20" width="1" height="1"/><rect x="21" y="20" width="1" height="1"/><rect x="22" y="20" width="1" height="1"/><rect x="23" y="20" width="1" height="1"/><rect x="0" y="21" width="1" height="1"/><rect x="2" y="21" width="1" height="1"/><rect x="3" y="21" width="1" height="1"/><rect x="4" y="21" width="1" height="1"/><rect x="6" y="21" width="1" height="1"/><rect x="9" y="21" width="1" height="1"/><rect x="10" y="21" width="1" height="1"/><rect x="12" y="21" width="1" height="1"/><rect x="15" y="21" width="1" height="1"/><rect x="18" y="21" width="1" height="1"/><rect x="22" y="21" width="1" height="1"/><rect x="24" y="21" width="1" height="1"/><rect x="0" y="22" width="1" height="1"/><rect x="2" y="22" width="1" height="1"/><rect x="3" y="22" width="1" height="1"/><rect x="4" y="22" width="1" height="1"/><rect x="6" y="22" width="1" height="1"/><rect x="8" y="22" width="1" height="1"/><rect x="13" y="22" width="1" height="1"/><rect x="15" y="22" width="1" height="1"/><rect x="20" y="22" width="1" height="1"/><rect x="21" y="22" width="1" height="1"/><rect x="23" y="22" width="1" height="1"/><rect x="24" y="22" width="1" height="1"/><rect x="0" y="23" width="1" height="1"/><rect x="6" y="23" width="1" height="1"/><rect x="9" y="23" width="1" height="1"/><rect x="11" y="23" width="1" height="1"/><rect x="12" y="23" width="1" height="1"/><rect x="13" y="23" width="1" height="1"/><rect x="14" y="23" width="1" height="1"/><rect x="18" y="23" width="1" height="1"/><rect x="19" y="23" width="1" height="1"/><rect x="23" y="23" width="1" height="1"/><rect x="24" y="23" width="1" height="1"/><rect x="0" y="24" width="1" height="1"/><rect x="1" y="24" width="1" height="1"/><rect x="2" y="24" width="1" height="1"/><rect x="3" y="24" width="1" height="1"/><rect x="4" y="24" width="1" height="1"/><rect x="5" y="24" width="1" height="1"/><rect x="6" y="24" width="1" height="1"/><rect x="8" y="24" width="1" height="1"/><rect x="9" y="24" width="1" height="1"/><rect x="12" y="24" width="1" height="1"/><rect x="13" y="24" width="1" height="1"/><rect x="15" y="24" width="1" height="1"/><rect x="17" y="24" width="1" height="1"/><rect x="18" y="24" width="1" height="1"/><rect x="21" y="24" width="1" height="1"/></svg></div>
+      <div class="qr-live"><span class="qr-dot"></span>9 of 12 students checked in</div>
+      <p class="muted" style="font-size:13.5px;line-height:1.5;max-width:285px;margin:14px auto 0">Students open <b>Findemy → Your classes → Scan to check in</b> and point their camera here. Attendance is marked automatically.</p>
+    </div>
+    <button class="btn btn-dark mt16" data-back="" data-toast="Check-in closed for this session">Done</button>
+  </section>
+
+  <!-- ============ LIVE CLASS (online host room) ============ -->
+  <section class="screen has-bar" id="screen-live-class">
+    <div class="scroller" style="padding:54px 18px 18px">
+      <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><span class="live-pill"><span class="live-dot"></span>Live</span><span class="muted" style="margin-left:auto;font-size:12px;font-weight:600">Findemy room</span></div>
+      <h1 style="font-family:var(--serif);font-size:26px;font-weight:400;margin:8px 0 2px" data-bind="lvName">Vocals — All Levels</h1>
+      <div class="muted" style="font-size:13px;font-weight:600;margin-bottom:14px" data-bind="lvWhen">Today · 6:30–8:00 PM</div>
+      <div class="live-stage">
+        <div class="cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke-linecap="round"></path></svg></div>
+        <div class="live-self">You · Coach</div>
+        <div class="live-faces"><div class="av">A</div><div class="av">K</div><div class="av" style="background:var(--gold)">I</div></div>
+      </div>
+      <div class="qr-live" style="margin:16px 0 2px"><span class="qr-dot"></span><span data-bind="lvJoined">7</span> of <span data-bind="lvTotal">8</span> joined · marked present automatically</div>
+      <p class="muted" style="font-size:13px;line-height:1.5;text-align:center;max-width:290px;margin:8px auto 14px">Students join from <b>Findemy → Your classes → Join live class</b>. Anyone who joins is marked present.</p>
+      <div class="card" style="padding:2px 14px">
+        <div class="att"><div class="av" style="width:34px;height:34px;font-size:13px">A</div><div style="flex:1"><div class="nm">Ananya R.</div><div class="sub">Joined · 6:31 PM</div></div><span class="att-chk in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>In</span></div>
+        <div class="att"><div class="av" style="width:34px;height:34px;font-size:13px">K</div><div style="flex:1"><div class="nm">Karan M.</div><div class="sub">Joined · 6:33 PM</div></div><span class="att-chk in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>In</span></div>
+        <div class="att"><div class="av" style="width:34px;height:34px;font-size:13px">P</div><div style="flex:1"><div class="nm">Priya S.</div><div class="sub">Not joined yet</div></div><span class="att-chk out">— Not yet</span></div>
+      </div>
+    </div>
+    <div class="action-bar"><button class="btn" style="background:var(--rose);color:#fff" data-back="" data-toast="Live class ended">End class</button></div>
+  </section>
+
+  <!-- ============ BATCHES LIST ============ -->
+  <section class="screen" id="screen-batches">
+    <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><h2 style="font-size:17px;font-weight:800">Batches</h2></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="row-card" style="display:flex;gap:12px;align-items:center" data-go="batch" data-set='{"bName":"Guitar — Beginner","bCoach":"Arjun Sharma","bTime":"5:00–6:30 PM","bDays":"Mon · Wed · Fri","bCount":"12","bCap":"15","bTrials":"3","_mode":"studio"}'>
+        <div class="cdot" style="width:11px;height:11px;border-radius:50%;background:#5C2A4A"></div><div style="flex:1"><div class="nm" style="font-weight:700;font-size:14.5px">Guitar — Beginner</div><div class="sub" style="font-size:12.5px;color:var(--muted)">Arjun Sharma · Mon·Wed·Fri · 12/15</div></div><span class="chev">›</span>
+      </div>
+      <div class="row-card" style="display:flex;gap:12px;align-items:center" data-go="batch" data-set='{"bName":"Vocals — All Levels","bCoach":"Meera Nair","bTime":"6:30–8:00 PM","bDays":"Tue · Thu","bCount":"8","bCap":"12","bTrials":"4","_mode":"online"}'>
+        <div class="cdot" style="width:11px;height:11px;border-radius:50%;background:#5C2A4A"></div><div style="flex:1"><div class="nm" style="font-weight:700;font-size:14.5px">Vocals — All Levels</div><div class="sub" style="font-size:12.5px;color:var(--muted)">Meera Nair · Tue·Thu · 8/12</div></div><span class="badge b-online" style="margin-right:8px">Online</span><span class="chev">›</span>
+      </div>
+      <div class="row-card" style="display:flex;gap:12px;align-items:center" data-go="batch" data-set='{"bName":"Keys & Piano","bCoach":"Rohan Das","bTime":"7:00–8:00 PM","bDays":"Mon · Fri","bCount":"6","bCap":"10","bTrials":"4","_mode":"studio"}'>
+        <div class="cdot" style="width:11px;height:11px;border-radius:50%;background:#8A8A33"></div><div style="flex:1"><div class="nm" style="font-weight:700;font-size:14.5px">Keys & Piano</div><div class="sub" style="font-size:12.5px;color:var(--muted)">Rohan Das · Mon·Fri · 6/10</div></div><span class="chev">›</span>
+      </div>
+    </div>
+    <button class="btn btn-primary mt16" data-sheet="new-batch"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"></path></svg>New batch</button>
+  </section>
+
+  <!-- ============ BATCH DETAIL ============ -->
+  <section class="screen has-bar" id="screen-batch" data-mode="studio">
+    <div class="scroller" style="padding:0 0 18px">
+      <div style="background:var(--ink);color:#fff;padding:54px 18px 20px">
+        <div class="topbar" style="margin:0 0 10px"><button class="backbtn" data-back="" aria-label="Back" style="background:rgba(255,255,255,.1);color:#fff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><span class="badge b-jade">Active</span><span class="badge b-online when-online" style="margin-left:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="14" height="12" rx="2"></rect><path d="M16 10l6-3v10l-6-3" stroke-linecap="round" stroke-linejoin="round"></path></svg>Online</span></div>
+        <h1 style="font-family:var(--serif);font-size:28px;font-weight:400;line-height:1.05" data-bind="bName">Guitar — Beginner</h1>
+        <div style="font-size:13px;color:rgba(255,255,255,.7);font-weight:600;margin-top:5px"><span data-bind="bCoach">Arjun Sharma</span> · <span data-bind="bDays">Mon · Wed · Fri</span> · <span data-bind="bTime">5:00–6:30 PM</span> · <span class="when-studio">In-studio</span><span class="when-online">Online · Findemy room</span></div>
+        <div style="display:flex;gap:8px;margin-top:12px;align-items:center"><span class="badge" style="background:rgba(255,255,255,.13);color:#fff"><span data-bind="bCount">12</span>/<span data-bind="bCap">15</span> enrolled</span><span class="badge b-jade"><span data-bind="bTrials">3</span> trial spots open</span></div>
+        <div style="font-size:11.5px;color:rgba(255,255,255,.5);font-weight:500;margin-top:7px">Trial spots open automatically from free seats — capacity minus enrolled. No setup needed.</div>
+      </div>
+      <div style="padding:16px 18px 0">
+        <div class="seg-choice" data-tabset="" style="margin-bottom:16px"><button class="active" data-panel="att">Attendance</button><button data-panel="roster">Roster</button><button data-panel="edit">Edit</button></div>
+
+        <div class="panel" data-panel="att">
+          <!-- IN-STUDIO: QR check-in -->
+          <div class="when-studio">
+          <div class="card qr-launch">
+            <div class="kicker">Today · Session 18 · 5:00 PM</div>
+            <div class="qr-count"><span class="big">9</span>of 12 checked in</div>
+            <div class="muted2">Students scan this session's QR in their Findemy app to mark themselves present — no manual marking needed.</div>
+            <button class="btn btn-jade" style="margin:0" data-go="attendance-qr" data-set='{"qBatch":"Guitar — Beginner","qTime":"Today · 5:00–6:30 PM"}'><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><path d="M14 14h3v3M21 14v7M17 21h-3" stroke-linecap="round"></path></svg>Show check-in QR →</button>
+          </div>
+          <div style="display:flex;gap:8px;margin:14px 0 10px"><span class="badge b-jade">Checked in 9</span><span class="badge b-ink">Not yet 3</span></div>
+          <div class="card" style="padding:2px 14px">
+            <div class="att"><div class="av" style="width:34px;height:34px;font-size:13px">A</div><div style="flex:1"><div class="nm">Ananya R.</div><div class="sub">Checked in · 5:02 PM</div></div><span class="att-chk in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>In</span></div>
+            <div class="att"><div class="av" style="width:34px;height:34px;font-size:13px">I</div><div style="flex:1"><div class="nm">Ishaan T.</div><div class="sub">Checked in · 5:04 PM</div></div><span class="att-chk in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>In</span></div>
+            <div class="att"><div class="av" style="width:34px;height:34px;font-size:13px">R</div><div style="flex:1"><div class="nm">Riya G.</div><div class="sub">Not scanned yet</div></div><span class="att-chk out">— Not yet</span></div>
+          </div>
+          </div>
+          <!-- ONLINE: live-join (auto-marked on join) -->
+          <div class="when-online">
+          <div class="card qr-launch">
+            <div class="kicker">Today · 6:30 PM · Findemy room</div>
+            <div class="qr-count"><span class="big">7</span>of 8 joined</div>
+            <div class="muted2">Start the live class — students join from their app and are marked present automatically when they join.</div>
+            <button class="btn btn-jade" style="margin:0" data-go="live-class" data-set='{"lvName":"Vocals — All Levels","lvWhen":"Today · 6:30–8:00 PM","lvJoined":"7","lvTotal":"8"}'><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="14" height="12" rx="2"></rect><path d="M16 10l6-3v10l-6-3" stroke-linecap="round" stroke-linejoin="round"></path></svg>Start live class →</button>
+          </div>
+          <div style="display:flex;gap:8px;margin:14px 0 10px"><span class="badge b-jade">Joined 7</span><span class="badge b-ink">Not joined 1</span></div>
+          <div class="card" style="padding:2px 14px">
+            <div class="att"><div class="av" style="width:34px;height:34px;font-size:13px">A</div><div style="flex:1"><div class="nm">Ananya R.</div><div class="sub">Joined · 6:31 PM</div></div><span class="att-chk in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>In</span></div>
+            <div class="att"><div class="av" style="width:34px;height:34px;font-size:13px">K</div><div style="flex:1"><div class="nm">Karan M.</div><div class="sub">Joined · 6:33 PM</div></div><span class="att-chk in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>In</span></div>
+            <div class="att"><div class="av" style="width:34px;height:34px;font-size:13px">P</div><div style="flex:1"><div class="nm">Priya S.</div><div class="sub">Not joined yet</div></div><span class="att-chk out">— Not yet</span></div>
+          </div>
+          </div>
+        </div>
+
+        <div class="panel" data-panel="roster" style="display:none">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="row-card" style="display:flex;gap:12px;align-items:center" data-go="student" data-set='{"sName":"Ananya R.","sBatch":"Guitar — Beginner","sCoach":"Arjun Sharma","sSince":"Enrolled May 2026","sPlan":"Quarterly · renews 12 Aug","sAtt":"92","sTier":"Active","sInitial":"A"}'><div class="av" style="width:36px;height:36px;font-size:13px">A</div><div style="flex:1"><div class="nm" style="font-weight:700;font-size:13.5px">Ananya R.</div><div class="sub" style="font-size:12px;color:var(--muted)">92% · Quarterly</div></div><span class="tier t-active">Active</span></div>
+            <div class="row-card" style="display:flex;gap:12px;align-items:center"><div class="av" style="width:36px;height:36px;font-size:13px">I</div><div style="flex:1"><div class="nm" style="font-weight:700;font-size:13.5px">Ishaan T.</div><div class="sub" style="font-size:12px;color:var(--muted)">88% · Monthly</div></div><span class="tier t-active">Active</span></div>
+            <div class="row-card" style="display:flex;gap:12px;align-items:center"><div class="av" style="width:36px;height:36px;font-size:13px">R</div><div style="flex:1"><div class="nm" style="font-weight:700;font-size:13.5px">Riya G.</div><div class="sub" style="font-size:12px;color:var(--muted)">61% · Monthly</div></div><span class="tier t-irr">Irregular</span></div>
+          </div>
+        </div>
+
+        <div class="panel" data-panel="edit" style="display:none">
+          <div class="field"><label class="fg-h">Days</label><div class="daytoggle"><button class="on">M</button><button>T</button><button class="on">W</button><button>T</button><button class="on">F</button><button>S</button><button>S</button></div></div>
+          <div class="btn-row"><div class="field" style="flex:1"><label class="fg-h">Start</label><input class="input" value="5:00 PM"></div><div class="field" style="flex:1"><label class="fg-h">End</label><input class="input" value="6:30 PM"></div></div>
+          <div class="field"><label class="fg-h">Mode</label><div class="seg-choice when-studio" data-segchoice=""><button class="active">In studio</button><button>Online</button></div><div class="seg-choice when-online" data-segchoice=""><button>In studio</button><button class="active">Online</button></div></div>
+          <div class="notice when-online" style="margin-bottom:4px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--jade)" stroke-width="2"><rect x="2" y="6" width="14" height="12" rx="2"></rect><path d="M16 10l6-3v10l-6-3" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="font-size:12px;font-weight:600;color:var(--jade)">Online batches run in a Findemy video room — no link to share. Tap “Start live class” at class time.</span></div>
+          <button class="btn btn-soft mt8" style="color:var(--gold)">Pause this batch</button>
+        </div>
+      </div>
+    </div>
+    <div class="action-bar"><button class="btn btn-dark when-studio" data-go="attendance-qr" data-set='{"qBatch":"Guitar — Beginner","qTime":"Today · 5:00–6:30 PM"}'>Show check-in QR →</button><button class="btn btn-dark when-online" data-go="live-class" data-set='{"lvName":"Vocals — All Levels","lvWhen":"Today · 6:30–8:00 PM","lvJoined":"7","lvTotal":"8"}'>Start live class →</button></div>
+  </section>
+
+  <!-- ============ COACHES LIST ============ -->
+  <section class="screen" id="screen-coaches">
+    <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><h2 style="font-size:17px;font-weight:800">Coaches</h2></div>
+    <div class="card" style="padding:4px 14px">
+      <div class="coach" data-go="coach" data-set='{"cName":"Arjun Sharma","cSpec":"Guitar · Ukulele","cBatch":"Guitar — Beginner"}'><div class="pic"><img src="assets/img/coach1.jpg" alt=""></div><div style="flex:1"><div class="cn">Arjun Sharma</div><div class="cr">Guitar · Ukulele · 1 batch</div></div><span class="chev">›</span></div>
+      <div class="coach" data-go="coach" data-set='{"cName":"Meera Nair","cSpec":"Vocals · Theory","cBatch":"Vocals — All Levels"}'><div class="pic"><img src="assets/img/coach2.jpg" alt=""></div><div style="flex:1"><div class="cn">Meera Nair</div><div class="cr">Vocals · Theory · 1 batch</div></div><span class="chev">›</span></div>
+      <div class="coach" data-go="coach" data-set='{"cName":"Rohan Das","cSpec":"Keys · Piano","cBatch":"Keys & Piano"}'><div class="pic"><img src="assets/img/coach3.jpg" alt=""></div><div style="flex:1"><div class="cn">Rohan Das</div><div class="cr">Keys · Piano · 1 batch</div></div><span class="chev">›</span></div>
+    </div>
+    <button class="btn btn-primary mt16" data-sheet="add-coach"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"></path></svg>Add coach</button>
+  </section>
+
+  <!-- ============ COACH DETAIL ============ -->
+  <section class="screen" id="screen-coach">
+    <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
+    <div style="text-align:center;margin-bottom:18px"><div class="pic" style="width:84px;height:84px;border-radius:26px;overflow:hidden;margin:0 auto 12px"><img src="assets/img/coach1.jpg" alt="" style="width:100%;height:100%;object-fit:cover"></div><h1 style="font-family:var(--serif);font-size:26px;font-weight:400" data-bind="cName">Arjun Sharma</h1><div class="muted" style="font-size:13px;font-weight:600;margin-top:3px" data-bind="cSpec">Guitar · Ukulele</div></div>
+    <div class="summary">
+      <div class="sum-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"></rect></svg></div><div><div class="l">Assigned batch</div><div class="v" data-bind="cBatch">Guitar — Beginner</div></div></div>
+      <div class="sum-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2" stroke-linecap="round"></path></svg></div><div><div class="l">This week</div><div class="v">5 classes · 1 trial</div></div></div>
+      <div class="sum-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17l-6 3 1.5-6.5L2 9l6.5-.5L12 2" stroke-linejoin="round"></path></svg></div><div><div class="l">Rating</div><div class="v"><span class="star">★</span> 4.9 · 32 reviews</div></div></div>
+    </div>
+    <button class="btn btn-ghost mt16" data-sheet="assign-coach">Reassign batches</button>
+  </section>
+
+  <!-- ============ REVIEWS ============ -->
+  <section class="screen" id="screen-reviews">
+    <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><h2 style="font-size:17px;font-weight:800">Reviews</h2></div>
+    <div class="revsum" style="margin-bottom:14px">
+      <div style="text-align:center"><div class="big">4.9</div><div class="stars" style="color:var(--gold)">★★★★★</div><div class="muted" style="font-size:11px;font-weight:600;margin-top:2px">84 reviews</div></div>
+      <div class="brks">
+        <div class="brk">5<div class="bar"><i style="width:88%"></i></div></div>
+        <div class="brk">4<div class="bar"><i style="width:8%"></i></div></div>
+        <div class="brk">3<div class="bar"><i style="width:3%"></i></div></div>
+        <div class="brk">2<div class="bar"><i style="width:1%"></i></div></div>
+        <div class="brk">1<div class="bar"><i style="width:0%"></i></div></div>
+      </div>
+    </div>
+    <div class="pills" data-pillgroup=""><button class="pill active">All</button><button class="pill" style="color:var(--rose)">Needs reply · 1</button><button class="pill">5★</button><button class="pill">≤3★</button></div>
+
+    <div class="card" style="border-color:var(--rose-soft);background:var(--rose-soft);margin-bottom:10px">
+      <div style="display:flex;gap:11px;align-items:center"><div class="av" style="background:var(--rose)">P</div><div style="flex:1"><div style="font-weight:700;font-size:14px">Priya S. <span class="stars" style="color:var(--gold);font-size:12px">★★★☆☆</span></div><div class="muted" style="font-size:11.5px;font-weight:600">Keys & Piano · 4 sessions · 1d ago</div></div></div>
+      <p style="font-size:13.5px;line-height:1.5;margin:10px 0 12px;color:var(--ink)">"Coach is good but the room gets crowded in the evening slot. Hard to hear sometimes."</p>
+      <button class="btn btn-dark" data-go="respond" data-set='{"rName":"Priya S.","rStars":"★★★☆☆","rText":"Coach is good but the room gets crowded in the evening slot. Hard to hear sometimes.","rMeta":"Keys & Piano · 4 sessions"}'>Respond now — protect your rating</button>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;gap:11px;align-items:center"><div class="av">A</div><div style="flex:1"><div style="font-weight:700;font-size:14px">Ananya R. <span class="stars" style="color:var(--gold);font-size:12px">★★★★★</span></div><div class="muted" style="font-size:11.5px;font-weight:600">Guitar · Arjun Sharma · 2h ago</div></div></div>
+      <p style="font-size:13.5px;line-height:1.5;margin:10px 0 0;color:var(--ink)">"Arjun is incredibly patient. Went from zero to playing a full song in a month."</p>
+      <button class="see-all" data-go="respond" style="margin-top:8px" data-set='{"rName":"Ananya R.","rStars":"★★★★★","rText":"Arjun is incredibly patient. Went from zero to playing a full song in a month.","rMeta":"Guitar · Arjun Sharma"}'>Reply</button>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;gap:11px;align-items:center"><div class="av">K</div><div style="flex:1"><div style="font-weight:700;font-size:14px">Karan M. <span class="stars" style="color:var(--gold);font-size:12px">★★★★★</span></div><div class="muted" style="font-size:11.5px;font-weight:600">Vocals · 5d ago</div></div></div>
+      <p style="font-size:13.5px;line-height:1.5;margin:10px 0 10px;color:var(--ink)">"Great space, good gear, flexible timings. The trial sold me instantly."</p>
+      <div class="policy" style="background:var(--jade-soft);color:var(--jade)"><b>YOUR REPLY · 4d ago</b><br>Thank you Karan! See you in class 🎸</div>
+    </div>
+  </section>
+
+  <!-- ============ RESPOND ============ -->
+  <section class="screen has-bar" id="screen-respond">
+    <div class="scroller" style="padding:54px 18px 18px">
+      <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><h2 style="font-size:17px;font-weight:800">Respond to review</h2></div>
+      <div class="policy" style="margin-bottom:14px"><b data-bind="rName">Priya S.</b> <span class="stars" data-bind="rStars" style="color:var(--gold)">★★★☆☆</span><br><span data-bind="rMeta" style="font-size:11.5px;color:var(--faint)">Keys & Piano · 4 sessions</span><p style="margin-top:8px;font-style:italic" data-bind="rText">Coach is good but the room gets crowded in the evening slot.</p></div>
+      <div class="chips" style="margin-bottom:12px"><button class="chip">Apologize</button><button class="chip">Explain</button><button class="chip">Invite back</button><button class="chip">Thank them</button></div>
+      <textarea class="input" rows="5" placeholder="Write a thoughtful reply…" style="resize:none"></textarea>
+      <div class="notice" style="margin-top:12px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--gold)" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01" stroke-linecap="round"></path></svg><span style="font-size:12px;font-weight:600">A calm, specific reply to a low rating reassures future learners.</span></div>
+    </div>
+    <div class="action-bar"><button class="btn btn-dark" data-back="" data-toast="Reply posted">Post reply</button></div>
+  </section>
+
+  <!-- ============ WORKSHOPS ============ -->
+  <section class="screen" id="screen-workshops">
+    <div class="head-row"><div class="hero"><div class="kicker" style="color:var(--persimmon)">EVENTS YOU HOST</div><h1 style="font-size:32px"><span class="hl" style="font-family:var(--serif)">Workshops</span></h1></div></div>
+    <div class="seg-choice" data-tabset="" style="margin-bottom:16px"><button class="active" data-panel="up">Upcoming</button><button data-panel="live">Live</button><button data-panel="past">Past</button></div>
+    <div class="panel" data-panel="up">
+      <div class="row-card" style="overflow:hidden;padding:0;margin-bottom:12px" data-go="workshop-edit" data-set='{"wName":"Songwriting 101","wWhen":"24 June · 4:00 PM","wMode":"In-studio · Hauz Khas","wFee":"₹800","wSpots":"8 of 20"}'>
+        <div style="height:120px;position:relative"><img src="assets/img/guitar-class.jpg" alt="" style="width:100%;height:100%;object-fit:cover"><span class="badge b-ink" style="position:absolute;top:10px;left:10px">Upcoming</span></div>
+        <div style="padding:13px 15px"><div style="font-weight:800;font-size:15px">Songwriting 101</div><div class="muted" style="font-size:12.5px;font-weight:600">24 June · 4:00 PM · 2 hrs · Hauz Khas</div><div style="margin-top:6px;font-size:13px;font-weight:700">₹800 · <span class="muted" style="font-weight:600">8 of 20 booked</span></div></div>
+      </div>
+      <div class="row-card" style="overflow:hidden;padding:0" data-go="workshop-edit" data-set='{"wName":"Open-Mic Masterclass","wWhen":"30 June · 6:00 PM","wMode":"In-studio · Hauz Khas","wFee":"Free","wSpots":"15 of 30"}'>
+        <div style="height:120px;position:relative"><img src="assets/img/music-studio.jpg" alt="" style="width:100%;height:100%;object-fit:cover"><span class="badge b-gold" style="position:absolute;top:10px;left:10px">Live soon</span></div>
+        <div style="padding:13px 15px"><div style="font-weight:800;font-size:15px">Open-Mic Masterclass</div><div class="muted" style="font-size:12.5px;font-weight:600">30 June · 6:00 PM · 3 hrs · Hauz Khas</div><div style="margin-top:6px;font-size:13px;font-weight:700">Free · <span class="muted" style="font-weight:600">15 of 30 registered</span></div></div>
+      </div>
+    </div>
+    <div class="panel" data-panel="live" style="display:none"><div class="empty" style="text-align:center;padding:40px 0;color:var(--faint)">No workshops live right now.</div></div>
+    <div class="panel" data-panel="past" style="display:none">
+      <div class="row-card" style="display:flex;gap:12px;align-items:center"><div class="av" style="background:var(--jade)">✓</div><div style="flex:1"><div class="nm" style="font-weight:700;font-size:14px">Guitar Jam Evening</div><div class="sub" style="font-size:12px;color:var(--muted)">12 June · 22 attended · ₹17,600</div></div></div>
+    </div>
+    <button class="btn btn-primary mt16" data-go="workshop-edit" data-set='{"wName":"New workshop","wWhen":"Pick date & time","wMode":"In-studio","wFee":"₹0","wSpots":"0 of 20"}'><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"></path></svg>Create workshop</button>
+  </section>
+
+  <!-- ============ WORKSHOP CREATE/EDIT ============ -->
+  <section class="screen has-bar" id="screen-workshop-edit">
+    <div class="scroller" style="padding:54px 18px 18px">
+      <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><h2 style="font-size:17px;font-weight:800">Workshop</h2></div>
+      <div class="field"><label class="fg-h">Title</label><input class="input" data-bind="wName" value="Songwriting 101"></div>
+      <div class="field"><label class="fg-h">Type</label><div class="quick-grid" style="grid-template-columns:1fr 1fr;gap:10px"><button class="chip sel" style="justify-content:center;padding:14px">Masterclass</button><button class="chip" style="justify-content:center;padding:14px">Demo</button><button class="chip" style="justify-content:center;padding:14px">In-studio</button><button class="chip" style="justify-content:center;padding:14px">Online</button></div></div>
+      <div class="btn-row"><div class="field" style="flex:1"><label class="fg-h">Date</label><input class="input" value="24 June"></div><div class="field" style="flex:1"><label class="fg-h">Time</label><input class="input" value="4:00 PM"></div></div>
+      <div class="btn-row"><div class="field" style="flex:1"><label class="fg-h">Fee (₹)</label><input class="input" inputmode="numeric" value="800"></div><div class="field" style="flex:1"><label class="fg-h">Capacity</label><input class="input" inputmode="numeric" value="20"></div></div>
+      <div class="field"><label class="fg-h">About</label><textarea class="input" rows="3" style="resize:none">A hands-on session on writing your first song — melody, lyrics & structure.</textarea></div>
+    </div>
+    <div class="action-bar"><button class="btn btn-ghost" data-back="" data-toast="Saved as draft">Save draft</button><button class="btn btn-primary" data-back="" data-toast="Workshop published">Publish</button></div>
+  </section>
+
+  <!-- ============ EARNINGS ============ -->
+  <section class="screen" id="screen-earnings">
+    <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><h2 style="font-size:17px;font-weight:800">Earnings</h2></div>
+    <div class="seg" data-seg=""><button>Week</button><button class="active">Month</button><button>Year</button></div>
+    <div class="dash" style="margin-bottom:18px">
+      <div class="dk">This month · June</div>
+      <div class="dn">₹62,400</div>
+      <div class="dl"><span class="up">▲ 18%</span> vs last month</div>
+      <div class="drow"><div><div class="v">₹3.6k</div><div class="t">Trials</div></div><div><div class="v">₹52k</div><div class="t">Monthly</div></div><div><div class="v">₹6.8k</div><div class="t">Workshops</div></div></div>
+    </div>
+    <div class="section-head"><h2>Recent transactions</h2></div>
+    <div class="card" style="padding:2px 14px">
+      <div class="earn-tx"><div class="av" style="width:34px;height:34px;font-size:12px;background:var(--persimmon-soft);color:var(--persimmon-deep)">₹</div><div><div style="font-weight:700;font-size:13.5px">Ananya R. · Quarterly</div><div class="muted" style="font-size:11.5px;font-weight:600">Guitar · 5h ago</div></div><span class="amt in">+₹8,640</span></div>
+      <div class="earn-tx"><div class="av" style="width:34px;height:34px;font-size:12px;background:var(--persimmon-soft);color:var(--persimmon-deep)">₹</div><div><div style="font-weight:700;font-size:13.5px">Trial · Aarav</div><div class="muted" style="font-size:11.5px;font-weight:600">Guitar · Today</div></div><span class="amt in">+₹150</span></div>
+      <div class="earn-tx"><div class="av" style="width:34px;height:34px;font-size:12px;background:var(--paper-warm);color:var(--faint)">%</div><div><div style="font-weight:700;font-size:13.5px">Findemy commission</div><div class="muted" style="font-size:11.5px;font-weight:600">Platform fee · Today</div></div><span class="amt out">−₹880</span></div>
+    </div>
+    <div class="card" style="margin-top:14px;display:flex;align-items:center;gap:13px">
+      <div class="av" style="background:var(--ink)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 9h18" stroke-linecap="round"></path></svg></div>
+      <div style="flex:1"><div style="font-weight:700;font-size:13.5px">Next payout · 1 July</div><div class="muted" style="font-size:12px;font-weight:600">HDFC ••4521 · ₹61,520</div></div><span class="chev">›</span>
+    </div>
+  </section>
+
+  <!-- ============ EDIT PROFILE ============ -->
+  <section class="screen" id="screen-edit-profile">
+    <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><h2 style="font-size:17px;font-weight:800">Academy profile</h2></div>
+    <div style="height:140px;border-radius:18px;overflow:hidden;position:relative;margin-bottom:16px"><img src="assets/img/academy-cover.jpg" alt="" style="width:100%;height:100%;object-fit:cover"><button class="chip" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.55);color:#fff;border:0">Change cover</button><span class="badge b-jade" style="position:absolute;top:10px;left:10px">Verified</span></div>
+    <div class="field"><label class="fg-h">Academy name</label><input class="input" value="The Rhythm House"></div>
+    <div class="field"><label class="fg-h">Tagline</label><input class="input" value="A warm, gear-rich space for guitar, keys & vocals."></div>
+    <div class="field"><label class="fg-h">About</label><textarea class="input" rows="3" style="resize:none">Group and 1-on-1 batches for all ages. Beginners welcome.</textarea></div>
+    <div class="field"><label class="fg-h">Address</label><input class="input" value="Hauz Khas, New Delhi"></div>
+    <div class="field"><label class="fg-h">Specialities</label><div class="chips"><button class="chip sel">Guitar</button><button class="chip sel">Vocals</button><button class="chip sel">Keys</button><button class="chip">+ Add</button></div></div>
+    <button class="btn btn-dark mt8" data-back="" data-toast="Profile updated">Save changes</button>
+  </section>
+
+  <!-- ============ SETTINGS ============ -->
+  <section class="screen" id="screen-settings">
+    <div class="topbar"><button class="backbtn" data-back="" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><h2 style="font-size:17px;font-weight:800">Settings</h2></div>
+    <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:700;margin:8px 0 8px">New trial alerts</div>
+    <div class="card" style="padding:4px 16px">
+      <div class="toggle-row"><div><div style="font-weight:600;font-size:14px">Push</div></div><button class="toggle on" aria-pressed="true"><span></span></button></div>
+      <div class="toggle-row"><div><div style="font-weight:600;font-size:14px">WhatsApp</div></div><button class="toggle on" aria-pressed="true"><span></span></button></div>
+      <div class="toggle-row"><div><div style="font-weight:600;font-size:14px">Email</div></div><button class="toggle" aria-pressed="false"><span></span></button></div>
+    </div>
+    <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:700;margin:18px 0 8px">Classes</div>
+    <div class="card" style="padding:4px 16px">
+      <div class="toggle-row"><div><div style="font-weight:600;font-size:14px">Reminder 30 min before</div></div><button class="toggle on" aria-pressed="true"><span></span></button></div>
+      <div class="toggle-row"><div><div style="font-weight:600;font-size:14px">Attendance reminder</div></div><button class="toggle on" aria-pressed="true"><span></span></button></div>
+    </div>
+    <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:700;margin:18px 0 8px">Reviews & activity</div>
+    <div class="card" style="padding:4px 16px">
+      <div class="toggle-row"><div><div style="font-weight:600;font-size:14px">New review</div></div><button class="toggle on" aria-pressed="true"><span></span></button></div>
+      <div class="toggle-row"><div><div style="font-weight:600;font-size:14px">Quiet hours · 10pm–8am</div></div><button class="toggle" aria-pressed="false"><span></span></button></div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- bottom nav (4 tabs) -->
+  <nav class="tabbar light hidden" id="tabbar" aria-label="Primary">
+    <button class="tab active" data-tab="inbox" aria-label="Home" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+      <span class="lbl">Home</span>
+    </button>
+    <button class="tab" data-tab="schedule" aria-label="Schedule">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"></rect><path d="M3 9h18M8 3v4M16 3v4" stroke-linecap="round"></path></svg>
+      <span class="lbl">Schedule</span>
+    </button>
+    <button class="tab" data-tab="students" aria-label="Students">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="8" r="3"></circle><path d="M3 20c0-3 3-5 6-5s6 2 6 5M16 4a3 3 0 0 1 0 6M21 20c0-2-1.5-3.5-3.5-4.2" stroke-linecap="round"></path></svg>
+      <span class="lbl">Students</span>
+    </button>
+    <button class="tab" data-tab="studio" aria-label="Studio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21V9l9-6 9 6v12M9 21v-6h6v6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      <span class="lbl">Studio</span>
+    </button>
+  </nav>
+
+  <!-- sheet host -->
+  <div class="backdrop" id="backdrop"></div>
+
+  <!-- cancel class -->
+  <div class="sheet" id="sheet-cancel-class" role="dialog" aria-modal="true" aria-label="Cancel class">
+    <div class="grab" aria-hidden="true"></div>
+    <div class="sh-head"><h3>Cancel a class</h3><button class="x" data-close-sheet="" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"></path></svg></button></div>
+    <p class="sh-sub">Pick the class to cancel. Students are notified.</p>
+    <div data-selectgroup="">
+      <button class="opt sel" data-select=""><div><div class="o-nm">Keys & Piano · Today 8:00 PM</div><div class="o-sub">Rohan Das · 6 students</div></div><span class="o-radio"></span></button>
+      <button class="opt" data-select=""><div><div class="o-nm">Guitar — Beginner · Today 5:00 PM</div><div class="o-sub">Arjun Sharma · 12 students</div></div><span class="o-radio"></span></button>
+    </div>
+    <div class="policy" style="background:var(--jade-soft);color:var(--jade);margin:6px 0 14px"><b>Not billed.</b> A cancelled class isn't counted as a paid session — <b>1 make-good session is added</b> so each student still gets their full plan (e.g. 8 classes stays 8, not a bonus class).</div>
+    <button class="btn" style="background:var(--rose);color:#fff" data-close-sheet="" data-toast="Class cancelled · make-good session added">Cancel class & add session</button>
+  </div>
+
+  <!-- new batch -->
+  <div class="sheet" id="sheet-new-batch" role="dialog" aria-modal="true" aria-label="New batch">
+    <div class="grab" aria-hidden="true"></div>
+    <div class="sh-head"><h3>New batch</h3><button class="x" data-close-sheet="" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"></path></svg></button></div>
+    <div class="field"><label class="fg-h">Batch name</label><input class="input" placeholder="e.g. Evening Guitar"></div>
+    <div class="btn-row"><div class="field" style="flex:1"><label class="fg-h">Category</label><div class="chips"><button class="chip sel">Music</button></div></div><div class="field" style="flex:1"><label class="fg-h">Coach</label><div class="chips"><button class="chip">Unassigned</button></div></div></div>
+    <div class="btn-row"><div class="field" style="flex:1"><label class="fg-h">Start time</label><input class="input" value="9:00 AM"></div><div class="field" style="flex:1"><label class="fg-h">Capacity</label><div class="stepper"><button>−</button><span class="val">10</span><button>+</button></div></div></div>
+    <div class="notice" style="margin:0 0 4px;background:var(--jade-soft)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--jade)" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z" stroke-linejoin="round"></path><path d="M9 11l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="font-size:12px;font-weight:600;color:var(--jade)">Trial spots open automatically — capacity minus enrolled. No separate availability to set.</span></div>
+    <div class="field"><label class="fg-h">Schedule days</label><div class="daytoggle"><button>M</button><button>T</button><button class="on">W</button><button>T</button><button class="on">F</button><button>S</button><button>S</button></div></div>
+    <button class="btn btn-primary mt8" data-close-sheet="" data-toast="Batch created">Create batch</button>
+  </div>
+
+  <!-- add coach -->
+  <div class="sheet" id="sheet-add-coach" role="dialog" aria-modal="true" aria-label="Add coach">
+    <div class="grab" aria-hidden="true"></div>
+    <div class="sh-head"><h3>Add new coach</h3><button class="x" data-close-sheet="" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"></path></svg></button></div>
+    <div class="field"><label class="fg-h">Coach name</label><input class="input" placeholder="Full name"></div>
+    <div class="field"><label class="fg-h">Phone number</label><div class="input-group"><span>+91</span><input class="input" inputmode="numeric" placeholder="98765 43210"></div></div>
+    <div class="field"><label class="fg-h">Specialties</label><div class="chips"><button class="chip">Guitar</button><button class="chip">Vocals</button><button class="chip">Keys</button><button class="chip">Theory</button><button class="chip">Ukulele</button></div></div>
+    <button class="btn btn-dark mt8" data-close-sheet="" data-toast="Coach registered">Register coach</button>
+  </div>
+
+  <!-- assign coach -->
+  <div class="sheet" id="sheet-assign-coach" role="dialog" aria-modal="true" aria-label="Assign coach">
+    <div class="grab" aria-hidden="true"></div>
+    <div class="sh-head"><h3>Assign coach</h3><button class="x" data-close-sheet="" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"></path></svg></button></div>
+    <p class="sh-sub">Select from your available team.</p>
+    <div data-selectgroup="">
+      <button class="opt sel" data-select=""><div style="display:flex;gap:11px;align-items:center"><span class="pic" style="width:36px;height:36px;border-radius:11px;overflow:hidden"><img src="assets/img/coach1.jpg" alt="" style="width:100%;height:100%;object-fit:cover"></span><div><div class="o-nm">Arjun Sharma</div><div class="o-sub">Guitar · Ukulele</div></div></div><span class="o-radio"></span></button>
+      <button class="opt" data-select=""><div style="display:flex;gap:11px;align-items:center"><span class="pic" style="width:36px;height:36px;border-radius:11px;overflow:hidden"><img src="assets/img/coach2.jpg" alt="" style="width:100%;height:100%;object-fit:cover"></span><div><div class="o-nm">Meera Nair</div><div class="o-sub">Vocals · Theory</div></div></div><span class="o-radio"></span></button>
+      <button class="opt" data-select=""><div style="display:flex;gap:11px;align-items:center"><span class="pic" style="width:36px;height:36px;border-radius:11px;overflow:hidden"><img src="assets/img/coach3.jpg" alt="" style="width:100%;height:100%;object-fit:cover"></span><div><div class="o-nm">Rohan Das</div><div class="o-sub">Keys · Piano</div></div></div><span class="o-radio"></span></button>
+    </div>
+    <button class="btn btn-jade mt8" data-close-sheet="" data-toast="Coach assigned">Assign coach</button>
+  </div>
+
+  <!-- students filter -->
+  <div class="sheet" id="sheet-filters" role="dialog" aria-modal="true" aria-label="Filters">
+    <div class="grab" aria-hidden="true"></div>
+    <div class="sh-head"><h3>Filter students</h3><button class="x" data-close-sheet="" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"></path></svg></button></div>
+    <div style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:700;margin:0 0 10px">Batch</div>
+    <div class="chips" data-chipgroup="" style="margin-bottom:16px"><button class="chip sel">All batches</button><button class="chip">Guitar — Beginner</button><button class="chip">Vocals — All Levels</button><button class="chip">Keys &amp; Piano</button></div>
+    <div style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:700;margin:0 0 10px">Attendance</div>
+    <div class="chips" data-chipgroup=""><button class="chip sel">All</button><button class="chip">Active ≥75%</button><button class="chip">Irregular 50–74%</button><button class="chip">Inactive &lt;50%</button></div>
+    <button class="btn btn-dark mt16" data-close-sheet="" data-toast="Filters applied">Apply filters</button>
+  </div>
+
+  <!-- toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span></div>
+
+</div>
+<script>
+(function(){
+  "use strict";
+  var screensEl = document.getElementById('screens');
+  var tabbar = document.getElementById('tabbar');
+  var statusbar = document.getElementById('statusbar');
+  var TAB_ROOTS = ['inbox','schedule','students','studio'];
+  var DARK_BG = []; // screens with dark background -> light status text
+  var stack = ['welcome'];
+  var state = {slot:'Today · 5:00 PM', price:'150', amount:'150', pkg:'Monthly', rating:0};
+
+  function cur(){ return stack[stack.length-1]; }
+  function el(id){ return document.getElementById('screen-'+id); }
+
+  function applyData(node, screen){
+    if(!node) return;
+    var set = node.getAttribute('data-set');
+    if(!set) return;
+    try{
+      var obj = JSON.parse(set);
+      Object.keys(obj).forEach(function(k){
+        if(k.charAt(0)==='_'){ screen.setAttribute('data-'+k.slice(1), obj[k]); return; }
+        screen.querySelectorAll('[data-bind="'+k+'"]').forEach(function(t){
+          if(t.tagName==='IMG'){ t.src = (window.__resolveRes? window.__resolveRes(obj[k]) : obj[k]); }
+          else { t.textContent = obj[k]; }
+        });
+      });
+    }catch(e){}
+  }
+
+  function render(dir, srcNode){
+    var id = cur();
+    var target = el(id);
+    if(!target) return;
+    applyData(srcNode, target);
+    Array.prototype.forEach.call(screensEl.querySelectorAll('.screen'), function(s){
+      s.classList.remove('active','in-right','in-left','in-fade');
+      if(s===target){
+        s.classList.add('active');
+        s.classList.add(dir==='back'?'in-left':(dir==='tab'?'in-fade':'in-right'));
+      } else { s.style.display=''; }
+    });
+    target.scrollTop = 0;
+    // tabbar visibility + active
+    var isTab = TAB_ROOTS.indexOf(id) !== -1;
+    tabbar.classList.toggle('hidden', !isTab);
+    tabbar.classList.toggle('dark', false);
+    tabbar.classList.toggle('light', isTab);
+    Array.prototype.forEach.call(tabbar.querySelectorAll('.tab'), function(t){
+      var on = t.dataset.tab===id;
+      t.classList.toggle('active', on);
+      if(on){ t.setAttribute('aria-current','page'); } else { t.removeAttribute('aria-current'); }
+    });
+    statusbar.classList.toggle('on-dark', DARK_BG.indexOf(id)!==-1);
+  }
+
+  function go(id, srcNode){ if(id===cur()) return; stack.push(id); render('fwd', srcNode); }
+  function back(){ if(stack.length>1){ stack.pop(); render('back'); } }
+  function tab(id){ stack=[id]; render('tab'); }
+  function reset(id){ stack=[id]; render('tab'); }
+  window.NAV = {go:go, back:back, tab:tab, reset:reset, state:state};
+
+  // delegated navigation
+  document.addEventListener('click', function(e){
+    var t;
+    if((t=e.target.closest('[data-go]'))){ if(e.target.closest('.heart'))return; go(t.dataset.go, t); return; }
+    if((t=e.target.closest('[data-back]'))){ back(); return; }
+    if((t=e.target.closest('[data-tab]'))){ tab(t.dataset.tab); return; }
+    if((t=e.target.closest('[data-reset]'))){ reset(t.dataset.reset); return; }
+  });
+
+  // hearts
+  document.addEventListener('click', function(e){
+    var h = e.target.closest('.heart'); if(!h) return;
+    e.stopPropagation();
+    var on = h.classList.toggle('on');
+    h.setAttribute('aria-pressed', on?'true':'false');
+    h.setAttribute('aria-label', on?'Remove from favourites':'Save to favourites');
+  });
+
+  // pill / segmented groups (single-active)
+  function groupSelect(sel, activeClass){
+    document.querySelectorAll(sel).forEach(function(group){
+      group.addEventListener('click', function(e){
+        var btn = e.target.closest('button'); if(!btn || !group.contains(btn)) return;
+        if(btn.hasAttribute('data-go')||btn.hasAttribute('data-sheet')) return;
+        group.querySelectorAll('button').forEach(function(b){ b.classList.remove(activeClass); if(b.hasAttribute('aria-pressed'))b.setAttribute('aria-pressed','false'); });
+        btn.classList.add(activeClass); if(btn.hasAttribute('aria-pressed'))btn.setAttribute('aria-pressed','true');
+      });
+    });
+  }
+  groupSelect('[data-pillgroup]','active');
+  groupSelect('[data-seg]','active');
+  groupSelect('[data-segchoice]','active');
+  groupSelect('[data-chipgroup]','sel');
+
+  // bookings: Upcoming / Past filter
+  var bkSeg = document.querySelector('[data-bkseg]');
+  if(bkSeg){ bkSeg.addEventListener('click', function(e){
+    var b=e.target.closest('button'); if(!b||!bkSeg.contains(b)) return;
+    var past = b.textContent.trim().toLowerCase()==='past';
+    document.querySelectorAll('#screen-bookings [data-when]').forEach(function(g){
+      g.style.display = (g.dataset.when===(past?'past':'upcoming'))?'':'none';
+    });
+  }); }
+
+  // change location
+  document.addEventListener('click', function(e){
+    var o=e.target.closest('[data-loc]'); if(!o) return;
+    document.querySelectorAll('[data-bind="userLoc"]').forEach(function(n){ n.textContent=o.getAttribute('data-loc'); });
+    closeSheet();
+    showToast('Showing classes in '+(o.getAttribute('data-loc-name')||o.getAttribute('data-loc')));
+  });
+  var locSearch=document.getElementById('loc-search');
+  if(locSearch){ locSearch.addEventListener('keydown', function(e){
+    if(e.key!=='Enter') return;
+    var v=locSearch.value.trim(); if(!v) return;
+    document.querySelectorAll('[data-bind="userLoc"]').forEach(function(n){ n.textContent=v+' · 5km'; });
+    locSearch.value=''; locSearch.blur(); closeSheet(); showToast('Showing classes in '+v);
+  }); }
+
+  // toast
+  var toast=document.getElementById('toast'), toastMsg=document.getElementById('toastMsg'), tT;
+  function showToast(msg){ toastMsg.textContent=msg; toast.classList.add('show'); clearTimeout(tT); tT=setTimeout(function(){toast.classList.remove('show');},2100); }
+  window.toast = showToast;
+  document.addEventListener('click', function(e){
+    var t=e.target.closest('[data-toast]'); if(!t) return;
+    if(e.target.closest('.heart')||t.hasAttribute('data-go')||t.hasAttribute('data-sheet')) return;
+    e.stopPropagation(); showToast(t.dataset.toast);
+  });
+
+  // sheets
+  var backdrop=document.getElementById('backdrop');
+  var openSheetEl=null, lastFocus=null;
+  function openSheet(name){
+    var s=document.getElementById('sheet-'+name); if(!s) return;
+    if(openSheetEl && openSheetEl!==s) openSheetEl.classList.remove('show');
+    else lastFocus=document.activeElement;
+    openSheetEl=s; backdrop.classList.add('show'); s.classList.add('show');
+    var f=s.querySelector('button, input, [tabindex]'); if(f) setTimeout(function(){f.focus();},60);
+  }
+  function closeSheet(){ if(openSheetEl){ openSheetEl.classList.remove('show'); openSheetEl=null; } backdrop.classList.remove('show'); if(lastFocus&&lastFocus.focus)lastFocus.focus(); }
+  window.SHEET={open:openSheet,close:closeSheet};
+  document.addEventListener('click', function(e){
+    var t;
+    if((t=e.target.closest('[data-sheet]'))){ if(e.target.closest('.heart'))return; e.stopPropagation(); openSheet(t.dataset.sheet); return; }
+    if(e.target.closest('[data-close-sheet]')){ closeSheet(); return; }
+  });
+  backdrop.addEventListener('click', closeSheet);
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ if(openSheetEl)closeSheet(); else if(stack.length>1)back(); } });
+
+  // generic single-select within a container (slots, payment, packages, options)
+  document.addEventListener('click', function(e){
+    var item=e.target.closest('[data-select]'); if(!item) return;
+    var group=item.closest('[data-selectgroup]'); if(!group) return;
+    group.querySelectorAll('[data-select]').forEach(function(s){ s.classList.remove('sel'); if(s.hasAttribute('aria-pressed'))s.setAttribute('aria-pressed','false'); });
+    item.classList.add('sel'); if(item.hasAttribute('aria-pressed'))item.setAttribute('aria-pressed','true');
+    // capture useful state
+    if(item.dataset.slot){ state.slot=item.dataset.slot; var sl=document.querySelectorAll('[data-bind="slot"]'); sl.forEach(function(n){n.textContent=item.dataset.slot;}); }
+    if(item.dataset.amount){ state.amount=item.dataset.amount; document.querySelectorAll('[data-bind="amount"]').forEach(function(n){n.textContent='₹'+item.dataset.amount;}); }
+    if(item.dataset.pkg){ state.pkg=item.dataset.pkg; document.querySelectorAll('[data-bind="pkg"]').forEach(function(n){n.textContent=item.dataset.pkg;}); }
+    // enable a paired continue button if present
+    var cont=group.getAttribute('data-enables'); if(cont){ var c=document.getElementById(cont); if(c) c.disabled=false; }
+  });
+
+  // toggles (filters)
+  document.addEventListener('click', function(e){
+    var tg=e.target.closest('.toggle'); if(!tg) return; tg.classList.toggle('on');
+    tg.setAttribute('aria-pressed', tg.classList.contains('on')?'true':'false');
+  });
+
+  // star rating
+  document.addEventListener('click', function(e){
+    var st=e.target.closest('.star-rate button'); if(!st) return;
+    var wrap=st.closest('.star-rate'); var btns=Array.prototype.slice.call(wrap.querySelectorAll('button'));
+    var idx=btns.indexOf(st); state.rating=idx+1;
+    btns.forEach(function(b,i){ b.classList.toggle('on', i<=idx); });
+    var caps=['','Disappointing','Okay','Good','Great teacher','Loved it'];
+    var cap=document.getElementById('rateCaption'); if(cap) cap.textContent=state.rating+' of 5 · '+caps[state.rating];
+    var chipsWrap=document.getElementById('reviewChips'); if(chipsWrap) chipsWrap.style.display='flex';
+    var sub=document.getElementById('reviewSubmit'); if(sub) sub.disabled=false;
+  });
+
+  // review chips multi-select
+  document.addEventListener('click', function(e){
+    var c=e.target.closest('#reviewChips .chip'); if(!c) return; c.classList.toggle('sel');
+  });
+
+  // OTP input auto-advance
+  document.addEventListener('input', function(e){
+    var i=e.target.closest('.otp-input input'); if(!i) return;
+    i.value=i.value.replace(/[^0-9]/g,'').slice(0,1);
+    if(i.value && i.nextElementSibling) i.nextElementSibling.focus();
+  });
+  document.addEventListener('keydown', function(e){
+    var i=e.target.closest('.otp-input input'); if(!i) return;
+    if(e.key==='Backspace' && !i.value && i.previousElementSibling) i.previousElementSibling.focus();
+  });
+
+  // boot
+  render('tab');
+})();
+</script>
+<script>
+(function(){
+  // content tabs (batch detail, workshops): [data-tabset] buttons[data-panel] -> .panel[data-panel]
+  document.querySelectorAll('[data-tabset]').forEach(function(set){
+    set.addEventListener('click', function(e){
+      var b=e.target.closest('button[data-panel]'); if(!b) return;
+      var key=b.dataset.panel, scope=set.closest('.screen');
+      set.querySelectorAll('button[data-panel]').forEach(function(x){ x.classList.toggle('active', x===b); });
+      scope.querySelectorAll('.panel[data-panel]').forEach(function(p){ p.style.display = p.dataset.panel===key?'':'none'; });
+    });
+  });
+})();
+</script>
+
+</body></html>

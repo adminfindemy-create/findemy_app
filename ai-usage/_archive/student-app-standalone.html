@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light" />
+<title>Findemy · Student App Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --paper:#F4EFE5; --paper-warm:#EFE6D6; --card:#FFFFFF;
+  --ink:#1A1611; --ink-2:#463F36; --muted:#6E655A; --faint:#8A8071;
+  --hairline:#E8E1D2;
+  --persimmon:#EC5A2B; --persimmon-deep:#D24A20; --persimmon-soft:#FBE3D8;
+  --jade:#1E6F66; --jade-soft:#D8E6E1;
+  --gold:#C8862A;
+  --serif:'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --sans:'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --shadow-sm:0 2px 6px rgba(60,30,10,.05);
+  --shadow:0 14px 34px -16px rgba(60,30,10,.22);
+  --shadow-lg:0 26px 50px -20px rgba(40,20,10,.30);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+html,body{margin:0;height:100%}
+
+/* ---------- accessibility: visible focus ---------- */
+:focus{outline:none}
+:focus-visible{outline:3px solid var(--persimmon);outline-offset:2px;border-radius:8px}
+.tab:focus-visible,.heart:focus-visible,.icon-btn:focus-visible{outline-offset:3px}
+
+/* visually-hidden (labels for screen readers) */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ---------- press feedback (transform-based, gpu) ---------- */
+.studio-card,.near-card,.grid-card,.event-card,.pill,.slot,.prow,.cta-dark,.see-all,.send-btn,.icon-btn,.tab,.heart,.x{transition:transform .18s ease, background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease}
+.studio-card:active,.near-card:active,.grid-card:active,.prow:active,.pill:active,.slot:active{transform:scale(.978)}
+.cta-dark:active,.see-all:active,.send-btn:active,.icon-btn:active,.x:active,.heart:active{transform:scale(.92)}
+body{
+  font-family:var(--sans);color:var(--ink);
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #2a2a33 0%, #16161c 55%, #0e0e12 100%);
+  display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;
+}
+
+/* ---------- phone frame ---------- */
+.phone{
+  position:relative;width:412px;height:min(884px, calc(100vh - 48px));
+  background:var(--paper);border-radius:46px;overflow:hidden;
+  box-shadow:var(--shadow-lg), 0 0 0 11px #0b0b0e, 0 0 0 13px #2c2c32;
+  display:flex;flex-direction:column;
+}
+.statusbar{
+  position:absolute;top:0;left:0;right:0;height:46px;z-index:40;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 30px 0;font-size:13px;font-weight:700;color:var(--ink);
+  pointer-events:none;
+}
+.statusbar .sb-icons{display:flex;gap:6px;align-items:center}
+.statusbar .sb-icons svg{width:16px;height:16px}
+
+/* ---------- screens ---------- */
+.screens{position:relative;flex:1;overflow:hidden}
+.screen{
+  position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+  padding:54px 18px 124px;display:none;scroll-behavior:smooth;
+}
+.screen::-webkit-scrollbar{width:0}
+.screen.active{display:block;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- type helpers ---------- */
+.kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.display{font-family:var(--serif);font-weight:400;line-height:.98;letter-spacing:-.01em}
+.serif-i{font-family:var(--serif);font-style:italic}
+.muted{color:var(--muted)}
+
+/* ---------- top header row ---------- */
+.head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-top:6px}
+.icon-btn{
+  width:46px;height:46px;border-radius:50%;background:#fff;border:1px solid var(--hairline);
+  display:grid;place-items:center;box-shadow:var(--shadow-sm);flex:none;cursor:pointer;color:var(--ink);
+}
+.icon-btn svg{width:20px;height:20px}
+
+/* hero */
+.hero .kicker{margin-bottom:8px}
+.hero h1{margin:0;font-family:var(--serif);font-size:50px;line-height:.92;letter-spacing:-.015em}
+.hero h1 .l1{font-style:italic;font-weight:400;display:block;color:var(--ink-2)}
+.hero h1 .l2{font-weight:400;display:inline-block;position:relative}
+.hero h1 .l2::after{content:"";position:absolute;left:-2px;right:-4px;bottom:8px;height:14px;background:var(--persimmon-soft);z-index:-1;border-radius:3px}
+
+/* ---------- search ---------- */
+.search{
+  margin:22px 0 12px;display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--hairline);
+  border-radius:999px;padding:16px 20px;box-shadow:var(--shadow);
+}
+.search svg{width:20px;height:20px;color:var(--persimmon);flex:none}
+.search input{border:0;outline:0;background:transparent;font-family:var(--sans);font-size:16px;width:100%;color:var(--ink)}
+.search input::placeholder{color:var(--faint)}
+
+/* location chips */
+.loc-row{display:flex;gap:10px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+.loc-chip{display:flex;gap:7px;align-items:center;background:var(--paper-warm);border-radius:999px;padding:9px 15px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.loc-chip svg{width:14px;height:14px;color:var(--persimmon)}
+.loc-chip.online{background:transparent;color:var(--jade)}
+.loc-chip.online .dot{width:8px;height:8px;border-radius:50%;background:var(--jade)}
+
+/* ---------- pills ---------- */
+.pills{display:flex;gap:10px;overflow-x:auto;padding:2px 0 6px;margin:0 -18px 6px;padding-left:18px;padding-right:18px}
+.pills::-webkit-scrollbar{height:0}
+.pill{
+  flex:none;display:flex;gap:8px;align-items:center;background:#fff;border:1px solid var(--hairline);
+  border-radius:999px;padding:12px 18px;font-size:14px;font-weight:600;color:var(--ink-2);cursor:pointer;
+  box-shadow:var(--shadow-sm);transition:.2s;white-space:nowrap;
+}
+.pill .emoji{font-size:15px}
+.pill svg{width:16px;height:16px;flex:none}
+.pill.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pill[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* ---------- section head ---------- */
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;margin:26px 0 14px}
+.section-head .st{font-size:24px;font-weight:800;letter-spacing:-.02em}
+.section-head .sk{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-top:5px}
+.see-all{background:#fff;border:1px solid var(--hairline);border-radius:999px;padding:9px 16px;font-size:12.5px;font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm)}
+.send-btn{width:48px;height:48px;border-radius:16px;background:var(--persimmon);display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 22px -8px rgba(236,90,43,.6)}
+.send-btn svg{width:20px;height:20px;color:#fff}
+
+/* ---------- curated (horizontal) ---------- */
+.h-scroll{display:flex;gap:14px;overflow-x:auto;margin:0 -18px;padding:4px 18px 8px}
+.h-scroll::-webkit-scrollbar{height:0}
+.studio-card{flex:none;width:200px;cursor:pointer}
+.studio-card .cover{
+  position:relative;height:210px;border-radius:24px;overflow:hidden;box-shadow:var(--shadow);
+  display:flex;align-items:flex-end;padding:16px;
+}
+.studio-card .cover .cat{
+  position:absolute;top:14px;left:14px;background:rgba(20,16,14,.55);backdrop-filter:blur(6px);
+  color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.12em;padding:7px 12px;border-radius:999px;
+}
+.studio-card .cover .nm{position:relative;color:#fff;font-size:20px;font-weight:800;line-height:1.05;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+.studio-card .meta{display:flex;align-items:center;gap:10px;margin-top:11px;font-size:13px;font-weight:600}
+.studio-card .meta .star{color:var(--persimmon);display:flex;align-items:center;gap:4px}
+.studio-card .meta .star svg{width:14px;height:14px}
+.studio-card .meta .sep{color:var(--faint)}
+.avatars{display:flex;margin-left:auto}
+.avatars span{width:24px;height:24px;border-radius:50%;border:2px solid var(--paper);margin-left:-9px;background:#ccc;background-size:cover}
+
+/* ---------- near you (large card) ---------- */
+.near-card{
+  background:#fff;border:1px solid var(--hairline);border-radius:26px;padding:14px;display:flex;gap:14px;
+  box-shadow:var(--shadow);margin-bottom:16px;cursor:pointer;
+}
+.near-card .thumb{width:104px;height:120px;border-radius:18px;flex:none;position:relative;overflow:hidden}
+.near-card .thumb .heart{position:absolute;top:8px;left:8px}
+.near-card .body{flex:1;min-width:0;display:flex;flex-direction:column}
+.near-card .cat{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--persimmon);display:flex;align-items:center;gap:6px}
+.near-card .cat svg{width:13px;height:13px;color:var(--jade)}
+.near-card .nm{font-size:20px;font-weight:800;line-height:1.05;margin:4px 0 6px;letter-spacing:-.01em}
+.near-card .loc{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-2);font-weight:500}
+.near-card .loc svg{width:13px;height:13px;color:var(--persimmon)}
+.near-card .rate{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;margin-top:6px}
+.near-card .rate .star{color:var(--persimmon);display:flex;gap:4px;align-items:center}
+.near-card .rate .star svg{width:14px;height:14px}
+.near-card .rate .rev{color:var(--faint);font-weight:500}
+.near-card .foot{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--hairline);margin-top:11px;padding-top:11px}
+.near-card .price .lbl{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:700;display:block}
+.near-card .price .amt{font-size:17px;font-weight:800}
+.near-card .price .amt small{font-size:12px;color:var(--muted);font-weight:600}
+
+.cta-dark{
+  background:var(--ink);color:#fff;border:0;border-radius:999px;padding:13px 18px;font-family:var(--sans);
+  font-size:13.5px;font-weight:700;display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+}
+.cta-dark svg{width:16px;height:16px}
+
+/* ---------- explore: header ---------- */
+.explore-h h1{margin:0;font-family:var(--serif);font-size:42px;line-height:1;letter-spacing:-.01em}
+.explore-h h1 em{font-style:italic;color:var(--persimmon)}
+.explore-h .sub{margin-top:8px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700}
+
+/* masonry grid */
+.grid{column-count:2;column-gap:13px;margin-top:18px}
+.grid-card{
+  break-inside:avoid;display:inline-block;width:100%;margin-bottom:13px;background:#fff;border:1px solid var(--hairline);
+  border-radius:22px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;
+}
+.grid-card .cover{position:relative;width:100%;display:block}
+.grid-card .cover .badge{
+  position:absolute;top:11px;left:11px;background:rgba(20,16,14,.6);backdrop-filter:blur(6px);color:#fff;
+  font-size:9.5px;font-weight:700;letter-spacing:.1em;padding:6px 10px;border-radius:999px;
+}
+.grid-card .cover .badge.comp{background:var(--persimmon)}
+.grid-card .body{padding:13px 13px 15px}
+.grid-card .ttl{font-size:16px;font-weight:800;line-height:1.12;letter-spacing:-.01em}
+.grid-card .by{font-size:12.5px;color:var(--muted);margin-top:3px;font-weight:500}
+.grid-card .row{display:flex;align-items:center;justify-content:space-between;margin-top:11px}
+.grid-card .row .loc{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-2);font-weight:500}
+.grid-card .row .loc svg{width:12px;height:12px;color:var(--persimmon)}
+.grid-card .row .pr{font-size:14px;font-weight:800}
+.grid-card .row .pr.free{color:var(--jade)}
+
+/* heart button */
+.heart{
+  width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.88);backdrop-filter:blur(6px);
+  display:grid;place-items:center;cursor:pointer;border:0;position:absolute;top:9px;right:9px;color:var(--ink);
+  box-shadow:var(--shadow-sm);
+}
+/* expand tap area to 44x44 without growing the visual */
+.heart::after{content:"";position:absolute;inset:-5px}
+.heart svg{width:17px;height:17px}
+.heart.on{color:var(--persimmon)}
+.heart.on svg path{fill:var(--persimmon)}
+
+/* ---------- events ---------- */
+.events-h h1{margin:0;font-family:var(--serif);font-size:46px;line-height:.95;letter-spacing:-.01em}
+.events-h h1 em{font-style:italic;color:var(--persimmon);display:block}
+.up-row{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:22px 0 14px}
+.up-row .hot{color:var(--persimmon);display:flex;align-items:center;gap:5px;text-transform:none;letter-spacing:0;font-size:12.5px}
+.up-row .hot svg{width:14px;height:14px}
+
+.event-card{background:#fff;border:1px solid var(--hairline);border-radius:26px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:18px}
+.event-card .banner{position:relative;height:188px;display:flex;flex-direction:column;justify-content:space-between;padding:14px}
+.event-card .banner .tags{display:flex;gap:8px}
+.event-card .banner .tag{font-size:10px;font-weight:700;letter-spacing:.08em;padding:7px 12px;border-radius:999px;color:#fff;background:rgba(20,16,14,.55);backdrop-filter:blur(6px)}
+.event-card .banner .tag.pink{background:var(--persimmon)}
+.event-card .banner .tag.hot{background:rgba(20,16,14,.7);display:flex;align-items:center;gap:5px}
+.event-card .banner .tag.hot svg{width:13px;height:13px;color:var(--persimmon)}
+.event-card .banner .b-bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.event-card .banner .e-by{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.8);font-weight:700}
+.event-card .banner .e-nm{font-family:var(--serif);font-size:28px;line-height:1.02;color:#fff;font-weight:400;text-shadow:0 2px 12px rgba(0,0,0,.5);margin-top:4px}
+.event-card .banner .e-price{background:#fff;border-radius:16px;padding:8px 14px;text-align:center;flex:none}
+.event-card .banner .e-price .l{font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:700;display:block}
+.event-card .banner .e-price .v{font-size:15px;font-weight:800}
+.event-card .banner .e-price .v.free{color:var(--jade)}
+.event-card .ebody{padding:16px}
+.ww-row{display:flex;gap:12px}
+.ww{flex:1;display:flex;gap:10px;align-items:center}
+.ww .ic{width:36px;height:36px;border-radius:12px;background:var(--persimmon-soft);display:grid;place-items:center;flex:none}
+.ww .ic svg{width:17px;height:17px;color:var(--persimmon)}
+.ww .l{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.ww .v{font-size:14px;font-weight:800;line-height:1.1;margin-top:2px}
+.reward{background:var(--paper-warm);border-radius:18px;padding:14px;display:flex;gap:12px;align-items:center;margin:14px 0}
+.reward .tr{width:40px;height:40px;border-radius:12px;background:#fff;display:grid;place-items:center;flex:none}
+.reward .tr svg{width:20px;height:20px;color:var(--gold)}
+.reward .rl{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.reward .rv{font-size:15px;font-weight:800;color:var(--gold);line-height:1.05;margin-top:2px}
+.reward .spots{margin-left:auto;text-align:right;flex:none}
+.reward .spots .s{font-size:12.5px;font-weight:700;color:var(--jade)}
+.reward .bar{width:90px;height:6px;border-radius:99px;background:#e4dccb;margin-top:6px;overflow:hidden}
+.reward .bar i{display:block;height:100%;background:var(--jade);border-radius:99px}
+.event-card .view{width:100%;justify-content:center;margin-top:2px}
+
+/* ---------- profile (placeholder) ---------- */
+.profile-wrap{text-align:center;padding-top:40px}
+.profile-wrap .pic{width:96px;height:96px;border-radius:50%;margin:0 auto 16px;background:linear-gradient(135deg,#f0c9a0,#ec5a2b);display:grid;place-items:center;color:#fff;font-family:var(--serif);font-style:italic;font-size:40px}
+.profile-wrap h2{font-family:var(--serif);font-size:32px;margin:0 0 4px}
+.pstats{display:flex;gap:12px;margin:24px 0}
+.pstat{flex:1;background:#fff;border:1px solid var(--hairline);border-radius:18px;padding:16px 10px;box-shadow:var(--shadow-sm)}
+.pstat .n{font-family:var(--serif);font-size:30px;line-height:1}
+.pstat .t{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:6px}
+.plist{text-align:left;margin-top:8px}
+.prow{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--hairline);border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:var(--shadow-sm);font-weight:600}
+.prow svg{width:20px;height:20px;color:var(--persimmon)}
+.prow .chev{margin-left:auto;color:var(--faint)}
+
+/* ---------- bottom nav ---------- */
+.tabbar{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:18px;z-index:50;
+  display:flex;align-items:center;gap:4px;padding:9px;border-radius:999px;
+  box-shadow:var(--shadow-lg);transition:.3s;
+}
+.tabbar.dark{background:rgba(22,18,15,.92);backdrop-filter:blur(14px)}
+.tabbar.light{background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border:1px solid var(--hairline)}
+.tab{
+  border:0;background:transparent;display:flex;align-items:center;gap:8px;border-radius:999px;
+  padding:12px;cursor:pointer;color:var(--faint);transition:.25s;font-family:var(--sans);font-weight:700;font-size:14px;
+}
+.tabbar.dark .tab{color:rgba(255,255,255,.55)}
+.tab svg{width:21px;height:21px}
+.tab .lbl{display:none;white-space:nowrap}
+.tab.active{background:var(--persimmon);color:#fff;padding:12px 20px}
+.tab.active .lbl{display:inline}
+
+/* ---------- bottom sheet ---------- */
+.backdrop{position:absolute;inset:0;z-index:60;background:rgba(20,16,14,.42);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:.3s}
+.backdrop.show{opacity:1;pointer-events:auto}
+.sheet{
+  position:absolute;left:0;right:0;bottom:0;z-index:61;background:#fff;border-radius:30px 30px 0 0;
+  padding:10px 22px calc(22px + env(safe-area-inset-bottom));transform:translateY(110%);transition:transform .36s cubic-bezier(.2,.8,.2,1);
+  box-shadow:0 -20px 50px -20px rgba(0,0,0,.4);
+}
+.sheet.show{transform:translateY(0)}
+.sheet .grab{width:44px;height:5px;border-radius:99px;background:var(--hairline);margin:4px auto 16px}
+.sheet .sh-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+.sheet h3{font-family:var(--serif);font-style:italic;font-size:30px;margin:0;font-weight:400}
+.sheet .sh-sub{font-size:12px;color:var(--muted);margin:0 0 18px;font-weight:500}
+.sheet .x{position:relative;width:38px;height:38px;border-radius:50%;border:1px solid var(--hairline);background:#fff;display:grid;place-items:center;cursor:pointer;flex:none}
+.sheet .x::after{content:"";position:absolute;inset:-4px}
+.sheet .x svg{width:16px;height:16px}
+.slot-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px}
+.slot{border:1px solid var(--hairline);border-radius:14px;padding:12px 8px;text-align:center;cursor:pointer;background:var(--paper);font-family:var(--sans);color:var(--ink);width:100%;min-height:56px}
+.slot .d{display:block;font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.slot .t{display:block;font-size:14px;font-weight:800;margin-top:3px}
+.slot.sel{background:var(--ink);border-color:var(--ink)}
+.slot.sel .d,.slot.sel .t{color:#fff}
+.sheet .confirm{width:100%;justify-content:center;background:var(--persimmon);padding:16px;font-size:15px;border-radius:18px}
+
+/* ---------- toast ---------- */
+.toast{
+  position:absolute;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);z-index:70;
+  background:var(--ink);color:#fff;padding:13px 20px;border-radius:999px;font-size:13.5px;font-weight:600;
+  opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:9px;box-shadow:var(--shadow-lg);white-space:nowrap;
+}
+.toast svg{width:16px;height:16px;color:var(--jade)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* category cover gradients */
+.cv-music{background:linear-gradient(150deg,#2b2b33,#4a4a57 60%,#6b5d52)}
+.cv-dance{background:linear-gradient(150deg,#3a2a4a,#7a4a6a 55%,#caa14a)}
+.cv-arts{background:linear-gradient(150deg,#b85a2a,#e08a3a 45%,#3a5a8a)}
+.cv-yoga{background:linear-gradient(150deg,#1e5c4a,#3a8a6a 60%,#d8c98a)}
+.cv-pottery{background:linear-gradient(150deg,#5a4a3a,#8a7a5a 60%,#3a3a3a)}
+.cv-event{background:linear-gradient(150deg,#3a1a4a,#a02a5a 50%,#e0506a)}
+.cv-rock{background:linear-gradient(150deg,#1a1a2a,#3a3a6a 50%,#6a2a4a)}
+.cv-comp{background:linear-gradient(150deg,#2a2a2a,#5a4a4a 50%,#9a6a4a)}
+.cv-paint{background:linear-gradient(150deg,#e0702a,#c0306a 35%,#3a40a0 70%,#1ea08a)}
+.tex{position:relative}
+.tex::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.10) 1px, transparent 1.4px);background-size:13px 13px;opacity:.5}
+.h-160{height:160px}.h-200{height:200px}.h-130{height:130px}.h-150{height:150px}
+
+/* ---------- tabular figures for data (prices, ratings, counts) ---------- */
+.near-card .price .amt,.near-card .rate,.studio-card .meta,.grid-card .row .pr,
+.e-price .v,.slot .t,.reward .s,.pstat .n,.statusbar span,#sheetPrice{font-variant-numeric:tabular-nums}
+
+/* ---------- small-screen: scale the device frame so it never overflows ---------- */
+@media (max-width:460px){
+  body{padding:0;align-items:stretch}
+  .phone{width:100%;height:100dvh;border-radius:0;box-shadow:none}
+}
+
+/* ---------- respect reduced-motion ---------- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+  .screen.active{animation:none}
+  .sheet{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- status bar -->
+  <div class="statusbar" aria-hidden="true">
+    <span>9:41</span>
+    <span class="sb-icons">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 17h2v-5H2v5zm4 0h2V9H6v8zm4 0h2V5h-2v12zm4 0h2v-9h-2v9zm4 0h2V7h-2v10z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4C7 4 2.7 6 0 9l12 15L24 9c-2.7-3-7-5-12-5z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2.5"/><rect x="4" y="9" width="13" height="6" rx="1" fill="currentColor"/><path d="M22 10v4" stroke-linecap="round"/></svg>
+    </span>
+  </div>
+
+  <div class="screens">
+
+    <!-- ============ DISCOVER ============ -->
+    <section class="screen active" id="discover">
+      <div class="head-row">
+        <div class="hero">
+          <div class="kicker">Creative Space</div>
+          <h1><span class="l1">Refine your</span><span class="l2">Artistry.</span></h1>
+        </div>
+        <button class="icon-btn" data-toast="Profile" aria-label="Open your profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4" stroke-linecap="round"/></svg>
+        <label for="discover-search" class="sr-only">Find a mentor or studio</label>
+        <input id="discover-search" type="search" enterkeyhint="search" autocomplete="off" placeholder="Find a mentor or studio…" />
+      </div>
+
+      <div class="loc-row">
+        <span class="loc-chip"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Delhi-NCR · 5km</span>
+        <span class="loc-chip online"><span class="dot"></span>Online available</span>
+      </div>
+
+      <div class="pills" data-pillgroup role="group" aria-label="Filter studios by category">
+        <button class="pill active" aria-pressed="true">All</button>
+        <button class="pill" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><path d="M9 18V5l12-2v11" stroke-linecap="round" stroke-linejoin="round"/></svg>Music</button>
+        <button class="pill" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="13" cy="5" r="2"/><path d="M13 7l-2 5 4 3 1 6M11 12l-4 2-2 5M11 12l5-1" stroke-linecap="round" stroke-linejoin="round"/></svg>Dance</button>
+        <button class="pill" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-1 2-2s-.8-1.6-.8-2.4c0-.9.7-1.6 1.6-1.6H18a3 3 0 0 0 3-3c0-3.9-4-6.4-9-6.4z" stroke-linejoin="round"/><circle cx="8" cy="11" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="10" r="1" fill="currentColor" stroke="none"/></svg>Arts</button>
+        <button class="pill" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="5" r="2"/><path d="M12 8c-3 2-6 2-9 2 1 4 5 6 9 6s8-2 9-6c-3 0-6 0-9-2zM12 16v5M9 21h6" stroke-linecap="round" stroke-linejoin="round"/></svg>Yoga</button>
+      </div>
+
+      <div class="section-head">
+        <div><span class="st">Curated Studios</span><span class="sk">Highest rated this week</span></div>
+        <button class="see-all" data-toast="Viewing all studios">View All</button>
+      </div>
+
+      <div class="h-scroll">
+        <div class="studio-card" data-action="book" data-studio="The Rhythm House" data-price="150">
+          <div class="cover cv-music tex"><span class="cat">MUSIC</span><span class="nm">The Rhythm<br>House</span></div>
+          <div class="meta"><span class="star"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.5 7 .6-5.3 4.6L18 21l-6-3.6L6 21l1.3-7.3L2 9.1l7-.6z"/></svg>4.9</span><span class="sep">·</span><span>1.2 km</span>
+            <span class="avatars"><span style="background:#d8a"></span><span style="background:#8ad"></span><span style="background:#da8"></span></span>
+          </div>
+        </div>
+        <div class="studio-card" data-action="book" data-studio="Step Up Dance Studio" data-price="200">
+          <div class="cover cv-dance tex"><span class="cat">DANCE</span><span class="nm">Step Up<br>Dance Studio</span></div>
+          <div class="meta"><span class="star"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.5 7 .6-5.3 4.6L18 21l-6-3.6L6 21l1.3-7.3L2 9.1l7-.6z"/></svg>4.8</span><span class="sep">·</span><span>2.5 km</span></div>
+        </div>
+        <div class="studio-card" data-action="book" data-studio="Clay &amp; Kiln Pottery" data-price="350">
+          <div class="cover cv-pottery tex"><span class="cat">ARTS</span><span class="nm">Clay &amp; Kiln<br>Pottery</span></div>
+          <div class="meta"><span class="star"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.5 7 .6-5.3 4.6L18 21l-6-3.6L6 21l1.3-7.3L2 9.1l7-.6z"/></svg>4.7</span><span class="sep">·</span><span>3.1 km</span></div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <div><span class="st">Near Your Workspace</span><span class="sk">12 creative centers nearby</span></div>
+        <button class="send-btn" data-toast="Showing map view" aria-label="View on map"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 11l18-8-8 18-2-7-8-3z"/></svg></button>
+      </div>
+
+      <div class="near-card" data-action="book" data-studio="The Rhythm House" data-price="150">
+        <div class="thumb cv-music tex"><button class="heart" aria-label="Save to favourites" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9C.5 8 3 4.5 6.5 5 9 5.4 12 8 12 8s3-2.6 5.5-3c3.5-.5 6 3 3.5 7-2.5 4.5-9 9-9 9z"/></svg></button></div>
+        <div class="body">
+          <div class="cat">MUSIC <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-1 14l-4-4 1.4-1.4L11 13.2l5.6-5.6L18 9z"/></svg></div>
+          <div class="nm">The Rhythm House</div>
+          <div class="loc"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Hauz Khas · 1.2 km</div>
+          <div class="rate"><span class="star"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.5 7 .6-5.3 4.6L18 21l-6-3.6L6 21l1.3-7.3L2 9.1l7-.6z"/></svg>4.9</span><span class="rev">84 reviews</span></div>
+          <div class="foot">
+            <div class="price"><span class="lbl">Trial starting at</span><span class="amt">₹150</span></div>
+            <button class="cta-dark">Book Session <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="near-card" data-action="book" data-studio="Step Up Dance Studio" data-price="200">
+        <div class="thumb cv-dance tex"><button class="heart on" aria-label="Remove from favourites" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9C.5 8 3 4.5 6.5 5 9 5.4 12 8 12 8s3-2.6 5.5-3c3.5-.5 6 3 3.5 7-2.5 4.5-9 9-9 9z"/></svg></button></div>
+        <div class="body">
+          <div class="cat">DANCE <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-1 14l-4-4 1.4-1.4L11 13.2l5.6-5.6L18 9z"/></svg></div>
+          <div class="nm">Step Up Dance Studio</div>
+          <div class="loc"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Saket · 2.5 km</div>
+          <div class="rate"><span class="star"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.5 7 .6-5.3 4.6L18 21l-6-3.6L6 21l1.3-7.3L2 9.1l7-.6z"/></svg>4.8</span><span class="rev">120 reviews</span></div>
+          <div class="foot">
+            <div class="price"><span class="lbl">Trial starting at</span><span class="amt">₹200</span></div>
+            <button class="cta-dark">Book Session <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ EXPLORE ============ -->
+    <section class="screen" id="explore">
+      <div class="head-row explore-h">
+        <div>
+          <h1>Discover <em>Creators</em></h1>
+          <div class="sub">Partners · Studios · Events</div>
+        </div>
+        <button class="icon-btn" data-toast="Filters" aria-label="Filters">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4 2v-8z" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <div class="pills" data-pillgroup role="group" aria-label="Filter creators by category" style="margin-top:18px">
+        <button class="pill active" aria-pressed="true">All</button>
+        <button class="pill" aria-pressed="false">Music</button>
+        <button class="pill" aria-pressed="false">Dance</button>
+        <button class="pill" aria-pressed="false">Art</button>
+        <button class="pill" aria-pressed="false">Yoga</button>
+      </div>
+
+      <div class="grid">
+        <div class="grid-card" data-toast="Opening Oil Painting class">
+          <div class="cover cv-paint tex h-200"><span class="badge">CLASS</span><button class="heart" aria-label="Save to favourites" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9C.5 8 3 4.5 6.5 5 9 5.4 12 8 12 8s3-2.6 5.5-3c3.5-.5 6 3 3.5 7-2.5 4.5-9 9-9 9z"/></svg></button></div>
+          <div class="body"><div class="ttl">Oil Painting for Beginners</div><div class="by">Brush &amp; Canvas</div>
+            <div class="row"><span class="loc"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Hauz Khas</span><span class="pr">₹1200</span></div>
+          </div>
+        </div>
+        <div class="grid-card" data-toast="Opening Hip Hop Battle">
+          <div class="cover cv-event tex h-130"><span class="badge">EVENT</span><button class="heart" aria-label="Save to favourites" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9C.5 8 3 4.5 6.5 5 9 5.4 12 8 12 8s3-2.6 5.5-3c3.5-.5 6 3 3.5 7-2.5 4.5-9 9-9 9z"/></svg></button></div>
+          <div class="body"><div class="ttl">Modern Hip Hop Battle</div><div class="by">Urban Movement</div>
+            <div class="row"><span class="loc"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Saket</span><span class="pr">₹199</span></div>
+          </div>
+        </div>
+        <div class="grid-card" data-toast="Opening Indie Rock Night">
+          <div class="cover cv-rock tex h-150"><span class="badge">EVENT</span><button class="heart" aria-label="Save to favourites" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9C.5 8 3 4.5 6.5 5 9 5.4 12 8 12 8s3-2.6 5.5-3c3.5-.5 6 3 3.5 7-2.5 4.5-9 9-9 9z"/></svg></button></div>
+          <div class="body"><div class="ttl">Indie Rock Night</div><div class="by">The Rhythm House</div>
+            <div class="row"><span class="loc"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Hard Rock Cafe</span><span class="pr free">Free</span></div>
+          </div>
+        </div>
+        <div class="grid-card" data-toast="Opening Pottery workshop">
+          <div class="cover cv-pottery tex h-200"><span class="badge">WORKSHOP</span><button class="heart" aria-label="Save to favourites" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9C.5 8 3 4.5 6.5 5 9 5.4 12 8 12 8s3-2.6 5.5-3c3.5-.5 6 3 3.5 7-2.5 4.5-9 9-9 9z"/></svg></button></div>
+          <div class="body"><div class="ttl">Hand-building Pottery</div><div class="by">Clay &amp; Kiln</div>
+            <div class="row"><span class="loc"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Lajpat Nagar</span><span class="pr">₹4500</span></div>
+          </div>
+        </div>
+        <div class="grid-card" data-toast="Opening National Canvas Championship">
+          <div class="cover cv-comp tex h-130"><span class="badge comp">COMPETITION</span><button class="heart" aria-label="Save to favourites" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9C.5 8 3 4.5 6.5 5 9 5.4 12 8 12 8s3-2.6 5.5-3c3.5-.5 6 3 3.5 7-2.5 4.5-9 9-9 9z"/></svg></button></div>
+          <div class="body"><div class="ttl">National Canvas Championship</div><div class="by">Findemy Arts</div>
+            <div class="row"><span class="loc"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Museum Rd</span><span class="pr">₹499</span></div>
+          </div>
+        </div>
+        <div class="grid-card" data-toast="Opening Modern Dance class">
+          <div class="cover cv-dance tex h-150"><span class="badge">CLASS</span><button class="heart on" aria-label="Remove from favourites" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9C.5 8 3 4.5 6.5 5 9 5.4 12 8 12 8s3-2.6 5.5-3c3.5-.5 6 3 3.5 7-2.5 4.5-9 9-9 9z"/></svg></button></div>
+          <div class="body"><div class="ttl">Modern Dance Flow</div><div class="by">Step Up Studio</div>
+            <div class="row"><span class="loc"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Saket</span><span class="pr">₹900</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ EVENTS ============ -->
+    <section class="screen" id="events">
+      <div class="head-row events-h">
+        <div>
+          <div class="kicker" style="margin-bottom:6px">Beyond the Academy</div>
+          <h1><em>Live</em>Events.</h1>
+        </div>
+        <button class="icon-btn" data-toast="Filters" aria-label="Filters">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4 2v-8z" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <div class="pills" data-pillgroup role="group" aria-label="Filter events by type" style="margin-top:18px">
+        <button class="pill active" aria-pressed="true">All</button>
+        <button class="pill" aria-pressed="false">Competitions</button>
+        <button class="pill" aria-pressed="false">Talent Hunts</button>
+        <button class="pill" aria-pressed="false">Meetups</button>
+      </div>
+
+      <div class="up-row">Upcoming in Delhi-NCR<span class="hot"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s5 4 5 9a5 5 0 01-10 0c0-1.5 1-3 1-3s.5 2 2 2c0-3-1-5 2-8z"/></svg>Last few entries</span></div>
+
+      <div class="event-card">
+        <div class="banner cv-comp tex">
+          <div class="tags"><span class="tag pink">COMPETITION</span><span class="tag hot"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s5 4 5 9a5 5 0 01-10 0c0-1.5 1-3 1-3s.5 2 2 2c0-3-1-5 2-8z"/></svg>HOT EVENT</span></div>
+          <div class="b-bottom">
+            <div><div class="e-by">By Findemy Arts</div><div class="e-nm">The National Canvas<br>Championship</div></div>
+            <div class="e-price"><span class="l">Price</span><span class="v">₹499</span></div>
+          </div>
+        </div>
+        <div class="ebody">
+          <div class="ww-row">
+            <div class="ww"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4" stroke-linecap="round"/></svg></span><div><div class="l">When</div><div class="v">15 June</div></div></div>
+            <div class="ww"><span class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg></span><div><div class="l">Where</div><div class="v">Museum of<br>Fine Arts</div></div></div>
+          </div>
+          <div class="reward">
+            <span class="tr"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h12v2h3v3a4 4 0 01-4 4h-.5A6 6 0 0113 19v1h3v2H8v-2h3v-1a6 6 0 01-3.5-6H7a4 4 0 01-4-4V6h3V4zm0 4H5v1a2 2 0 002 2V8zm12 0v3a2 2 0 002-2V8h-2z"/></svg></span>
+            <div><div class="rl">Top Reward</div><div class="rv">Cash Prize + Trophy</div></div>
+            <div class="spots"><div class="s">8 Spots Left</div><div class="bar"><i style="width:62%"></i></div></div>
+          </div>
+          <button class="cta-dark view" data-toast="Opening event details">View Event Details <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="banner cv-event tex">
+          <div class="tags"><span class="tag">TALENT HUNT</span></div>
+          <div class="b-bottom">
+            <div><div class="e-by">By Urban Crew</div><div class="e-nm">Street Dance<br>Battle 2026</div></div>
+            <div class="e-price"><span class="l">Price</span><span class="v free">Free</span></div>
+          </div>
+        </div>
+        <div class="ebody">
+          <div class="ww-row">
+            <div class="ww"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4" stroke-linecap="round"/></svg></span><div><div class="l">When</div><div class="v">22 June</div></div></div>
+            <div class="ww"><span class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg></span><div><div class="l">Where</div><div class="v">Central Plaza</div></div></div>
+          </div>
+          <div class="reward">
+            <span class="tr"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h12v2h3v3a4 4 0 01-4 4h-.5A6 6 0 0113 19v1h3v2H8v-2h3v-1a6 6 0 01-3.5-6H7a4 4 0 01-4-4V6h3V4zm0 4H5v1a2 2 0 002 2V8zm12 0v3a2 2 0 002-2V8h-2z"/></svg></span>
+            <div><div class="rl">Top Reward</div><div class="rv">Global Tour Ticket</div></div>
+            <div class="spots"><div class="s">5 Spots Left</div><div class="bar"><i style="width:40%"></i></div></div>
+          </div>
+          <button class="cta-dark view" data-toast="Opening event details">View Event Details <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PROFILE ============ -->
+    <section class="screen" id="profile">
+      <div class="profile-wrap">
+        <div class="pic">V</div>
+        <h2>Varun Mehta</h2>
+        <div class="muted" style="font-weight:600">Explorer · Delhi-NCR</div>
+        <div class="pstats">
+          <div class="pstat"><div class="n">3</div><div class="t">Trials</div></div>
+          <div class="pstat"><div class="n">1</div><div class="t">Enrolled</div></div>
+          <div class="pstat"><div class="n">5</div><div class="t">Reviews</div></div>
+        </div>
+        <div class="plist">
+          <div class="prow" data-toast="Upcoming trials"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4" stroke-linecap="round"/></svg>Upcoming trials<span class="chev">›</span></div>
+          <div class="prow" data-toast="Saved studios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9C.5 8 3 4.5 6.5 5 9 5.4 12 8 12 8s3-2.6 5.5-3c3.5-.5 6 3 3.5 7-2.5 4.5-9 9-9 9z"/></svg>Saved studios<span class="chev">›</span></div>
+          <div class="prow" data-toast="My classes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4z"/><path d="M4 9h16" stroke-linecap="round"/></svg>My classes<span class="chev">›</span></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- bottom nav -->
+  <nav class="tabbar dark" aria-label="Primary">
+    <button class="tab active" data-screen="discover" aria-label="Discover" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="currentColor" stroke="none"/></svg>
+      <span class="lbl">Discover</span>
+    </button>
+    <button class="tab" data-screen="explore" aria-label="Explore">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2l2.4 5.6L20 9l-5.6 2.4L12 17l-2.4-5.6L4 9l5.6-1.4z" fill="currentColor" stroke="none"/></svg>
+      <span class="lbl">Explore</span>
+    </button>
+    <button class="tab" data-screen="events" aria-label="Events">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 3v4M16 3v4" stroke-linecap="round"/></svg>
+      <span class="lbl">Events</span>
+    </button>
+    <button class="tab" data-screen="profile" aria-label="Profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke-linecap="round"/></svg>
+      <span class="lbl">Profile</span>
+    </button>
+  </nav>
+
+  <!-- bottom sheet: book a trial -->
+  <div class="backdrop" id="backdrop"></div>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-describedby="sheetSub">
+    <div class="grab" aria-hidden="true"></div>
+    <div class="sh-head">
+      <div><h3 id="sheetTitle">Book a trial</h3></div>
+      <button class="x" id="sheetClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></button>
+    </div>
+    <p class="sh-sub" id="sheetSub">Pick a slot — your spot is held for 5 minutes.</p>
+    <div class="slot-grid" data-slotgroup role="group" aria-label="Choose a trial slot">
+      <button type="button" class="slot sel" aria-pressed="true"><span class="d">Today</span><span class="t">5:00 PM</span></button>
+      <button type="button" class="slot" aria-pressed="false"><span class="d">Tomorrow</span><span class="t">10:00 AM</span></button>
+      <button type="button" class="slot" aria-pressed="false"><span class="d">Tomorrow</span><span class="t">6:30 PM</span></button>
+      <button type="button" class="slot" aria-pressed="false"><span class="d">Sat 14</span><span class="t">11:00 AM</span></button>
+      <button type="button" class="slot" aria-pressed="false"><span class="d">Sat 14</span><span class="t">4:00 PM</span></button>
+      <button type="button" class="slot" aria-pressed="false"><span class="d">Sun 15</span><span class="t">9:00 AM</span></button>
+    </div>
+    <button class="cta-dark confirm" id="sheetConfirm">Confirm trial · <span id="sheetPrice">₹150</span></button>
+  </div>
+
+  <!-- toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5z"/></svg><span id="toastMsg"></span></div>
+
+</div>
+
+<script>
+(function(){
+  var phone = document.querySelector('.phone');
+  var screens = document.querySelectorAll('.screen');
+  var tabbar = document.querySelector('.tabbar');
+  var tabs = document.querySelectorAll('.tab');
+
+  // --- tab / screen navigation ---
+  function show(id){
+    screens.forEach(function(s){ s.classList.toggle('active', s.id===id); });
+    tabs.forEach(function(t){
+      var on = t.dataset.screen===id;
+      t.classList.toggle('active', on);
+      if(on){ t.setAttribute('aria-current','page'); } else { t.removeAttribute('aria-current'); }
+    });
+    // discover uses the dark floating pill; other screens use the light pill
+    tabbar.classList.toggle('dark', id==='discover');
+    tabbar.classList.toggle('light', id!=='discover');
+    var active = document.getElementById(id);
+    if(active) active.scrollTop = 0;
+  }
+  tabs.forEach(function(t){ t.addEventListener('click', function(){ show(t.dataset.screen); }); });
+
+  // --- pill groups (single active) ---
+  document.querySelectorAll('[data-pillgroup]').forEach(function(group){
+    group.addEventListener('click', function(e){
+      var pill = e.target.closest('.pill'); if(!pill) return;
+      group.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); p.setAttribute('aria-pressed','false'); });
+      pill.classList.add('active'); pill.setAttribute('aria-pressed','true');
+    });
+  });
+
+  // --- heart toggles ---
+  document.addEventListener('click', function(e){
+    var h = e.target.closest('.heart');
+    if(h){
+      e.stopPropagation();
+      var on = h.classList.toggle('on');
+      h.setAttribute('aria-pressed', on ? 'true' : 'false');
+      h.setAttribute('aria-label', on ? 'Remove from favourites' : 'Save to favourites');
+    }
+  });
+
+  // --- toast ---
+  var toast = document.getElementById('toast'), toastMsg = document.getElementById('toastMsg'), tT;
+  function showToast(msg){
+    toastMsg.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(tT); tT = setTimeout(function(){ toast.classList.remove('show'); }, 1900);
+  }
+  document.querySelectorAll('[data-toast]').forEach(function(el){
+    el.addEventListener('click', function(e){
+      if(e.target.closest('.heart')) return;   // let heart toggle handle its own click
+      e.stopPropagation(); showToast(el.dataset.toast);
+    });
+  });
+
+  // --- booking sheet ---
+  var backdrop = document.getElementById('backdrop'), sheet = document.getElementById('sheet');
+  var sheetTitle = document.getElementById('sheetTitle'), sheetPrice = document.getElementById('sheetPrice');
+  var lastFocused = null;
+  function openSheet(studio, price){
+    sheetTitle.textContent = studio ? ('Trial · ' + studio) : 'Book a trial';
+    sheetPrice.textContent = '₹' + (price || '150');
+    lastFocused = document.activeElement;
+    backdrop.classList.add('show'); sheet.classList.add('show');
+    // move focus into the sheet for keyboard / screen-reader users
+    setTimeout(function(){ document.getElementById('sheetClose').focus(); }, 60);
+  }
+  function closeSheet(){
+    backdrop.classList.remove('show'); sheet.classList.remove('show');
+    if(lastFocused && lastFocused.focus){ lastFocused.focus(); }
+  }
+
+  document.querySelectorAll('[data-action="book"]').forEach(function(el){
+    el.addEventListener('click', function(e){
+      if(e.target.closest('.heart')) return;
+      openSheet(el.dataset.studio, el.dataset.price);
+    });
+  });
+  document.getElementById('sheetClose').addEventListener('click', closeSheet);
+  backdrop.addEventListener('click', closeSheet);
+
+  // slot selection
+  var slotGroup = document.querySelector('[data-slotgroup]');
+  slotGroup.addEventListener('click', function(e){
+    var slot = e.target.closest('.slot'); if(!slot) return;
+    slotGroup.querySelectorAll('.slot').forEach(function(s){ s.classList.remove('sel'); s.setAttribute('aria-pressed','false'); });
+    slot.classList.add('sel'); slot.setAttribute('aria-pressed','true');
+  });
+
+  // close the sheet with Escape
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && sheet.classList.contains('show')) closeSheet();
+  });
+  document.getElementById('sheetConfirm').addEventListener('click', function(){
+    closeSheet(); setTimeout(function(){ showToast('Trial booked — check your email'); }, 220);
+  });
+})();
+</script>
+</body>
+</html>

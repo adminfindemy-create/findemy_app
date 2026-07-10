@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Findemy · Academy CTA refactor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+  <style>
+    :root {
+      --ink:           #14110F;
+      --ink-soft:      #3A332D;
+      --mist:          #8B7F73;
+      --whisper:       #B5AB9B;
+      --paper:         #F1ECE2;
+      --paper-warm:    #EDE6D8;
+      --ivory:         #FAF6EE;
+      --bone:          #E5DDC9;
+      --hairline:      #DDD3BC;
+      --persimmon:     #D8492A;
+      --persimmon-deep:#B33B1E;
+      --persimmon-soft:#FBE3D9;
+      --jade:          #1E5C5A;
+      --jade-soft:     #C9DCD8;
+      --marigold:      #E8A33D;
+      --marigold-soft: #F7E4C0;
+      --serif: 'Instrument Serif', Georgia, serif;
+      --sans:  'Geist', 'Inter', system-ui, sans-serif;
+
+      --phone-w: 390px;
+      --phone-h: 844px;
+      --phone-bezel: 14px;
+      --phone-radius: 56px;
+      --phone-radius-inner: 42px;
+
+      --sh-frame: 0 60px 120px -40px rgba(0,0,0,0.55), 0 30px 60px -30px rgba(0,0,0,0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #0E0C0A;
+      color: var(--ink);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      min-height: 100vh;
+    }
+
+    img { display: block; max-width: 100%; }
+
+    .page {
+      min-height: 100vh;
+      padding: 56px 32px 80px;
+    }
+    .page-header {
+      max-width: 1400px;
+      margin: 0 auto 48px;
+      color: #F1ECE2;
+      text-align: center;
+    }
+    .page-header h1 {
+      font-family: var(--serif);
+      font-size: 36px;
+      letter-spacing: -0.01em;
+    }
+    .page-header h1 em {
+      color: #E8A33D;
+      font-style: italic;
+    }
+    .page-header p {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #847A6E;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.55;
+    }
+
+    .row {
+      display: flex;
+      gap: 56px;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+    .col .variant-tag {
+      color: #847A6E;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .col .variant-label {
+      color: #F1ECE2;
+      font-family: var(--serif);
+      font-size: 22px;
+    }
+    .col .variant-blurb {
+      color: #B5AB9B;
+      font-size: 12px;
+      line-height: 1.5;
+      width: 360px;
+      text-align: center;
+    }
+
+    /* Phone frame */
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      border-radius: var(--phone-radius);
+      background: linear-gradient(135deg, #2A2A2C 0%, #161617 50%, #2A2A2C 100%);
+      padding: var(--phone-bezel);
+      position: relative;
+      box-shadow: var(--sh-frame);
+      flex-shrink: 0;
+    }
+    .phone::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: calc(var(--phone-radius) - 4px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.4));
+      pointer-events: none;
+    }
+    .screen {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--phone-radius-inner);
+      overflow: hidden;
+      background: var(--paper);
+      position: relative;
+      isolation: isolate;
+    }
+    .island {
+      position: absolute;
+      top: 11px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 116px;
+      height: 32px;
+      background: #000;
+      border-radius: 18px;
+      z-index: 50;
+    }
+    .status-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px 0;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      z-index: 40;
+      pointer-events: none;
+      color: var(--ink);
+    }
+    .status-bar.on-dark { color: #F1ECE2; }
+    .status-bar .signals { display: flex; gap: 5px; align-items: center; }
+    .signal-dots { display: inline-flex; align-items: end; gap: 2px; height: 10px; }
+    .signal-dots i { display: block; width: 3px; background: currentColor; border-radius: 1px; }
+    .signal-dots i:nth-child(1) { height: 4px; }
+    .signal-dots i:nth-child(2) { height: 6px; }
+    .signal-dots i:nth-child(3) { height: 8px; }
+    .signal-dots i:nth-child(4) { height: 10px; }
+    .battery { width: 24px; height: 11px; border: 1px solid currentColor; border-radius: 3px; position: relative; padding: 1px; }
+    .battery::after { content: ""; position: absolute; right: -3px; top: 3px; width: 2px; height: 5px; background: currentColor; border-radius: 0 1px 1px 0; }
+    .battery i { display: block; height: 100%; width: 80%; background: currentColor; border-radius: 1px; }
+
+    /* ============================================================
+       PHONE 1 — Refined academy page
+       ============================================================ */
+    .phone1-scroll {
+      position: absolute;
+      inset: 0;
+      bottom: 154px;          /* sticky CTA (no count line) + nav */
+      overflow: hidden;
+    }
+    .hero {
+      position: relative;
+      height: 290px;
+      background: center/cover no-repeat url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=900&q=80&auto=format');
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 75%, rgba(241,236,226,0.7) 100%);
+    }
+    .hero-top {
+      position: absolute;
+      top: 54px;
+      left: 18px;
+      right: 18px;
+      display: flex;
+      justify-content: space-between;
+      z-index: 2;
+    }
+    .hero-icon {
+      width: 36px; height: 36px;
+      border-radius: 18px;
+      background: rgba(20,16,14,0.40);
+      display: grid; place-items: center;
+      color: #FAF6EE;
+      font-size: 16px;
+      backdrop-filter: blur(6px);
+    }
+    .hero-icons-right { display: flex; gap: 8px; }
+
+    .aca-card {
+      position: relative;
+      margin: -42px 22px 0;
+      background: var(--ivory);
+      border: 1px solid var(--hairline);
+      border-radius: 18px;
+      padding: 18px 18px 14px;
+      z-index: 4;
+    }
+    .aca-card .verified {
+      position: absolute;
+      top: -10px;
+      left: 18px;
+      background: var(--jade);
+      color: var(--ivory);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+    .aca-card .name {
+      font-family: var(--serif);
+      font-size: 28px;
+      color: var(--ink);
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+    }
+    .aca-card .addr {
+      font-size: 12px;
+      color: var(--mist);
+      margin-top: 6px;
+      margin-bottom: 14px;
+    }
+    .stat-row {
+      display: flex;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+      padding: 12px 0;
+    }
+    .stat {
+      flex: 1;
+      text-align: center;
+    }
+    .stat .v {
+      font-family: var(--serif);
+      font-size: 20px;
+      color: var(--ink);
+    }
+    .stat.em .v {
+      color: var(--persimmon);
+      font-style: italic;
+    }
+    .stat .l {
+      font-size: 9px;
+      color: var(--mist);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+      margin-top: 3px;
+    }
+    .coach-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .coach-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--paper-warm);
+      padding: 5px 10px 5px 5px;
+      border-radius: 999px;
+    }
+    .coach-av {
+      width: 20px; height: 20px;
+      border-radius: 10px;
+      background: var(--persimmon);
+      display: grid; place-items: center;
+      color: var(--ivory);
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .coach-name {
+      font-size: 12px;
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* Reviews block (replaces tabs) */
+    .reviews-block {
+      padding: 22px 24px 24px;
+    }
+    .reviews-block h3 {
+      font-family: var(--serif);
+      font-size: 22px;
+      color: var(--ink);
+      margin-bottom: 14px;
+    }
+    .rating-summary {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .rating-summary .big {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 38px;
+      color: var(--persimmon);
+      line-height: 1;
+    }
+    .rating-summary .label {
+      font-size: 12px;
+      color: var(--mist);
+    }
+    .review-card {
+      background: var(--ivory);
+      border: 1px solid var(--hairline);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+    .review-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .review-av {
+      width: 28px; height: 28px;
+      border-radius: 14px;
+      background: var(--jade);
+      color: var(--ivory);
+      display: grid; place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .review-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .review-date {
+      font-size: 11px;
+      color: var(--mist);
+    }
+    .review-stars {
+      margin-left: auto;
+      color: var(--persimmon);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+    }
+    .review-text {
+      font-size: 12px;
+      color: var(--ink-soft);
+      line-height: 1.5;
+      margin-top: 6px;
+    }
+    .see-all {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--persimmon);
+    }
+
+    /* Sticky CTA above the nav */
+    .cta-strip {
+      position: absolute;
+      left: 0; right: 0;
+      bottom: 100px;
+      padding: 12px 20px 14px;
+      background: rgba(250, 246, 238, 0.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--hairline);
+      z-index: 6;
+    }
+    .cta-btn {
+      display: block;
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--persimmon);
+      color: var(--ivory);
+      border-radius: 12px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .cta-btn .arrow {
+      margin-left: 6px;
+    }
+
+    /* Bottom nav (minimal — only need it for visual context) */
+    .nav-bar {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      background: rgba(250, 246, 238, 0.92);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--hairline);
+      height: 100px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding: 14px 8px 28px;
+      z-index: 5;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: var(--mist);
+      letter-spacing: 0.04em;
+      font-weight: 500;
+    }
+    .nav-icon {
+      width: 22px; height: 22px;
+      border-radius: 4px;
+      background: currentColor;
+      opacity: 0.6;
+    }
+
+    /* ============================================================
+       PHONE 2 — Offerings screen (Variant C row layout)
+       ============================================================ */
+    .phone2-scroll {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .off-head {
+      padding: 70px 22px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .off-head .back {
+      width: 36px; height: 36px;
+      border-radius: 18px;
+      background: rgba(20,16,14,0.06);
+      display: grid; place-items: center;
+      color: var(--ink);
+      font-size: 18px;
+    }
+    .off-head .name {
+      flex: 1;
+      font-family: var(--serif);
+      font-size: 18px;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+    .off-head .share {
+      width: 36px; height: 36px;
+      border-radius: 18px;
+      display: grid; place-items: center;
+      color: var(--mist);
+      font-size: 16px;
+    }
+    .off-title {
+      padding: 4px 24px 12px;
+      font-family: var(--serif);
+      font-size: 28px;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      line-height: 1.05;
+    }
+    .off-title em {
+      font-style: italic;
+      color: var(--persimmon);
+    }
+
+    .off-tabs {
+      display: flex;
+      padding: 0 24px;
+      gap: 24px;
+      border-bottom: 1px solid var(--hairline);
+    }
+    .off-tab {
+      padding: 10px 0 12px;
+      font-size: 13px;
+      color: var(--mist);
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+    }
+    .off-tab.active {
+      color: var(--ink);
+      font-weight: 700;
+      border-bottom-color: var(--persimmon);
+    }
+
+    .off-list {
+      padding: 16px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Variant C row card */
+    .row-card {
+      background: var(--ivory);
+      border: 1px solid var(--hairline);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      gap: 14px;
+    }
+    .row-card .thumb {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      background: var(--bone) center/cover no-repeat;
+      overflow: hidden;
+    }
+    .row-card .thumb .seats {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .seats.jade { background: var(--jade-soft); color: var(--jade); }
+    .seats.warn { background: var(--persimmon-soft); color: var(--persimmon); }
+    .seats.full { background: var(--bone); color: var(--mist); }
+    .row-card .body {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .row-card .head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .row-card .title {
+      font-family: var(--serif);
+      font-size: 16px;
+      color: var(--ink);
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .row-card .pill-lvl {
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--paper-warm);
+      color: var(--mist);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      align-self: center;
+    }
+    .row-card .coaches {
+      font-size: 11px;
+      color: var(--mist);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .row-card .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+    .row-card .fees {
+      font-size: 12px;
+      color: var(--ink);
+      font-weight: 600;
+    }
+    .row-card .fees .from {
+      color: var(--mist);
+      font-weight: 500;
+    }
+    .row-card .cta {
+      padding: 6px 12px;
+      background: var(--persimmon);
+      color: var(--ivory);
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+    }
+    .row-card .cta.ghost {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--hairline);
+    }
+    .row-card .cta.disabled {
+      background: var(--bone);
+      color: var(--mist);
+    }
+
+    .note {
+      margin: 14px 24px 0;
+      padding: 12px 14px;
+      background: rgba(232,163,61,0.10);
+      border: 1px dashed rgba(232,163,61,0.45);
+      border-radius: 12px;
+      font-size: 11px;
+      color: var(--ink-soft);
+      line-height: 1.5;
+    }
+    .note strong { color: var(--persimmon); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="page-header">
+      <h1>Academy CTA refactor · <em>reviews + sticky "Explore" button</em></h1>
+      <p>
+        Phone 1 = the refined academy page (tabs are gone — reviews are the primary content, and a sticky CTA at the bottom previews "12 programs · 3 workshops" before sending the user to a dedicated screen).
+        Phone 2 = the new <code style="color:#E8A33D">/academy/[id]/offerings</code> route with two tabs (Programs / Workshops) and Variant C row cards.
+      </p>
+    </div>
+
+    <div class="row">
+      <!-- ============================================================
+           PHONE 1 — Refined academy page
+           ============================================================ -->
+      <div class="col">
+        <div>
+          <div class="variant-tag">Phone 1</div>
+          <div class="variant-label">Refined academy page</div>
+        </div>
+        <div class="phone">
+          <div class="island"></div>
+          <div class="screen">
+            <div class="status-bar on-dark">
+              <div class="time">9:41</div>
+              <div class="signals">
+                <div class="signal-dots"><i></i><i></i><i></i><i></i></div>
+                <span style="font-size:11px;font-weight:600;">5G</span>
+                <div class="battery"><i></i></div>
+              </div>
+            </div>
+
+            <div class="phone1-scroll">
+              <div class="hero">
+                <div class="hero-top">
+                  <div class="hero-icon">‹</div>
+                  <div class="hero-icons-right">
+                    <div class="hero-icon">↑</div>
+                    <div class="hero-icon">♡</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="aca-card">
+                <div class="verified">✓ Verified</div>
+                <div class="name">Raaga Music Academy</div>
+                <div class="addr">📍 Indiranagar · 2.4 km</div>
+                <div class="stat-row">
+                  <div class="stat em"><div class="v">4.8</div><div class="l">Rating</div></div>
+                  <div class="stat"><div class="v">142</div><div class="l">Reviews</div></div>
+                  <div class="stat"><div class="v">12</div><div class="l">Years</div></div>
+                  <div class="stat"><div class="v">340+</div><div class="l">Students</div></div>
+                </div>
+                <div class="coach-row">
+                  <div class="coach-chip">
+                    <div class="coach-av">R</div><div class="coach-name">Ria</div>
+                  </div>
+                  <div class="coach-chip">
+                    <div class="coach-av" style="background:#1E5C5A">A</div><div class="coach-name">Arjun</div>
+                  </div>
+                  <div class="coach-chip">
+                    <div class="coach-av" style="background:#C7556A">M</div><div class="coach-name">Meera</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="reviews-block">
+                <h3>Reviews</h3>
+                <div class="rating-summary">
+                  <div class="big">4.8</div>
+                  <div class="label">Based on 142 reviews</div>
+                </div>
+
+                <div class="review-card">
+                  <div class="review-head">
+                    <div class="review-av">P</div>
+                    <div>
+                      <div class="review-name">Priya N.</div>
+                      <div class="review-date">3 weeks ago</div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                  </div>
+                  <div class="review-text">Coach Ria is incredibly patient. I'd never picked up a guitar before — three months in, I'm playing songs my niece actually requests.</div>
+                </div>
+
+                <div class="review-card">
+                  <div class="review-head">
+                    <div class="review-av" style="background:#5B2F3D">A</div>
+                    <div>
+                      <div class="review-name">Aditya S.</div>
+                      <div class="review-date">last month</div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                  </div>
+                  <div class="review-text">Took a trial vocal class with Coach Meera. Felt seen on day one. The studio is well-kept and they don't push you into a monthly the moment you walk in.</div>
+                </div>
+
+                <div class="review-card">
+                  <div class="review-head">
+                    <div class="review-av" style="background:#E8A33D;color:#5B3F0E">K</div>
+                    <div>
+                      <div class="review-name">Kavya R.</div>
+                      <div class="review-date">2 months ago</div>
+                    </div>
+                    <div class="review-stars">★★★★☆</div>
+                  </div>
+                  <div class="review-text">Solid academy. Tabla program is well-structured. Wish the evening slots had more availability — they fill up fast.</div>
+                </div>
+
+                <a class="see-all">See all 142 reviews →</a>
+              </div>
+            </div>
+
+            <!-- Sticky CTA strip -->
+            <div class="cta-strip">
+              <a class="cta-btn">Explore Programs &amp; Workshops <span class="arrow">→</span></a>
+            </div>
+
+            <!-- Bottom nav (visual context only) -->
+            <div class="nav-bar">
+              <div class="nav-item"><div class="nav-icon"></div>Discover</div>
+              <div class="nav-item"><div class="nav-icon"></div>Saved</div>
+              <div class="nav-item" style="color:var(--ink)"><div class="nav-icon" style="opacity:1;background:var(--persimmon)"></div>Events</div>
+              <div class="nav-item"><div class="nav-icon"></div>Trials</div>
+              <div class="nav-item"><div class="nav-icon"></div>Me</div>
+            </div>
+          </div>
+        </div>
+        <div class="variant-blurb">
+          Tabs gone. Reviews lift up as the main content. A small count line gives the user a sense of what's behind the CTA before they tap.
+        </div>
+      </div>
+
+      <!-- ============================================================
+           PHONE 2 — Offerings screen with Variant C row layout
+           ============================================================ -->
+      <div class="col">
+        <div>
+          <div class="variant-tag">Phone 2</div>
+          <div class="variant-label">Offerings screen · Variant C rows</div>
+        </div>
+        <div class="phone">
+          <div class="island"></div>
+          <div class="screen">
+            <div class="status-bar">
+              <div class="time">9:41</div>
+              <div class="signals">
+                <div class="signal-dots"><i></i><i></i><i></i><i></i></div>
+                <span style="font-size:11px;font-weight:600;">5G</span>
+                <div class="battery"><i></i></div>
+              </div>
+            </div>
+
+            <div class="phone2-scroll">
+              <div class="off-head">
+                <div class="back">‹</div>
+                <div class="name">Raaga Music Academy</div>
+                <div class="share">↑</div>
+              </div>
+
+              <div class="off-title">What's on <em>offer</em></div>
+
+              <div class="off-tabs">
+                <div class="off-tab active">Programs · 12</div>
+                <div class="off-tab">Workshops · 3</div>
+              </div>
+
+              <div class="off-list">
+
+                <div class="row-card">
+                  <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=300&q=80&auto=format')">
+                    <div class="seats jade">12</div>
+                  </div>
+                  <div class="body">
+                    <div class="head">
+                      <div class="title">Beginner Guitar</div>
+                      <div class="pill-lvl">BEGINNER</div>
+                    </div>
+                    <div class="coaches">Coach Ria · Coach Arjun</div>
+                    <div class="footer">
+                      <div class="fees">Trials ₹150 <span class="from">· ₹2000+/mo</span></div>
+                      <div class="cta">Book now</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row-card">
+                  <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=300&q=80&auto=format')">
+                    <div class="seats warn">2 left</div>
+                  </div>
+                  <div class="body">
+                    <div class="head">
+                      <div class="title">Intermediate Vocal</div>
+                      <div class="pill-lvl">INTER.</div>
+                    </div>
+                    <div class="coaches">Coach Meera</div>
+                    <div class="footer">
+                      <div class="fees">Trials ₹200 <span class="from">· ₹2500+/mo</span></div>
+                      <div class="cta">Book now</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row-card">
+                  <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1551817958-d9d86fb29431?w=300&q=80&auto=format')">
+                    <div class="seats full">Full</div>
+                  </div>
+                  <div class="body">
+                    <div class="head">
+                      <div class="title">Beginner Tabla</div>
+                      <div class="pill-lvl">BEGINNER</div>
+                    </div>
+                    <div class="coaches">Coach Vikram</div>
+                    <div class="footer">
+                      <div class="fees">Trials ₹150 <span class="from">· ₹1800+/mo</span></div>
+                      <div class="cta disabled">Full</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row-card">
+                  <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=300&q=80&auto=format')">
+                    <div class="seats jade">6</div>
+                  </div>
+                  <div class="body">
+                    <div class="head">
+                      <div class="title">Advanced Sitar</div>
+                      <div class="pill-lvl">ADVANCED</div>
+                    </div>
+                    <div class="coaches">Coach Anika</div>
+                    <div class="footer">
+                      <div class="fees">Trials ₹250 <span class="from">· ₹3500+/mo</span></div>
+                      <div class="cta">Book now</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="note">
+                  <strong>Workshops tab</strong> uses the same row layout — same thumbnail + body, but the right-side button reads <em>Book now · ₹350</em> / <em>Pay now</em> / <em>Registered ✓</em> / <em>Full</em> depending on registration state. (Not redrawn here.)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="variant-blurb">
+          New full route. Compact rows mean ~4 offerings visible at once — better scanning than the poster grid for a transactional "pick one" screen.
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
