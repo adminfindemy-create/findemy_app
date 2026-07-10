@@ -16,9 +16,9 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 // YYYY-MM-DD (or ISO) -> "22 Jun 2026"; avoids Hermes Intl locale gaps.
 function formatDate(iso: string | null | undefined) {
   if (!iso) return "—";
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return "—";
-  return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  const date = new Date(iso);
+  if (isNaN(date.getTime())) return "—";
+  return `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
 }
 
 export default function EnrollmentConfirmationScreen() {

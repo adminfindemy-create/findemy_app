@@ -25,9 +25,9 @@ export type BookingItem = {
   data: any;
 };
 
-function paise(val: number | null | undefined): string | null {
-  if (val == null || isNaN(val)) return null;
-  return `₹${Math.round(val / 100).toLocaleString("en-IN")}`;
+function paise(amountPaise: number | null | undefined): string | null {
+  if (amountPaise == null || isNaN(amountPaise)) return null;
+  return `₹${Math.round(amountPaise / 100).toLocaleString("en-IN")}`;
 }
 
 function SectionDivider() {
@@ -100,24 +100,24 @@ export function BookingDetailSheet({ visible, onClose, item }: Props) {
     typePillFg = theme.color.jade;
     typePillLabel = "ENROLLMENT";
   } else {
-    const wType = (data.workshop_type ?? "demo").toLowerCase();
-    const wc = WORKSHOP_TYPE_COLORS[wType] ?? WORKSHOP_TYPE_COLORS.demo;
-    typePillBg = wc.bg;
-    typePillFg = wc.fg;
+    const workshopType = (data.workshop_type ?? "demo").toLowerCase();
+    const workshopTypeColor = WORKSHOP_TYPE_COLORS[workshopType] ?? WORKSHOP_TYPE_COLORS.demo;
+    typePillBg = workshopTypeColor.bg;
+    typePillFg = workshopTypeColor.fg;
     typePillLabel = (data.workshop_type ?? "WORKSHOP").toUpperCase();
   }
 
   const status: string = data.status ?? "";
   let statusBg: string;
   let statusFg: string;
-  const sl = status.toLowerCase();
-  if (["booked", "confirmed", "active"].includes(sl)) {
+  const statusLower = status.toLowerCase();
+  if (["booked", "confirmed", "active"].includes(statusLower)) {
     statusBg = theme.color.jadeSoft;
     statusFg = theme.color.jade;
-  } else if (["attended", "completed"].includes(sl)) {
+  } else if (["attended", "completed"].includes(statusLower)) {
     statusBg = theme.color.bone;
     statusFg = theme.color.mist;
-  } else if (["missed", "cancelled"].includes(sl)) {
+  } else if (["missed", "cancelled"].includes(statusLower)) {
     statusBg = theme.color.roseSoft;
     statusFg = theme.color.rose;
   } else {
@@ -334,14 +334,14 @@ export function BookingDetailSheet({ visible, onClose, item }: Props) {
                     styles.detailVal,
                     {
                       fontFamily: theme.font.sans,
-                      color: ["confirmed", "active", "attended", "completed"].includes(sl)
+                      color: ["confirmed", "active", "attended", "completed"].includes(statusLower)
                         ? theme.color.jade
                         : theme.color.mist,
                       fontWeight: "600",
                     },
                   ]}
                 >
-                  {["confirmed", "active", "attended", "completed"].includes(sl) ? "✓ Paid" : status}
+                  {["confirmed", "active", "attended", "completed"].includes(statusLower) ? "✓ Paid" : status}
                 </Text>
               </View>
               {orderId ? (
@@ -376,10 +376,10 @@ export function BookingDetailSheet({ visible, onClose, item }: Props) {
 
           {/* ── Manage / Get Help ── */}
           {(() => {
-            const isTerminal = ["cancelled", "attended", "completed", "missed"].includes(sl);
+            const isTerminal = ["cancelled", "attended", "completed", "missed"].includes(statusLower);
             if (isTerminal) return null;
 
-            if (type === "trial" && data.id && sl === "booked") {
+            if (type === "trial" && data.id && statusLower === "booked") {
               return (
                 <View style={styles.helpBtn}>
                   <Button
@@ -395,7 +395,7 @@ export function BookingDetailSheet({ visible, onClose, item }: Props) {
               );
             }
 
-            if (type === "workshop" && workshopId && (sl === "confirmed" || sl === "pending")) {
+            if (type === "workshop" && workshopId && (statusLower === "confirmed" || statusLower === "pending")) {
               return (
                 <View style={styles.helpBtn}>
                   <Button
@@ -405,7 +405,7 @@ export function BookingDetailSheet({ visible, onClose, item }: Props) {
                     }}
                     block
                   >
-                    {sl === "pending" ? "Complete registration" : "Manage registration"}
+                    {statusLower === "pending" ? "Complete registration" : "Manage registration"}
                   </Button>
                 </View>
               );

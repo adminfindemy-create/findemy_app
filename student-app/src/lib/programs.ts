@@ -58,7 +58,7 @@ export type Program = {
 
 // A batch-level summary shown where the program used to carry a single level.
 function deriveLevel(batches: ProgramBatch[]): string {
-  const levels = Array.from(new Set(batches.map((b) => b.level).filter((l): l is string => !!l)));
+  const levels = Array.from(new Set(batches.map((batch) => batch.level).filter((level): level is string => !!level)));
   if (levels.length === 1) return levels[0];
   if (levels.length > 1) return "All levels";
   return "";
@@ -66,23 +66,23 @@ function deriveLevel(batches: ProgramBatch[]): string {
 
 // Turn a server program (from GET /academies/:id → programs[] or GET /programs/:id) into the
 // client Program shape used across the app.
-export function enrichProgram(sp: any): Program {
-  const batches: ProgramBatch[] = (sp?.batches ?? []) as ProgramBatch[];
+export function enrichProgram(serverProgram: any): Program {
+  const batches: ProgramBatch[] = (serverProgram?.batches ?? []) as ProgramBatch[];
   const level = deriveLevel(batches);
   return {
-    id: sp.id,
-    academy_id: sp.academy_id,
-    title: sp.title,
-    category: sp.category,
+    id: serverProgram.id,
+    academy_id: serverProgram.academy_id,
+    title: serverProgram.title,
+    category: serverProgram.category,
     level,
-    description: (sp.description ?? "") as string,
-    things_to_know: sp.things_to_know ?? [],
-    image_url: getProgramImage(sp.category, level || batches[0]?.level || ""),
-    media: (sp.media ?? []) as ProgramMedia[],
-    coach_names: sp.coach_names ?? [],
-    trial_fee_paise: sp.trial_fee_paise ?? 0,
-    monthly_fee_paise_from: sp.monthly_fee_paise_from ?? 0,
-    total_seats_left: sp.total_seats_left ?? 0,
+    description: (serverProgram.description ?? "") as string,
+    things_to_know: serverProgram.things_to_know ?? [],
+    image_url: getProgramImage(serverProgram.category, level || batches[0]?.level || ""),
+    media: (serverProgram.media ?? []) as ProgramMedia[],
+    coach_names: serverProgram.coach_names ?? [],
+    trial_fee_paise: serverProgram.trial_fee_paise ?? 0,
+    monthly_fee_paise_from: serverProgram.monthly_fee_paise_from ?? 0,
+    total_seats_left: serverProgram.total_seats_left ?? 0,
     batches,
   };
 }

@@ -46,8 +46,8 @@ function configureGoogleSignin() {
 export default function WelcomeScreen() {
   const router = useRouter();
   const theme = useTheme();
-  const setAuth = useAuth((s) => s.setAuth);
-  const setOnboardingMany = useOnboarding((s) => s.setMany);
+  const setAuth = useAuth((state) => state.setAuth);
+  const setOnboardingMany = useOnboarding((state) => state.setMany);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [appleLoading, setAppleLoading] = useState(false);
   const googleConfiguredRef = useRef(false);
@@ -99,28 +99,28 @@ export default function WelcomeScreen() {
         setOnboardingMany({ name: composedName });
       }
 
-      const res = await api.auth.oauthApple({
+      const response = await api.auth.oauthApple({
         idToken: credential.identityToken,
         nonce: rawNonce,
         role: "student",
       });
 
-      const user = (res.user as User | undefined) ?? null;
+      const user = (response.user as User | undefined) ?? null;
       setAuth({
-        access: res.access_token,
-        refresh: res.refresh_token,
+        access: response.access_token,
+        refresh: response.refresh_token,
         user: user as User,
-        attendanceOtp: res.attendance_otp ?? "",
+        attendanceOtp: response.attendance_otp ?? "",
       });
-      routeAfterAuth(user, res.is_new_user);
-    } catch (e: any) {
+      routeAfterAuth(user, response.is_new_user);
+    } catch (error: any) {
       // Silent on user cancellation
-      if (e?.code === 'ERR_REQUEST_CANCELED') {
+      if (error?.code === 'ERR_REQUEST_CANCELED') {
         return;
       }
       Alert.alert(
         "Sign in failed",
-        e?.message ?? "Couldn't sign in with Apple. Try again or use phone."
+        error?.message ?? "Couldn't sign in with Apple. Try again or use phone."
       );
     } finally {
       setAppleLoading(false);
@@ -151,21 +151,21 @@ export default function WelcomeScreen() {
         return;
       }
 
-      const res = await api.auth.oauthGoogle({
+      const response = await api.auth.oauthGoogle({
         idToken,
         role: "student",
       });
 
-      const user = (res.user as User | undefined) ?? null;
+      const user = (response.user as User | undefined) ?? null;
       setAuth({
-        access: res.access_token,
-        refresh: res.refresh_token,
+        access: response.access_token,
+        refresh: response.refresh_token,
         user: user as User,
-        attendanceOtp: res.attendance_otp ?? "",
+        attendanceOtp: response.attendance_otp ?? "",
       });
-      routeAfterAuth(user, res.is_new_user);
-    } catch (e: any) {
-      const code = e?.code;
+      routeAfterAuth(user, response.is_new_user);
+    } catch (error: any) {
+      const code = error?.code;
       // Silent on user cancellation / in-progress
       if (
         googleStatusCodes &&
@@ -176,7 +176,7 @@ export default function WelcomeScreen() {
       }
       Alert.alert(
         "Sign in failed",
-        e?.message ?? "Couldn't sign in with Google. Try again or use phone."
+        error?.message ?? "Couldn't sign in with Google. Try again or use phone."
       );
     } finally {
       setGoogleLoading(false);
@@ -201,11 +201,11 @@ export default function WelcomeScreen() {
 
         {/* Category art grid (block-print covers) */}
         <View style={styles.catGrid}>
-          {(["music", "dance", "arts", "yoga"] as const).map((cat, i) => (
+          {(["music", "dance", "arts", "yoga"] as const).map((cat, index) => (
             <View key={cat} style={styles.catTile}>
               <BlockPrintCover
                 category={cat}
-                variant={(i + 1) as 1 | 2 | 3 | 4}
+                variant={(index + 1) as 1 | 2 | 3 | 4}
                 height={96}
                 hideLetter
                 style={{ width: "100%", height: 96, borderRadius: 20, overflow: "hidden" }}

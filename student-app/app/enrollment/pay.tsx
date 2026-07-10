@@ -26,7 +26,7 @@ const PACKAGE_LABELS: Record<string, { label: string; months: number }> = {
 export default function EnrollmentPayScreen() {
   const router = useRouter();
   const theme = useTheme();
-  const user = useAuth((s) => s.user);
+  const user = useAuth((state) => state.user);
   const [paying, setPaying] = useState(false);
 
   const {
@@ -65,7 +65,7 @@ export default function EnrollmentPayScreen() {
           onPress: async () => {
             const apiUrl = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:8080";
             try {
-              const res = await fetch(`${apiUrl}/payments/webhook`, {
+              const response = await fetch(`${apiUrl}/payments/webhook`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "x-razorpay-signature": "" },
                 body: JSON.stringify({
@@ -73,9 +73,9 @@ export default function EnrollmentPayScreen() {
                   payload: { payment: { entity: { order_id: razorpay_order_id, id: `pay_dev_${Date.now()}`, notes: { payment_type: "enrollment" } } } },
                 }),
               });
-              if (!res.ok) { Alert.alert("Webhook failed", `API returned ${res.status}.`); return; }
-            } catch (e: any) {
-              Alert.alert("Cannot reach API", `Webhook URL ${apiUrl} unreachable. ${e?.message ?? ""}`);
+              if (!response.ok) { Alert.alert("Webhook failed", `API returned ${response.status}.`); return; }
+            } catch (error: any) {
+              Alert.alert("Cannot reach API", `Webhook URL ${apiUrl} unreachable. ${error?.message ?? ""}`);
               return;
             }
             router.replace(`/enrollment/confirmation?enrollment_id=${enrollment_id}&enrollment_period_id=${enrollment_period_id}&batch_title=${encodeURIComponent(batch_title ?? "")}`);
@@ -100,8 +100,8 @@ export default function EnrollmentPayScreen() {
       };
       await RazorpayCheckout.open(options);
       router.replace(`/enrollment/confirmation?enrollment_id=${enrollment_id}&enrollment_period_id=${enrollment_period_id}&batch_title=${encodeURIComponent(batch_title ?? "")}`);
-    } catch (err: any) {
-      Alert.alert("Payment failed", err?.description ?? "Something went wrong. Please try again.");
+    } catch (error: any) {
+      Alert.alert("Payment failed", error?.description ?? "Something went wrong. Please try again.");
     } finally {
       setPaying(false);
     }

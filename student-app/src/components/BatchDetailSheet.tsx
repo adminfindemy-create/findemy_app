@@ -7,12 +7,12 @@ import { useEnrollBatch, useEnrollmentStatus } from "@/hooks/useEnroll";
 
 const DAY_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-function formatTime(t: string) {
-  if (!t) return "";
-  const [h, m] = t.split(":").map(Number);
-  const ampm = h >= 12 ? "PM" : "AM";
-  const hour = h % 12 || 12;
-  return `${hour}:${String(m).padStart(2, "0")} ${ampm}`;
+function formatTime(time: string) {
+  if (!time) return "";
+  const [hour24, minute] = time.split(":").map(Number);
+  const ampm = hour24 >= 12 ? "PM" : "AM";
+  const hour12 = hour24 % 12 || 12;
+  return `${hour12}:${String(minute).padStart(2, "0")} ${ampm}`;
 }
 
 export type BatchDetailSheetBatch = {
@@ -39,13 +39,13 @@ type Props = {
 
 // S2.3: plans = monthly | quarterly | annual (no biannual); discounts come from the batch.
 function buildPackages(batch: BatchDetailSheetBatch | null) {
-  const q = batch?.quarterly_discount_bps ?? 0;
-  const a = batch?.annual_discount_bps ?? 0;
+  const quarterlyDiscountBps = batch?.quarterly_discount_bps ?? 0;
+  const annualDiscountBps = batch?.annual_discount_bps ?? 0;
   const pct = (bps: number) => (bps > 0 ? `${bps / 100}% off` : "");
   return [
     { key: "monthly", label: "Monthly", suffix: "", badge: "" },
-    { key: "quarterly", label: "Quarterly", suffix: pct(q), badge: "Popular" },
-    { key: "annual", label: "Annual", suffix: pct(a), badge: "Best value" },
+    { key: "quarterly", label: "Quarterly", suffix: pct(quarterlyDiscountBps), badge: "Popular" },
+    { key: "annual", label: "Annual", suffix: pct(annualDiscountBps), badge: "Best value" },
   ];
 }
 
@@ -141,14 +141,14 @@ export function BatchDetailSheet({ visible, onClose, batch, coachName, onEnrolle
           {timings.length > 0 ? (
             <View style={[styles.section, { borderColor: theme.color.hairline }]}>
               <Text style={[styles.sectionLabel, { color: theme.color.mist }]}>SCHEDULE</Text>
-              {timings.map((t, i) => (
-                <View key={i} style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 8 }}>
+              {timings.map((timing, index) => (
+                <View key={index} style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 8 }}>
                   <Text style={{ fontFamily: tokens.font.sans, fontSize: 14, color: theme.color.ink, fontWeight: "500" }}>
-                    {DAY_FULL[t.day_of_week] ?? `Day ${t.day_of_week}`}
+                    {DAY_FULL[timing.day_of_week] ?? `Day ${timing.day_of_week}`}
                   </Text>
                   <Text style={{ fontFamily: tokens.font.sans, fontSize: 14, color: theme.color.mist }}>
-                    {t.start_time ? formatTime(t.start_time) : ""}
-                    {t.duration_min ? ` · ${t.duration_min} min` : ""}
+                    {timing.start_time ? formatTime(timing.start_time) : ""}
+                    {timing.duration_min ? ` · ${timing.duration_min} min` : ""}
                   </Text>
                 </View>
               ))}

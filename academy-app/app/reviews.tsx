@@ -13,9 +13,9 @@ type Filter = 'all' | 'needs_reply' | 'replied' | '5' | 'lte3';
 
 function fmtDate(iso?: string): string {
   if (!iso) return '';
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  const date = new Date(iso);
+  if (isNaN(date.getTime())) return '';
+  return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 }
 
 function Stars({ value }: { value: number }) {
@@ -64,8 +64,8 @@ export default function ReviewsScreen() {
             </View>
             <View style={{ flex: 1, gap: 4 }}>
               {[5, 4, 3, 2, 1].map((star) => {
-                const c = summary.breakdown[star as 1 | 2 | 3 | 4 | 5] ?? 0;
-                const pct = summary.count ? (c / summary.count) * 100 : 0;
+                const countForStar = summary.breakdown[star as 1 | 2 | 3 | 4 | 5] ?? 0;
+                const pct = summary.count ? (countForStar / summary.count) * 100 : 0;
                 return (
                   <View key={star} style={styles.barRow}>
                     <Text style={{ fontFamily: sansFor(600), fontSize: 11, color: theme.color.mist, width: 10 }}>{star}</Text>
@@ -81,12 +81,12 @@ export default function ReviewsScreen() {
 
         {/* Filter pills (.pills) */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.pillsWrap} contentContainerStyle={styles.pills}>
-          {tabs.map((t) => {
-            const on = filter === t.key;
+          {tabs.map((tab) => {
+            const on = filter === tab.key;
             return (
               <Pressable
-                key={t.key}
-                onPress={() => setFilter(t.key)}
+                key={tab.key}
+                onPress={() => setFilter(tab.key)}
                 style={[
                   styles.pill,
                   { backgroundColor: on ? theme.color.ink : theme.color.ivory, borderColor: on ? theme.color.ink : theme.color.hairline },
@@ -97,10 +97,10 @@ export default function ReviewsScreen() {
                   style={{
                     fontFamily: sansFor(600),
                     fontSize: 13,
-                    color: on ? theme.color.ivory : t.alert ? theme.color.rose : theme.color.inkSoft,
+                    color: on ? theme.color.ivory : tab.alert ? theme.color.rose : theme.color.inkSoft,
                   }}
                 >
-                  {t.label}
+                  {tab.label}
                 </Text>
               </Pressable>
             );

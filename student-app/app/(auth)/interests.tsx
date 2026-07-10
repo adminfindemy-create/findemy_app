@@ -24,12 +24,12 @@ export default function InterestsScreen() {
   const [selected, setSelected] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
-  const attendanceOtp = useAuth((s) => s.attendanceOtp);
-  const setUser = useAuth((s) => s.setUser);
+  const attendanceOtp = useAuth((state) => state.attendanceOtp);
+  const setUser = useAuth((state) => state.setUser);
 
   const toggle = (key: Category) => {
     setSelected((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+      prev.includes(key) ? prev.filter((selectedKey) => selectedKey !== key) : [...prev, key]
     );
   };
 

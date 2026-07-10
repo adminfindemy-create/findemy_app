@@ -25,7 +25,7 @@ if (!isExpoGo) {
 
 export function usePushNotifications() {
   const router = useRouter();
-  const accessToken = useAuth((s) => s.accessToken);
+  const accessToken = useAuth((state) => state.accessToken);
   const notificationListener = useRef<Notifications.Subscription | null>(null);
   const responseListener = useRef<Notifications.Subscription | null>(null);
 

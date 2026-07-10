@@ -15,7 +15,7 @@ export default function VerifyOtpScreen() {
   const otp_id = Array.isArray(otpIdParam) ? otpIdParam[0] : otpIdParam;
   const phone = Array.isArray(phoneParam) ? phoneParam[0] : phoneParam;
   const theme = useTheme();
-  const setAuth = useAuth((s) => s.setAuth);
+  const setAuth = useAuth((state) => state.setAuth);
   const [countdown, setCountdown] = useState(60);
   const [error, setError] = useState('');
   const [resending, setResending] = useState(false);
@@ -27,16 +27,16 @@ export default function VerifyOtpScreen() {
 
   useEffect(() => {
     if (countdown <= 0) return;
-    const t = setInterval(() => setCountdown((c) => c - 1), 1000);
-    return () => clearInterval(t);
+    const timer = setInterval(() => setCountdown((seconds) => seconds - 1), 1000);
+    return () => clearInterval(timer);
   }, [countdown]);
 
   const onSubmit = async (data: { otp_id: string; code: string }) => {
     setError('');
     try {
-      const res = await api.auth.verifyOtp(data);
-      const account = (res as any).account as Record<string, unknown> | undefined;
-      const academy = (res as any).academy as Record<string, unknown> | undefined;
+      const response = await api.auth.verifyOtp(data);
+      const account = (response as any).account as Record<string, unknown> | undefined;
+      const academy = (response as any).academy as Record<string, unknown> | undefined;
 
       if (!account) {
         // Backend genuinely returned no account record — should be rare since OTP verify
@@ -76,8 +76,8 @@ export default function VerifyOtpScreen() {
         : null;
 
       setAuth({
-        access: res.access_token,
-        refresh: res.refresh_token,
+        access: response.access_token,
+        refresh: response.refresh_token,
         account: normalizedAccount,
         academy: normalizedAcademy,
       });
@@ -89,14 +89,14 @@ export default function VerifyOtpScreen() {
         // New account, or returning user whose academy hasn't been created yet.
         router.replace('/(auth)/onboarding');
       }
-    } catch (e: any) {
-      const code = e.code ?? '';
+    } catch (error: any) {
+      const code = error.code ?? '';
       if (code === 'OTP_INVALID' || code === 'OTP_EXPIRED') {
-        setError(e.message ?? 'Invalid or expired code');
+        setError(error.message ?? 'Invalid or expired code');
       } else if (code === 'RATE_LIMITED') {
         setError('Too many attempts. Please wait.');
       } else {
-        setError(e.message ?? 'Verification failed');
+        setError(error.message ?? 'Verification failed');
       }
     }
   };
@@ -106,18 +106,18 @@ export default function VerifyOtpScreen() {
     setResending(true);
     setError('');
     try {
-      const r = await api.auth.requestOtp({ phone: phone ?? '', role: 'academy' });
+      const response = await api.auth.requestOtp({ phone: phone ?? '', role: 'academy' });
       // Backend mints a NEW otp row each request; the freshly-sent code verifies
       // against THIS otp_id, not the original. Re-sync the form and clear the input.
-      setValue('otp_id', r.otp_id);
+      setValue('otp_id', response.otp_id);
       setValue('code', '');
       setCountdown(60); // only restart the timer once the resend actually succeeded
-    } catch (e: any) {
-      const code = e?.code ?? '';
+    } catch (error: any) {
+      const code = error?.code ?? '';
       if (code === 'RATE_LIMITED') {
         setError('Too many attempts. Please wait a minute and try again.');
       } else {
-        setError(e?.message ?? "Couldn't resend the code. Check your connection.");
+        setError(error?.message ?? "Couldn't resend the code. Check your connection.");
       }
     } finally {
       setResending(false);

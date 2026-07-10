@@ -11,15 +11,15 @@ export function useSavedAcademies() {
 export function useIsAcademySaved(academyId: string) {
   const { data } = useSavedAcademies();
   const items = (data as any)?.items ?? [];
-  return items.some((a: any) => a.id === academyId);
+  return items.some((savedAcademy: any) => savedAcademy.id === academyId);
 }
 
 export function useToggleSavedAcademy() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (academyId: string) => api.me.savedAcademies.toggle(academyId),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["me", "saved-academies"] });
+      queryClient.invalidateQueries({ queryKey: ["me", "saved-academies"] });
     },
   });
 }

@@ -37,8 +37,8 @@ function Field({ label, required, children, helper }: { label: string; required?
 export default function ProfileEditScreen() {
   const router = useRouter();
   const theme = useTheme();
-  const qc = useQueryClient();
-  const user = useAuth((s) => s.user);
+  const queryClient = useQueryClient();
+  const user = useAuth((state) => state.user);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
@@ -63,7 +63,7 @@ export default function ProfileEditScreen() {
         lng: user?.lng ?? 0,
         interests: (user?.interests ?? []) as any,
       });
-      await qc.invalidateQueries({ queryKey: ["me"] });
+      await queryClient.invalidateQueries({ queryKey: ["me"] });
       router.back();
     } catch {
       setErrorMsg("Failed to save changes. Please try again.");
@@ -74,8 +74,8 @@ export default function ProfileEditScreen() {
   };
 
   const handleChangePhoto = async () => {
-    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!perm.granted) {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
       Alert.alert("Permission needed", "Allow photo access to change your picture.");
       return;
     }

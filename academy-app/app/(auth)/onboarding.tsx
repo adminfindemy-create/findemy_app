@@ -78,7 +78,7 @@ function coerceAcademy(raw: Record<string, unknown> | undefined): Academy {
 export default function OnboardingScreen() {
   const router = useRouter();
   const theme = useTheme();
-  const account = useAuth((s) => s.account);
+  const account = useAuth((state) => state.account);
   const onboardingStore = useOnboarding();
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -115,7 +115,7 @@ export default function OnboardingScreen() {
     setLoading(true);
     setErrorMsg('');
     try {
-      const res = await api.academy.completeOnboarding({
+      const response = await api.academy.completeOnboarding({
         ownerName: data.ownerName,
         academyName: data.academyName,
         city: data.city,
@@ -136,15 +136,15 @@ export default function OnboardingScreen() {
       useAuth.getState().setAuth({
         access: accessToken,
         refresh: refreshToken,
-        account: coerceAccount(res.account),
-        academy: coerceAcademy(res.academy),
+        account: coerceAccount(response.account),
+        academy: coerceAcademy(response.academy),
       });
 
       // Clear the cached onboarding draft on success.
       onboardingStore.clear();
       router.replace('/(tabs)/studio');
-    } catch (e: any) {
-      setErrorMsg(e?.message ?? 'Failed to save. Please try again.');
+    } catch (error: any) {
+      setErrorMsg(error?.message ?? 'Failed to save. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -170,9 +170,9 @@ export default function OnboardingScreen() {
               label="Academy name"
               placeholder="e.g. The Rhythm House"
               value={value}
-              onChangeText={(t) => {
-                onChange(t);
-                onboardingStore.setField('academyName', t);
+              onChangeText={(text) => {
+                onChange(text);
+                onboardingStore.setField('academyName', text);
               }}
               error={error?.message}
             />
@@ -187,9 +187,9 @@ export default function OnboardingScreen() {
               label="Owner name"
               placeholder="Your name"
               value={value}
-              onChangeText={(t) => {
-                onChange(t);
-                onboardingStore.setField('ownerName', t);
+              onChangeText={(text) => {
+                onChange(text);
+                onboardingStore.setField('ownerName', text);
               }}
               error={error?.message}
             />
@@ -204,9 +204,9 @@ export default function OnboardingScreen() {
               label="Location / area"
               placeholder="e.g. Hauz Khas, Delhi"
               value={value}
-              onChangeText={(t) => {
-                onChange(t);
-                onboardingStore.setField('city', t);
+              onChangeText={(text) => {
+                onChange(text);
+                onboardingStore.setField('city', text);
               }}
               error={error?.message}
             />
@@ -223,14 +223,14 @@ export default function OnboardingScreen() {
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <View>
                 <View style={styles.chipRow}>
-                  {CATEGORIES.map((cat) => (
+                  {CATEGORIES.map((category) => (
                     <Chip
-                      key={cat.key}
-                      label={cat.label}
-                      selected={value === cat.key}
+                      key={category.key}
+                      label={category.label}
+                      selected={value === category.key}
                       onPress={() => {
-                        onChange(cat.key);
-                        onboardingStore.setField('category', cat.key);
+                        onChange(category.key);
+                        onboardingStore.setField('category', category.key);
                       }}
                     />
                   ))}
@@ -253,18 +253,18 @@ export default function OnboardingScreen() {
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <View>
                 <View style={styles.chipRow}>
-                  {MODES.map((m) => {
-                    const active = (value ?? []).includes(m.key);
+                  {MODES.map((mode) => {
+                    const active = (value ?? []).includes(mode.key);
                     return (
                       <Chip
-                        key={m.key}
-                        label={m.label}
+                        key={mode.key}
+                        label={mode.label}
                         selected={active}
                         onPress={() =>
                           onChange(
                             active
-                              ? (value ?? []).filter((k) => k !== m.key)
-                              : [...(value ?? []), m.key]
+                              ? (value ?? []).filter((modeKey) => modeKey !== mode.key)
+                              : [...(value ?? []), mode.key]
                           )
                         }
                       />
@@ -303,8 +303,8 @@ export default function OnboardingScreen() {
               keyboardType="number-pad"
               maxLength={10}
               value={value}
-              onChangeText={(t) => {
-                const digits = t.replace(/\D/g, '').slice(0, 10);
+              onChangeText={(text) => {
+                const digits = text.replace(/\D/g, '').slice(0, 10);
                 onChange(digits);
                 onboardingStore.setField('phone', digits);
               }}

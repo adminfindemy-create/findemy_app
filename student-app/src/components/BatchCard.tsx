@@ -21,9 +21,9 @@ export function BatchCard({
   const theme = useTheme();
   const fee = batch.trial_fee_paise ? `₹${(batch.trial_fee_paise / 100).toFixed(0)}` : "Free";
   const timingSummary = (batch.timings ?? [])
-    .map((t) => {
+    .map((timing) => {
       const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      return `${days[t.day_of_week]} · ${t.start_time} · ${t.duration_min}m`;
+      return `${days[timing.day_of_week]} · ${timing.start_time} · ${timing.duration_min}m`;
     })
     .join(", ");
 

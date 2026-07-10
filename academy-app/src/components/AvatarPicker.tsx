@@ -38,10 +38,10 @@ export function AvatarPicker({
     try {
       const form = new FormData();
       form.append('file', { uri: asset.uri, name: asset.fileName ?? 'coach.jpg', type: asset.mimeType ?? 'image/jpeg' } as any);
-      const json = await uploadMultipart<{ url: string; type: string }>('/studio/media/upload', form);
-      onChange(json.url);
-    } catch (e: any) {
-      Alert.alert('Upload failed', e.message || 'Could not upload photo');
+      const uploaded = await uploadMultipart<{ url: string; type: string }>('/studio/media/upload', form);
+      onChange(uploaded.url);
+    } catch (error: any) {
+      Alert.alert('Upload failed', error.message || 'Could not upload photo');
     } finally {
       setUploading(false);
     }

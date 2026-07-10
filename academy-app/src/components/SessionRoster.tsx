@@ -27,8 +27,8 @@ export function SessionRoster({
 }) {
   const theme = useTheme();
   const record = variant === 'record';
-  const present = rows.filter((r) => r.checked_in);
-  const absent = rows.filter((r) => !r.checked_in);
+  const present = rows.filter((row) => row.checked_in);
+  const absent = rows.filter((row) => !row.checked_in);
   const absentText = record ? 'Absent' : verb === 'Joined' ? 'Not joined yet' : 'Not scanned yet';
 
   return (
@@ -47,27 +47,27 @@ export function SessionRoster({
       </View>
 
       <View style={[styles.card, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
-        {rows.map((r, i) => {
-          const time = fmtTime(r.marked_at);
+        {rows.map((row, index) => {
+          const time = fmtTime(row.marked_at);
           return (
             <View
-              key={r.user_id || `${r.name}-${i}`}
-              style={[styles.row, i > 0 && { borderTopWidth: 1, borderTopColor: theme.color.hairline }]}
+              key={row.user_id || `${row.name}-${index}`}
+              style={[styles.row, index > 0 && { borderTopWidth: 1, borderTopColor: theme.color.hairline }]}
             >
               <View style={[styles.av, { backgroundColor: theme.color.persimmon }]}>
                 <Text style={{ fontFamily: theme.font.serifItalic, fontSize: 13, color: theme.color.ivory }}>
-                  {r.name?.[0]?.toUpperCase() ?? '?'}
+                  {row.name?.[0]?.toUpperCase() ?? '?'}
                 </Text>
               </View>
               <View style={{ flex: 1, minWidth: 0 }}>
                 <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }} numberOfLines={1}>
-                  {r.name}
+                  {row.name}
                 </Text>
                 <Text style={{ fontFamily: sansFor(500), fontSize: 12, color: theme.color.mist, marginTop: 1 }}>
-                  {r.checked_in ? `${record ? 'Present' : verb}${time ? ` · ${time}` : ''}` : absentText}
+                  {row.checked_in ? `${record ? 'Present' : verb}${time ? ` · ${time}` : ''}` : absentText}
                 </Text>
               </View>
-              {r.checked_in ? (
+              {row.checked_in ? (
                 <View style={[styles.chk, { backgroundColor: theme.color.jadeSoft }]}>
                   <IconCheck size={13} color={theme.color.jade} />
                   <Text style={[styles.chkText, { color: theme.color.jade }]}>{record ? 'Present' : 'In'}</Text>

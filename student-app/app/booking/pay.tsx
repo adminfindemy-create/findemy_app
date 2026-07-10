@@ -26,19 +26,19 @@ export default function BookingPayScreen() {
   const router = useRouter();
   const { booking_id } = useLocalSearchParams<{ booking_id: string }>();
   const theme = useTheme();
-  const user = useAuth((s) => s.user);
+  const user = useAuth((state) => state.user);
   const [paying, setPaying] = useState(false);
 
   const booking = useBooking(booking_id);
   const order = usePaymentOrder(booking_id);
 
   // Countdown to the reservation expiry (reference: "Complete your booking in MM:SS").
-  const b = booking.data?.booking as any;
-  const expiresAt = b?.reservation_expires_at ? new Date(b.reservation_expires_at).getTime() : null;
+  const bookingDetail = booking.data?.booking as any;
+  const expiresAt = bookingDetail?.reservation_expires_at ? new Date(bookingDetail.reservation_expires_at).getTime() : null;
   const [nowTs, setNowTs] = useState(Date.now());
   useEffect(() => {
-    const t = setInterval(() => setNowTs(Date.now()), 1000);
-    return () => clearInterval(t);
+    const timer = setInterval(() => setNowTs(Date.now()), 1000);
+    return () => clearInterval(timer);
   }, []);
   const remainingMs = expiresAt != null ? Math.max(0, expiresAt - nowTs) : null;
   const mmss = remainingMs != null
@@ -84,8 +84,8 @@ export default function BookingPayScreen() {
       };
       await RazorpayCheckout.open(options);
       router.replace(`/booking/confirmation?booking_id=${booking_id}`);
-    } catch (err: any) {
-      Alert.alert("Payment failed", err?.description ?? "Something went wrong. Please try again.");
+    } catch (error: any) {
+      Alert.alert("Payment failed", error?.description ?? "Something went wrong. Please try again.");
     } finally {
       setPaying(false);
     }
@@ -100,14 +100,14 @@ export default function BookingPayScreen() {
     );
   }
 
-  const slotIso = b?.slot?.slot_time ?? b?.trial_at;
+  const slotIso = bookingDetail?.slot?.slot_time ?? bookingDetail?.trial_at;
   const slotDate = slotIso ? new Date(slotIso) : null;
-  const academyName = b?.academy?.name ?? "";
-  const isOnline = b?.batch?.mode === "online";
-  const academyAddress = isOnline ? "Online · Findemy room" : (b?.academy?.address ?? "");
-  const category = b?.academy?.category ?? b?.batch?.category ?? "music";
-  const batchTitle = b?.batch?.title ?? "Trial class";
-  const images = b?.academy?.images as string[] | undefined;
+  const academyName = bookingDetail?.academy?.name ?? "";
+  const isOnline = bookingDetail?.batch?.mode === "online";
+  const academyAddress = isOnline ? "Online · Findemy room" : (bookingDetail?.academy?.address ?? "");
+  const category = bookingDetail?.academy?.category ?? bookingDetail?.batch?.category ?? "music";
+  const batchTitle = bookingDetail?.batch?.title ?? "Trial class";
+  const images = bookingDetail?.academy?.images as string[] | undefined;
   const breakdown = order.data?.breakdown as { base_paise: number; total_paise: number } | undefined;
 
   return (

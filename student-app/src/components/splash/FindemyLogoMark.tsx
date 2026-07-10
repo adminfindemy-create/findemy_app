@@ -37,8 +37,8 @@ export function FindemyLogoMark({ size = 132 }: Props) {
   return (
     <View style={{ width, height }}>
       <Svg width={width} height={height} viewBox="0 0 120 150">
-        {PETALS.map((p, i) => (
-          <Path key={i} d={p.d} fill={p.fill} />
+        {PETALS.map((petal, index) => (
+          <Path key={index} d={petal.d} fill={petal.fill} />
         ))}
         {/* small focal dot at the mark's heart (stands in for a glyph) */}
         <Circle cx={60} cy={66} r={6} fill={theme.color.navy} />

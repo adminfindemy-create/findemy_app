@@ -29,7 +29,7 @@ export function PayFooter({
   const theme = useTheme();
   const [method, setMethod] = useState<Method>("razorpay");
   const [showMethods, setShowMethods] = useState(false);
-  const selected = METHODS.find((m) => m.key === method) ?? METHODS[0];
+  const selected = METHODS.find((methodOption) => methodOption.key === method) ?? METHODS[0];
 
   return (
     <>
@@ -70,26 +70,26 @@ export function PayFooter({
         <View style={[styles.sheet, { backgroundColor: theme.color.paper }]}>
           <View style={[styles.handle, { backgroundColor: theme.color.hairline }]} />
           <Text style={{ fontFamily: theme.font.serif, fontSize: 22, color: theme.color.ink, marginBottom: 16 }}>Pay using</Text>
-          {METHODS.map((m) => {
-            const sel = method === m.key;
+          {METHODS.map((methodOption) => {
+            const sel = method === methodOption.key;
             return (
               <Pressable
-                key={m.key}
+                key={methodOption.key}
                 onPress={() => {
-                  if (!m.available) return;
-                  setMethod(m.key);
+                  if (!methodOption.available) return;
+                  setMethod(methodOption.key);
                   setShowMethods(false);
                 }}
-                style={[styles.method, { borderColor: sel ? theme.color.persimmon : theme.color.hairline, backgroundColor: "#fff", opacity: m.available ? 1 : 0.5 }]}
+                style={[styles.method, { borderColor: sel ? theme.color.persimmon : theme.color.hairline, backgroundColor: "#fff", opacity: methodOption.available ? 1 : 0.5 }]}
               >
                 <View style={[styles.methodIc, { backgroundColor: theme.color.paperWarm }]}>
-                  <Text style={{ fontFamily: theme.font.sansBold, fontSize: 11, color: theme.color.ink }}>{m.ic}</Text>
+                  <Text style={{ fontFamily: theme.font.sansBold, fontSize: 11, color: theme.color.ink }}>{methodOption.ic}</Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontFamily: theme.font.sansBold, fontSize: 14.5, color: theme.color.ink }}>{m.label}</Text>
-                  <Text style={{ fontFamily: theme.font.sansMedium, fontSize: 12, color: theme.color.mist, marginTop: 2 }}>{m.sub}</Text>
+                  <Text style={{ fontFamily: theme.font.sansBold, fontSize: 14.5, color: theme.color.ink }}>{methodOption.label}</Text>
+                  <Text style={{ fontFamily: theme.font.sansMedium, fontSize: 12, color: theme.color.mist, marginTop: 2 }}>{methodOption.sub}</Text>
                 </View>
-                {m.available ? (
+                {methodOption.available ? (
                   <View style={[styles.radio, { borderColor: sel ? theme.color.persimmon : theme.color.hairline }]}>
                     {sel ? <View style={[styles.radioDot, { backgroundColor: theme.color.persimmon }]} /> : null}
                   </View>

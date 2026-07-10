@@ -4,12 +4,12 @@ import type { CreateReviewRequestType } from "@findemy/types";
 
 // S4.3: post a review from an attended trial OR an enrolment (one per academy).
 export const useCreateReview = () => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: CreateReviewRequestType) => api.reviews.create(payload),
-    onSuccess: (_d, vars) => {
-      qc.invalidateQueries({ queryKey: ["academy", vars.academy_id] });
-      qc.invalidateQueries({ queryKey: ["me", "classes"] });
+    onSuccess: (_data, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["academy", vars.academy_id] });
+      queryClient.invalidateQueries({ queryKey: ["me", "classes"] });
     },
   });
 };

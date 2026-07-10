@@ -26,7 +26,7 @@ try {
 export default function WorkshopPayScreen() {
   const router = useRouter();
   const theme = useTheme();
-  const user = useAuth((s) => s.user);
+  const user = useAuth((state) => state.user);
   const [paying, setPaying] = useState(false);
 
   const { registration_id, workshop_id, title, amount_paise } = useLocalSearchParams<{
@@ -37,13 +37,13 @@ export default function WorkshopPayScreen() {
   }>();
 
   const workshopQ = useWorkshop(workshop_id);
-  const w = (workshopQ.data as any)?.workshop;
-  const wsTitle = w?.title ?? title ?? "Workshop";
-  const start = w?.start_at ? new Date(w.start_at) : null;
+  const workshop = (workshopQ.data as any)?.workshop;
+  const wsTitle = workshop?.title ?? title ?? "Workshop";
+  const start = workshop?.start_at ? new Date(workshop.start_at) : null;
   const whenLabel = start && !isNaN(start.getTime()) ? format(start, "EEE, d MMM · h:mm a") : null;
-  const online = (w?.type ?? "") === "online";
-  const where = online ? "Online" : (w?.location ?? "");
-  const cover = getWorkshopImage(w?.type);
+  const online = (workshop?.type ?? "") === "online";
+  const where = online ? "Online" : (workshop?.location ?? "");
+  const cover = getWorkshopImage(workshop?.type);
 
   const order = useQuery({
     queryKey: ["workshop-order", registration_id],
@@ -64,7 +64,7 @@ export default function WorkshopPayScreen() {
           onPress: async () => {
             const apiUrl = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:8080";
             try {
-              const res = await fetch(`${apiUrl}/payments/webhook`, {
+              const response = await fetch(`${apiUrl}/payments/webhook`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "x-razorpay-signature": "" },
                 body: JSON.stringify({
@@ -72,9 +72,9 @@ export default function WorkshopPayScreen() {
                   payload: { payment: { entity: { order_id: order.data!.razorpay_order_id, id: `pay_dev_${Date.now()}`, notes: { workshop_registration_id: registration_id } } } },
                 }),
               });
-              if (!res.ok) { Alert.alert("Webhook failed", `API returned ${res.status}. Cannot confirm registration.`); return; }
-            } catch (e: any) {
-              Alert.alert("Cannot reach API", `Webhook URL ${apiUrl} unreachable from device. ${e?.message ?? ""}`);
+              if (!response.ok) { Alert.alert("Webhook failed", `API returned ${response.status}. Cannot confirm registration.`); return; }
+            } catch (error: any) {
+              Alert.alert("Cannot reach API", `Webhook URL ${apiUrl} unreachable from device. ${error?.message ?? ""}`);
               return;
             }
             router.replace(`/workshop/confirmation?registration_id=${registration_id}&workshop_id=${workshop_id}&title=${encodeURIComponent(title ?? "")}`);
@@ -99,8 +99,8 @@ export default function WorkshopPayScreen() {
       };
       await RazorpayCheckout.open(options);
       router.replace(`/workshop/confirmation?registration_id=${registration_id}&workshop_id=${workshop_id}&title=${encodeURIComponent(title ?? "")}`);
-    } catch (err: any) {
-      Alert.alert("Payment failed", err?.description ?? "Something went wrong. Please try again.");
+    } catch (error: any) {
+      Alert.alert("Payment failed", error?.description ?? "Something went wrong. Please try again.");
     } finally {
       setPaying(false);
     }
@@ -116,7 +116,7 @@ export default function WorkshopPayScreen() {
           <View style={{ flex: 1, minWidth: 0 }}>
             <Text style={{ fontFamily: theme.font.sansBold, fontSize: 16, color: theme.color.ink }} numberOfLines={2}>{wsTitle}</Text>
             <Text style={{ fontFamily: theme.font.sansSemibold, fontSize: 12.5, color: theme.color.mist, marginTop: 3 }}>
-              {online ? "Online workshop" : "Workshop"}{w?.academy_name ? ` · ${w.academy_name}` : ""}
+              {online ? "Online workshop" : "Workshop"}{workshop?.academy_name ? ` · ${workshop.academy_name}` : ""}
             </Text>
           </View>
         </View>

@@ -6,8 +6,8 @@ const IST_OFFSET_MIN = 5 * 60 + 30;
 
 /** IST calendar date ('yyyy-MM-dd') of an instant (ISO string or Date). */
 export function istDateKey(instant: string | Date): string {
-  const d = typeof instant === 'string' ? new Date(instant) : instant;
-  const shifted = new Date(d.getTime() + IST_OFFSET_MIN * 60_000);
+  const date = typeof instant === 'string' ? new Date(instant) : instant;
+  const shifted = new Date(date.getTime() + IST_OFFSET_MIN * 60_000);
   return shifted.toISOString().slice(0, 10);
 }
 

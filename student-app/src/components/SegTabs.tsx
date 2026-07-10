@@ -16,12 +16,12 @@ export function SegTabs<T extends string>({
   const theme = useTheme();
   return (
     <View style={[styles.track, { backgroundColor: theme.color.paperWarm }]}>
-      {options.map((o) => {
-        const active = o.key === value;
+      {options.map((option) => {
+        const active = option.key === value;
         return (
           <Pressable
-            key={o.key}
-            onPress={() => onChange(o.key)}
+            key={option.key}
+            onPress={() => onChange(option.key)}
             style={[styles.seg, active && { backgroundColor: "#fff", ...theme.shadow.sm }]}
             accessibilityRole="tab"
             accessibilityState={{ selected: active }}
@@ -33,7 +33,7 @@ export function SegTabs<T extends string>({
                 color: active ? theme.color.ink : theme.color.inkSoft,
               }}
             >
-              {o.label}
+              {option.label}
             </Text>
           </Pressable>
         );

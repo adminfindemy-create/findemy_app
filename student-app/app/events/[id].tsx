@@ -39,11 +39,11 @@ function badgeFor(type: string, theme: any): { label: string; bg: string; fg: st
 }
 
 function inr(paise?: number | null): string {
-  const n = Math.round((paise ?? 0) / 100);
-  const s = String(n);
-  if (s.length <= 3) return `₹${s}`;
-  const last3 = s.slice(-3);
-  const rest = s.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",");
+  const rupees = Math.round((paise ?? 0) / 100);
+  const rupeesStr = String(rupees);
+  if (rupeesStr.length <= 3) return `₹${rupeesStr}`;
+  const last3 = rupeesStr.slice(-3);
+  const rest = rupeesStr.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",");
   return `₹${rest},${last3}`;
 }
 
@@ -189,10 +189,10 @@ export default function EventDetailScreen() {
 
   const handleRegister = async () => {
     try {
-      const res = await registerMut.mutateAsync(id);
-      if (res.requires_payment) {
+      const response = await registerMut.mutateAsync(id);
+      if (response.requires_payment) {
         router.push(
-          `/events/pay?registration_id=${res.registration_id}&event_id=${id}&title=${encodeURIComponent(event.title ?? "")}&amount_paise=${res.amount_paise}` as any
+          `/events/pay?registration_id=${response.registration_id}&event_id=${id}&title=${encodeURIComponent(event.title ?? "")}&amount_paise=${response.amount_paise}` as any
         );
       } else {
         Alert.alert("Registered!", "Your spot is confirmed.", [{ text: "OK", onPress: () => regStatus.refetch() }]);
@@ -269,9 +269,9 @@ export default function EventDetailScreen() {
             <View style={{ marginTop: 22 }}>
               <Text style={[styles.blockLabel, { fontFamily: theme.font.sansBold, color: theme.color.whisper }]}>Categories</Text>
               <View style={styles.chips}>
-                {divisions.map((d) => (
-                  <View key={d} style={[styles.chip, { borderColor: theme.color.hairline }]}>
-                    <Text style={{ fontFamily: theme.font.sansMedium, fontSize: 13, color: theme.color.inkSoft }}>{d}</Text>
+                {divisions.map((division) => (
+                  <View key={division} style={[styles.chip, { borderColor: theme.color.hairline }]}>
+                    <Text style={{ fontFamily: theme.font.sansMedium, fontSize: 13, color: theme.color.inkSoft }}>{division}</Text>
                   </View>
                 ))}
               </View>

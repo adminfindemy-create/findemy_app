@@ -29,13 +29,13 @@ export default function LoginScreen() {
   const onSubmit = async (data: FormData) => {
     setErrorMsg('');
     try {
-      const res = await api.auth.requestOtp(data);
-      router.push(`/(auth)/verify-otp?otp_id=${res.otp_id}&phone=${data.phone}`);
-    } catch (e: any) {
-      if (e?.code === 'RATE_LIMITED') {
+      const response = await api.auth.requestOtp(data);
+      router.push(`/(auth)/verify-otp?otp_id=${response.otp_id}&phone=${data.phone}`);
+    } catch (error: any) {
+      if (error?.code === 'RATE_LIMITED') {
         setErrorMsg('Too many attempts, try in a few minutes.');
       } else {
-        setErrorMsg(e?.message ?? 'Failed to send OTP');
+        setErrorMsg(error?.message ?? 'Failed to send OTP');
       }
     }
   };
@@ -66,7 +66,7 @@ export default function LoginScreen() {
               keyboardType="number-pad"
               maxLength={10}
               value={value}
-              onChangeText={(t) => onChange(t.replace(/\D/g, '').slice(0, 10))}
+              onChangeText={(digits) => onChange(digits.replace(/\D/g, '').slice(0, 10))}
               error={error?.message}
             />
           )}

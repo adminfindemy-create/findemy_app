@@ -50,22 +50,22 @@ export default function BookingSlotScreen() {
       try {
         await rescheduleBooking.mutateAsync({ id: reschedule_booking_id, new_trial_at: selectedSlot });
         router.replace("/bookings");
-      } catch (e: any) {
-        Alert.alert("Error", e.message ?? "Reschedule failed");
+      } catch (error: any) {
+        Alert.alert("Error", error.message ?? "Reschedule failed");
       }
     } else {
       try {
-        const res = await createBooking.mutateAsync({ batch_id, trial_at: selectedSlot });
-        router.push(`/booking/pay?booking_id=${res.booking.id}`);
-      } catch (e: any) {
-        Alert.alert("Error", e.message ?? "Booking failed");
+        const response = await createBooking.mutateAsync({ batch_id, trial_at: selectedSlot });
+        router.push(`/booking/pay?booking_id=${response.booking.id}`);
+      } catch (error: any) {
+        Alert.alert("Error", error.message ?? "Booking failed");
       }
     }
   };
 
   const rawSlots = (slots.data?.slots ?? []) as any[];
   const slotList = isSameDay(selectedDate, new Date())
-    ? rawSlots.filter((s: any) => new Date(s.slot_time) > new Date())
+    ? rawSlots.filter((slot: any) => new Date(slot.slot_time) > new Date())
     : rawSlots;
 
   return (
@@ -88,23 +88,23 @@ export default function BookingSlotScreen() {
           </View>
 
           <View style={styles.dowRow}>
-            {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
-              <Text key={i} style={[styles.dow, { color: theme.color.whisper, fontFamily: theme.font.sansBold }]}>{d}</Text>
+            {["M", "T", "W", "T", "F", "S", "S"].map((dayLetter, index) => (
+              <Text key={index} style={[styles.dow, { color: theme.color.whisper, fontFamily: theme.font.sansBold }]}>{dayLetter}</Text>
             ))}
           </View>
 
           <View style={styles.grid}>
-            {days.map((d, i) => {
-              const inMonth = isSameMonth(d, viewMonth);
-              const isSelected = isSameDay(d, selectedDate);
-              const isPast = isBefore(d, today);
-              const isToday = isSameDay(d, today);
+            {days.map((day, index) => {
+              const inMonth = isSameMonth(day, viewMonth);
+              const isSelected = isSameDay(day, selectedDate);
+              const isPast = isBefore(day, today);
+              const isToday = isSameDay(day, today);
               return (
                 <Pressable
-                  key={i}
+                  key={index}
                   disabled={isPast}
                   onPress={() => {
-                    setSelectedDate(d);
+                    setSelectedDate(day);
                     setSelectedSlot(null);
                   }}
                   style={styles.dayCell}
@@ -123,7 +123,7 @@ export default function BookingSlotScreen() {
                         color: isSelected ? "#fff" : isPast || !inMonth ? theme.color.whisper : theme.color.ink,
                       }}
                     >
-                      {format(d, "d")}
+                      {format(day, "d")}
                     </Text>
                   </View>
                 </Pressable>

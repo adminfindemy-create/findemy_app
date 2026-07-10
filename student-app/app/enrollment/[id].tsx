@@ -78,42 +78,42 @@ function getNextClass(timings: Timing[] | null | undefined): Date | null {
   if (!timings?.length) return null;
   const now = new Date();
   let closest: Date | null = null;
-  for (const t of timings) {
-    const [h, m] = t.start_time.split(":").map(Number);
-    const d = new Date();
-    d.setHours(h, m, 0, 0);
-    let diff = t.day_of_week - d.getDay();
+  for (const timing of timings) {
+    const [hour, minute] = timing.start_time.split(":").map(Number);
+    const candidateDate = new Date();
+    candidateDate.setHours(hour, minute, 0, 0);
+    let diff = timing.day_of_week - candidateDate.getDay();
     if (diff === 0) {
-      const minutesPast = (now.getTime() - d.getTime()) / 60000;
-      if (minutesPast > t.duration_min) diff = 7;
+      const minutesPast = (now.getTime() - candidateDate.getTime()) / 60000;
+      if (minutesPast > timing.duration_min) diff = 7;
     } else if (diff < 0) {
       diff += 7;
     }
-    d.setDate(d.getDate() + diff);
-    if (!closest || d < closest) closest = d;
+    candidateDate.setDate(candidateDate.getDate() + diff);
+    if (!closest || candidateDate < closest) closest = candidateDate;
   }
   return closest;
 }
 
-function formatTimeRange(t: Timing): string {
-  const [h, m] = t.start_time.split(":").map(Number);
-  const startAmpm = h >= 12 ? "PM" : "AM";
-  const startHour = h % 12 || 12;
-  const startStr = `${startHour}:${String(m).padStart(2, "0")} ${startAmpm}`;
-  if (!t.duration_min) return startStr;
-  const endTotalMin = h * 60 + m + t.duration_min;
-  const endH = Math.floor(endTotalMin / 60) % 24;
-  const endM = endTotalMin % 60;
-  const endAmpm = endH >= 12 ? "PM" : "AM";
-  const endHour = endH % 12 || 12;
-  return `${startStr} – ${endHour}:${String(endM).padStart(2, "0")} ${endAmpm}`;
+function formatTimeRange(timing: Timing): string {
+  const [hour24, minute] = timing.start_time.split(":").map(Number);
+  const startAmpm = hour24 >= 12 ? "PM" : "AM";
+  const startHour = hour24 % 12 || 12;
+  const startStr = `${startHour}:${String(minute).padStart(2, "0")} ${startAmpm}`;
+  if (!timing.duration_min) return startStr;
+  const endTotalMin = hour24 * 60 + minute + timing.duration_min;
+  const endHour24 = Math.floor(endTotalMin / 60) % 24;
+  const endMinute = endTotalMin % 60;
+  const endAmpm = endHour24 >= 12 ? "PM" : "AM";
+  const endHour = endHour24 % 12 || 12;
+  return `${startStr} – ${endHour}:${String(endMinute).padStart(2, "0")} ${endAmpm}`;
 }
 
 function batchDayPattern(timings: Timing[] | undefined): string {
   if (!timings?.length) return "";
-  return [...new Set(timings.map((t) => t.day_of_week))]
+  return [...new Set(timings.map((timing) => timing.day_of_week))]
     .sort()
-    .map((d) => DAY_LABELS[d])
+    .map((dayOfWeek) => DAY_LABELS[dayOfWeek])
     .join(" · ");
 }
 
@@ -170,7 +170,7 @@ function RenewSheet({ enrollment, onClose }: { enrollment: any; onClose: () => v
   const [makeDefault, setMakeDefault] = useState(false);
   const options = renewOptions.data?.options ?? [];
 
-  const selectedOption = options.find((o: any) => o.package_type === selected);
+  const selectedOption = options.find((option: any) => option.package_type === selected);
 
   const handleRenew = async () => {
     try {
@@ -181,13 +181,13 @@ function RenewSheet({ enrollment, onClose }: { enrollment: any; onClose: () => v
           await setPkgMut.mutateAsync({ id: enrollment.id, package_type: selected });
         } catch { /* non-fatal — onError alerts */ }
       }
-      const res = await renewMut.mutateAsync({
+      const response = await renewMut.mutateAsync({
         batchId: enrollment.batch_id,
         package_type: selected,
       });
       onClose();
       router.push(
-        `/enrollment/pay?enrollment_id=${res.enrollment_id}&enrollment_period_id=${res.enrollment_period_id}&razorpay_order_id=${res.razorpay_order_id}&razorpay_key=${res.razorpay_key}&amount_paise=${res.amount_paise}&batch_title=${encodeURIComponent(enrollment.batch_title)}&package_type=${selected}&batch_id=${enrollment.batch_id}&category=${enrollment.category}&flow=renewal` as any
+        `/enrollment/pay?enrollment_id=${response.enrollment_id}&enrollment_period_id=${response.enrollment_period_id}&razorpay_order_id=${response.razorpay_order_id}&razorpay_key=${response.razorpay_key}&amount_paise=${response.amount_paise}&batch_title=${encodeURIComponent(enrollment.batch_title)}&package_type=${selected}&batch_id=${enrollment.batch_id}&category=${enrollment.category}&flow=renewal` as any
       );
     } catch { /* onError handles */ }
   };
@@ -208,17 +208,17 @@ function RenewSheet({ enrollment, onClose }: { enrollment: any; onClose: () => v
         <ActivityIndicator color={theme.color.persimmon} style={{ marginVertical: 24 }} />
       ) : (
         <View style={{ marginTop: 4 }}>
-          {options.map((opt: any) => {
-            const pkg = PACKAGE_CONFIG[opt.package_type];
+          {options.map((option: any) => {
+            const pkg = PACKAGE_CONFIG[option.package_type];
             if (!pkg) return null;
-            const amountRs = Math.round(opt.amount_paise / 100);
+            const amountRs = Math.round(option.amount_paise / 100);
             const badge = pkg.badge ? ` · ${pkg.badge}` : "";
-            const off = opt.discount_bps > 0 ? ` · ${opt.discount_bps / 100}% off` : "";
+            const off = option.discount_bps > 0 ? ` · ${option.discount_bps / 100}% off` : "";
             return (
               <OptionRow
-                key={opt.package_type}
-                selected={selected === opt.package_type}
-                onPress={() => setSelected(opt.package_type)}
+                key={option.package_type}
+                selected={selected === option.package_type}
+                onPress={() => setSelected(option.package_type)}
                 title={`${pkg.label} · ₹${amountRs.toLocaleString("en-IN")}`}
                 sub={`${pkg.months} month${pkg.months > 1 ? "s" : ""}${off}${badge}`}
               />
@@ -228,7 +228,7 @@ function RenewSheet({ enrollment, onClose }: { enrollment: any; onClose: () => v
       )}
 
       <Pressable
-        onPress={() => setMakeDefault((v) => !v)}
+        onPress={() => setMakeDefault((prev) => !prev)}
         style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 4, marginBottom: 4 }}
       >
         <View
@@ -353,13 +353,13 @@ function DiscontinueSheet({ enrollment, onClose }: { enrollment: any; onClose: (
         Your feedback helps academies improve. This is kept private.
       </Text>
       <View>
-        {DISCONTINUE_REASONS.map((r) => (
+        {DISCONTINUE_REASONS.map((reasonOption) => (
           <OptionRow
-            key={r.key}
-            selected={reason === r.key}
-            onPress={() => setReason(r.key)}
-            title={r.label}
-            sub={r.desc}
+            key={reasonOption.key}
+            selected={reason === reasonOption.key}
+            onPress={() => setReason(reasonOption.key)}
+            title={reasonOption.label}
+            sub={reasonOption.desc}
           />
         ))}
       </View>
@@ -382,13 +382,13 @@ function PauseSheet({ enrollment, onClose }: { enrollment: any; onClose: () => v
 
   const handlePause = async () => {
     try {
-      const res = await pauseMut.mutateAsync({
+      const response = await pauseMut.mutateAsync({
         id: enrollment.id,
         duration,
         reason: reason.trim() || undefined,
       });
       onClose();
-      const isPending = res.status === "pending";
+      const isPending = response.status === "pending";
       Alert.alert(
         isPending ? "Pause requested" : "Enrollment paused",
         isPending
@@ -422,12 +422,12 @@ function PauseSheet({ enrollment, onClose }: { enrollment: any; onClose: () => v
       </Text>
 
       <View style={{ flexDirection: "row", gap: 10, marginBottom: 18 }}>
-        {PAUSE_DURATIONS.map((d) => {
-          const isSelected = duration === d.key;
+        {PAUSE_DURATIONS.map((durationOption) => {
+          const isSelected = duration === durationOption.key;
           return (
             <Pressable
-              key={d.key}
-              onPress={() => setDuration(d.key)}
+              key={durationOption.key}
+              onPress={() => setDuration(durationOption.key)}
               style={[
                 pauseStyles.durationPill,
                 {
@@ -445,7 +445,7 @@ function PauseSheet({ enrollment, onClose }: { enrollment: any; onClose: () => v
                   textAlign: "center",
                 }}
               >
-                {d.label}
+                {durationOption.label}
               </Text>
             </Pressable>
           );
@@ -490,7 +490,7 @@ function TransferSheet({ enrollment, onClose }: { enrollment: any; onClose: () =
   const siblings = useMemo(() => {
     const batches = (academy.data?.batches ?? []) as any[];
     return batches.filter(
-      (b) => b.id !== enrollment.batch_id && (!enrollment.category || b.category === enrollment.category)
+      (batch) => batch.id !== enrollment.batch_id && (!enrollment.category || batch.category === enrollment.category)
     );
   }, [academy.data, enrollment.batch_id, enrollment.category]);
 
@@ -500,13 +500,13 @@ function TransferSheet({ enrollment, onClose }: { enrollment: any; onClose: () =
       return;
     }
     try {
-      const res = await transferMut.mutateAsync({
+      const response = await transferMut.mutateAsync({
         id: enrollment.id,
         target_batch_id: targetBatchId,
         reason: reason.trim() || undefined,
       });
       onClose();
-      const isPending = res.status === "pending";
+      const isPending = response.status === "pending";
       Alert.alert(
         isPending ? "Transfer requested" : "Transfer approved",
         isPending
@@ -555,20 +555,20 @@ function TransferSheet({ enrollment, onClose }: { enrollment: any; onClose: () =
         </Text>
       ) : (
         <View>
-          {siblings.map((b: any) => {
-            const days = batchDayPattern(b.timings);
-            const t0 = (b.timings ?? [])[0];
-            const time = t0 ? formatTimeRange(t0) : "";
+          {siblings.map((siblingBatch: any) => {
+            const days = batchDayPattern(siblingBatch.timings);
+            const firstTiming = (siblingBatch.timings ?? [])[0];
+            const time = firstTiming ? formatTimeRange(firstTiming) : "";
             const seats =
-              b.capacity != null ? Number(b.capacity) - Number(b.enrolled_count ?? 0) : null;
+              siblingBatch.capacity != null ? Number(siblingBatch.capacity) - Number(siblingBatch.enrolled_count ?? 0) : null;
             const parts = [time, seats != null ? `${Math.max(seats, 0)} seat${seats === 1 ? "" : "s"} left` : ""].filter(Boolean);
             return (
               <OptionRow
-                key={b.id}
-                selected={targetBatchId === b.id}
+                key={siblingBatch.id}
+                selected={targetBatchId === siblingBatch.id}
                 disabled={seats != null && seats <= 0}
-                onPress={() => setTargetBatchId(b.id)}
-                title={days || b.title || b.level || "Batch"}
+                onPress={() => setTargetBatchId(siblingBatch.id)}
+                title={days || siblingBatch.title || siblingBatch.level || "Batch"}
                 sub={parts.join(" · ")}
               />
             );
@@ -672,7 +672,7 @@ export default function EnrollmentDetailScreen() {
   const resumeMut = useResumePause();
 
   const enrollment = useMemo(
-    () => (enrollments.data?.items ?? []).find((e: any) => e.id === id),
+    () => (enrollments.data?.items ?? []).find((item: any) => item.id === id),
     [enrollments.data, id]
   );
   const detail = (detailQ.data as any)?.enrollment;
@@ -705,7 +705,7 @@ export default function EnrollmentDetailScreen() {
   const catColors = theme.category[enrollment.category as keyof typeof theme.category] ?? theme.category.music;
   const nextClass = getNextClass(enrollment.timings);
   const nextTiming = nextClass
-    ? enrollment.timings?.find((t: Timing) => t.day_of_week === nextClass.getDay())
+    ? enrollment.timings?.find((timing: Timing) => timing.day_of_week === nextClass.getDay())
     : null;
   const fee = enrollment.monthly_fee_paise
     ? `₹${Math.round(enrollment.monthly_fee_paise / 100).toLocaleString("en-IN")}/mo`
@@ -762,9 +762,9 @@ export default function EnrollmentDetailScreen() {
   };
 
   const handleDirections = () => {
-    const q = encodeURIComponent(enrollment.academy_address ?? enrollment.academy_name ?? "");
-    Linking.openURL(Platform.OS === "ios" ? `maps://?q=${q}` : `geo:0,0?q=${q}`).catch(() =>
-      Linking.openURL(`https://maps.google.com/?q=${q}`)
+    const address = encodeURIComponent(enrollment.academy_address ?? enrollment.academy_name ?? "");
+    Linking.openURL(Platform.OS === "ios" ? `maps://?q=${address}` : `geo:0,0?q=${address}`).catch(() =>
+      Linking.openURL(`https://maps.google.com/?q=${address}`)
     );
   };
 
@@ -876,10 +876,10 @@ export default function EnrollmentDetailScreen() {
           {attendedCount > 0 ? (
             <>
               <View style={styles.dotTrack}>
-                {Array.from({ length: DOT_COUNT }).map((_, i) => (
+                {Array.from({ length: DOT_COUNT }).map((_, index) => (
                   <View
-                    key={i}
-                    style={[styles.dot, { backgroundColor: i < filledDots ? catColors.accent : theme.color.hairline }]}
+                    key={index}
+                    style={[styles.dot, { backgroundColor: index < filledDots ? catColors.accent : theme.color.hairline }]}
                   />
                 ))}
                 {attendedCount > DOT_COUNT ? (

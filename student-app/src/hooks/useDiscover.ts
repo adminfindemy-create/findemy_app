@@ -38,6 +38,6 @@ export const useInfiniteDiscover = (params: {
         min_rating: params.minRating || undefined,
         radius_km: params.radius || undefined,
       }),
-    getNextPageParam: (last) => last.next_cursor ?? undefined,
+    getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
     initialPageParam: undefined as string | undefined,
   });

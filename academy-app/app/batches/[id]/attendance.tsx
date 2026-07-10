@@ -27,8 +27,8 @@ export default function BatchAttendanceScreen() {
   const issue = async () => {
     setFailed(false);
     try {
-      const res = await checkinToken.mutateAsync(id);
-      setToken(res.token);
+      const response = await checkinToken.mutateAsync(id);
+      setToken(response.token);
     } catch {
       setFailed(true);
     }
@@ -39,8 +39,8 @@ export default function BatchAttendanceScreen() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await checkinToken.mutateAsync(id);
-        if (!cancelled) setToken(res.token);
+        const response = await checkinToken.mutateAsync(id);
+        if (!cancelled) setToken(response.token);
       } catch {
         if (!cancelled) setFailed(true);
       }

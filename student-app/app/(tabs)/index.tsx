@@ -54,9 +54,9 @@ function getGreetWord(): string {
 export default function DiscoverScreen() {
   const router = useRouter();
   const theme = useTheme();
-  const user = useAuth((s) => s.user);
+  const user = useAuth((state) => state.user);
   const location = useLocation();
-  const [q, setQ] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState<Category | undefined>();
   const [refreshing, setRefreshing] = useState(false);
   const [showLocation, setShowLocation] = useState(false);
@@ -79,22 +79,22 @@ export default function DiscoverScreen() {
   const nearby = useInfiniteDiscover({
     ...location,
     category,
-    q,
+    q: searchQuery,
     online: filterOnline || undefined,
     minRating: filterMinRating || undefined,
     radius: filterRadius || undefined,
   });
   const { data: savedData } = useSavedAcademies();
   const toggleSave = useToggleSavedAcademy();
-  const savedIds = new Set(((savedData as any)?.items ?? []).map((a: any) => a.id));
+  const savedIds = new Set(((savedData as any)?.items ?? []).map((academy: any) => academy.id));
 
   const requestLocation = useCallback(async () => {
     try {
-      const res = await Location.requestForegroundPermissionsAsync();
-      useLocation.getState().setPermission(res.status as any);
-      if (!res.granted) return;
-      const pos = await Location.getCurrentPositionAsync({});
-      useLocation.getState().setLocation(pos.coords.latitude, pos.coords.longitude);
+      const permissionResult = await Location.requestForegroundPermissionsAsync();
+      useLocation.getState().setPermission(permissionResult.status as any);
+      if (!permissionResult.granted) return;
+      const position = await Location.getCurrentPositionAsync({});
+      useLocation.getState().setLocation(position.coords.latitude, position.coords.longitude);
     } catch {
       // Device location services disabled — silently skip
     }
@@ -184,8 +184,8 @@ export default function DiscoverScreen() {
         <View style={[styles.search, { borderColor: theme.color.hairline, ...theme.shadow.md }]}>
           <IconSearch size={20} color={theme.color.persimmon} />
           <TextInput
-            value={q}
-            onChangeText={setQ}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
             placeholder="Find a mentor or studio…"
             placeholderTextColor={theme.color.whisper}
             style={{ flex: 1, fontFamily: theme.font.sans, fontSize: 15, color: theme.color.ink, paddingVertical: 0 }}

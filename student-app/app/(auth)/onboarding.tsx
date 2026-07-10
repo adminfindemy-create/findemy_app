@@ -26,8 +26,8 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const theme = useTheme();
   const store = useOnboarding();
-  const setUser = useAuth((s) => s.setUser);
-  const userPhone = useAuth((s) => s.user?.phone);
+  const setUser = useAuth((state) => state.setUser);
+  const userPhone = useAuth((state) => state.user?.phone);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 

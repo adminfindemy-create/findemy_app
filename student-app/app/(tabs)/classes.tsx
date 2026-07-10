@@ -20,16 +20,16 @@ function inr(paise?: number | null): string {
   return `₹${rest},${last3}`;
 }
 
-function timeOf(t?: string) {
-  if (!t) return "";
-  const [h, m] = t.split(":").map(Number);
-  const ampm = h >= 12 ? "PM" : "AM";
-  return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${ampm}`;
+function timeOf(time?: string) {
+  if (!time) return "";
+  const [hour, minute] = time.split(":").map(Number);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  return `${hour % 12 || 12}:${String(minute).padStart(2, "0")} ${ampm}`;
 }
 
 function scheduleSummary(timings?: { day_of_week: number; start_time?: string }[]) {
   if (!timings?.length) return "";
-  const days = [...new Set(timings.map((t) => t.day_of_week))].sort().map((d) => DAY_SHORT[d]).join("·");
+  const days = [...new Set(timings.map((timing) => timing.day_of_week))].sort().map((dayOfWeek) => DAY_SHORT[dayOfWeek]).join("·");
   return `${days}${timings[0]?.start_time ? ` · ${timeOf(timings[0].start_time)}` : ""}`;
 }
 
@@ -124,7 +124,7 @@ export default function ClassesScreen() {
   );
 
   const coachFirst = (name?: string) => (name ?? "").split(" ")[0];
-  const footFor = (c: ClassItem) => [c.academy_name, coachFirst(c.coach_name)].filter(Boolean).join(" · ");
+  const footFor = (classItem: ClassItem) => [classItem.academy_name, coachFirst(classItem.coach_name)].filter(Boolean).join(" · ");
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={["top"]}>
@@ -175,15 +175,15 @@ export default function ClassesScreen() {
           {active.length > 0 ? (
             <>
               <SectionLabel>Enrolled</SectionLabel>
-              {active.map((c) => {
-                const paused = c.status === "paused";
-                const closing = c.batch_status === "closing";
-                const online = c.mode === "online";
-                const resumes = paused && c.paused_until ? `Resumes ${format(new Date(c.paused_until), "d MMMM")}` : undefined;
-                const schedule = [online ? "Online" : undefined, scheduleSummary(c.timings)].filter(Boolean).join(" · ");
+              {active.map((classItem) => {
+                const paused = classItem.status === "paused";
+                const closing = classItem.batch_status === "closing";
+                const online = classItem.mode === "online";
+                const resumes = paused && classItem.paused_until ? `Resumes ${format(new Date(classItem.paused_until), "d MMMM")}` : undefined;
+                const schedule = [online ? "Online" : undefined, scheduleSummary(classItem.timings)].filter(Boolean).join(" · ");
                 // A closing batch is being discontinued: student is covered until their paid term ends.
-                const closingSub = closing && c.current_period_end
-                  ? `Closing — active until ${format(new Date(c.current_period_end), "d MMM yyyy")}`
+                const closingSub = closing && classItem.current_period_end
+                  ? `Closing — active until ${format(new Date(classItem.current_period_end), "d MMM yyyy")}`
                   : undefined;
                 const badge = closing
                   ? { label: "Closing", bg: theme.color.roseSoft, fg: theme.color.rose }
@@ -192,14 +192,14 @@ export default function ClassesScreen() {
                   : { label: "Active", bg: theme.color.jadeSoft, fg: theme.color.jade };
                 return (
                   <RowCard
-                    key={c.enrollment_id}
-                    category={c.category ?? "music"}
-                    title={c.batch_title}
+                    key={classItem.enrollment_id}
+                    category={classItem.category ?? "music"}
+                    title={classItem.batch_title}
                     badge={badge}
                     subText={closingSub ?? resumes ?? schedule}
-                    footLeft={footFor(c)}
-                    footRight={c.monthly_fee_paise ? `${inr(c.monthly_fee_paise)}/mo` : undefined}
-                    onPress={() => router.push(`/enrollment/${c.enrollment_id}` as any)}
+                    footLeft={footFor(classItem)}
+                    footRight={classItem.monthly_fee_paise ? `${inr(classItem.monthly_fee_paise)}/mo` : undefined}
+                    onPress={() => router.push(`/enrollment/${classItem.enrollment_id}` as any)}
                   />
                 );
               })}
@@ -209,16 +209,16 @@ export default function ClassesScreen() {
           {past.length > 0 ? (
             <>
               <SectionLabel>Past</SectionLabel>
-              {past.map((c) => (
+              {past.map((classItem) => (
                 <RowCard
-                  key={c.enrollment_id}
-                  category={c.category ?? "music"}
-                  title={c.batch_title}
+                  key={classItem.enrollment_id}
+                  category={classItem.category ?? "music"}
+                  title={classItem.batch_title}
                   badge={{ label: "Ended", bg: theme.color.paperWarm, fg: theme.color.inkSoft }}
-                  subText={format(new Date(c.current_period_end ?? c.started_at), "MMM yyyy")}
-                  footLeft={footFor(c)}
-                  footRight={durationLabel(c.started_at, c.current_period_end)}
-                  onPress={() => router.push(`/enrollment/${c.enrollment_id}` as any)}
+                  subText={format(new Date(classItem.current_period_end ?? classItem.started_at), "MMM yyyy")}
+                  footLeft={footFor(classItem)}
+                  footRight={durationLabel(classItem.started_at, classItem.current_period_end)}
+                  onPress={() => router.push(`/enrollment/${classItem.enrollment_id}` as any)}
                 />
               ))}
             </>

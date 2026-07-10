@@ -11,12 +11,12 @@ export function useRenewalOptions(batchId: string) {
 }
 
 export const useRenewEnrollment = () => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ batchId, package_type }: { batchId: string; package_type: string }) =>
       api.batches.renew(batchId, { package_type }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["me", "enrollments"] });
+      queryClient.invalidateQueries({ queryKey: ["me", "enrollments"] });
     },
     onError: (err: any) => {
       Alert.alert("Could not renew", err?.message ?? "Please try again.");

@@ -10,7 +10,7 @@ import { FindemyWordmark } from "@/components/splash/FindemyWordmark";
 export default function SplashScreen() {
   const router = useRouter();
   const theme = useTheme();
-  const accessToken = useAuth((s) => s.accessToken);
+  const accessToken = useAuth((state) => state.accessToken);
 
   useEffect(() => {
     const timer = setTimeout(() => {

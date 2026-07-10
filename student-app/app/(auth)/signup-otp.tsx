@@ -21,13 +21,13 @@ export default function SignupOtpScreen() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [resendTimer, setResendTimer] = useState(60);
-  const setAuth = useAuth((s) => s.setAuth);
+  const setAuth = useAuth((state) => state.setAuth);
   const toast = useToast();
 
   useEffect(() => {
     if (resendTimer > 0) {
-      const t = setTimeout(() => setResendTimer((s) => s - 1), 1000);
-      return () => clearTimeout(t);
+      const timer = setTimeout(() => setResendTimer((seconds) => seconds - 1), 1000);
+      return () => clearTimeout(timer);
     }
   }, [resendTimer]);
 
@@ -36,11 +36,11 @@ export default function SignupOtpScreen() {
     setLoading(true);
     setErrorMsg("");
     try {
-      const res = await api.auth.verifyOtp({ otp_id, code });
-      const user = res.user as any;
+      const response = await api.auth.verifyOtp({ otp_id, code });
+      const user = response.user as any;
       setAuth({
-        access: res.access_token,
-        refresh: res.refresh_token,
+        access: response.access_token,
+        refresh: response.refresh_token,
         user: {
           id: user?.id ?? "",
           name: user?.name ?? "",
@@ -51,9 +51,9 @@ export default function SignupOtpScreen() {
           lng: user?.lng,
           interests: user?.interests ?? [],
         },
-        attendanceOtp: res.attendance_otp ?? "",
+        attendanceOtp: response.attendance_otp ?? "",
       });
-      if (res.is_new_user) {
+      if (response.is_new_user) {
         const onboardingStore = useOnboarding.getState();
         if (name) onboardingStore.setField("name", decodeURIComponent(name));
         if (age) onboardingStore.setField("age", age);
@@ -61,10 +61,10 @@ export default function SignupOtpScreen() {
       } else {
         router.replace("/(tabs)");
       }
-    } catch (e: any) {
-      if (e.code === "OTP_INVALID" || e.code === "OTP_EXPIRED") {
+    } catch (error: any) {
+      if (error.code === "OTP_INVALID" || error.code === "OTP_EXPIRED") {
         setErrorMsg("Invalid or expired code. Please try again.");
-      } else if (e.code === "RATE_LIMITED") {
+      } else if (error.code === "RATE_LIMITED") {
         setErrorMsg("Too many attempts. Please wait.");
       } else {
         setErrorMsg("Something went wrong. Please try again.");

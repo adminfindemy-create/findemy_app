@@ -36,8 +36,8 @@ export default function AttendanceOtpScreen() {
             try {
               await noShow.mutateAsync(trialId);
               router.replace('/(tabs)/inbox');
-            } catch (e: any) {
-              Alert.alert('Error', e.message || 'Failed to mark no-show');
+            } catch (error: any) {
+              Alert.alert('Error', error.message || 'Failed to mark no-show');
             }
           },
         },
@@ -61,18 +61,18 @@ export default function AttendanceOtpScreen() {
       await mark.mutateAsync({ id: trialId, otp_code: state.code });
       setState({ stage: 'success' });
       setTimeout(() => router.replace('/(tabs)/inbox'), 1500);
-    } catch (e: any) {
+    } catch (error: any) {
       const nextAttempts = state.attempts + 1;
-      if (e.code === 'OTP_MISMATCH') {
+      if (error.code === 'OTP_MISMATCH') {
         // The client doesn't enforce a lockout — the server returns RATE_LIMITED
         // when the limit is hit — so don't promise a specific number of tries left.
         setState({ stage: 'entry', code: '', attempts: nextAttempts });
         Alert.alert('Error', 'Wrong code. Try again.');
-      } else if (e.code === 'RATE_LIMITED') {
+      } else if (error.code === 'RATE_LIMITED') {
         Alert.alert('Error', 'Too many attempts. Try again in 10 minutes.');
         setState({ stage: 'entry', code: '', attempts: nextAttempts });
       } else {
-        Alert.alert('Error', e.message || 'Something went wrong');
+        Alert.alert('Error', error.message || 'Something went wrong');
         setState({ stage: 'entry', code: state.code, attempts: nextAttempts });
       }
     }

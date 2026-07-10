@@ -34,7 +34,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   }, [opacity]);
 
   // Bridge: non-component modules enqueue via the zustand bus; surface them here.
-  const busRequest = useToastBus((s) => s.request);
+  const busRequest = useToastBus((state) => state.request);
   useEffect(() => {
     if (busRequest) show(busRequest.message, busRequest.variant);
   }, [busRequest, show]);

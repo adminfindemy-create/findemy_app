@@ -106,7 +106,7 @@ export default function AcademyDetailScreen() {
 
   const academy = data?.academy as any;
   const coaches = (data?.coaches ?? []) as any[];
-  const reviews = reviewsData?.pages.flatMap((p: any) => p.items) ?? [];
+  const reviews = reviewsData?.pages.flatMap((page: any) => page.items) ?? [];
   const workshops = (workshopsData?.items ?? []) as Workshop[];
 
   // Programs are server-provided; the client only enriches them (image + display level).
@@ -165,7 +165,7 @@ export default function AcademyDetailScreen() {
         </View>
 
         {/* Body */}
-        <View style={{ padding: 18 }} onLayout={(e) => { bodyY.current = e.nativeEvent.layout.y; }}>
+        <View style={{ padding: 18 }} onLayout={(event) => { bodyY.current = event.nativeEvent.layout.y; }}>
           <Text style={[styles.cat, { fontFamily: theme.font.sansBold, color: theme.color.persimmon }]}>
             {String(academy?.category ?? "").toUpperCase()}
           </Text>
@@ -228,7 +228,7 @@ export default function AcademyDetailScreen() {
             ) : inlineWorkshops.length === 0 ? (
               <EmptyState message="No upcoming workshops." />
             ) : (
-              inlineWorkshops.map((w) => <WorkshopRowCard key={w.id} w={w} onPress={() => router.push(`/workshop/${w.id}`)} />)
+              inlineWorkshops.map((w) => <WorkshopRowCard key={w.id} workshop={w} onPress={() => router.push(`/workshop/${w.id}`)} />)
             )}
           </View>
 
@@ -244,7 +244,7 @@ export default function AcademyDetailScreen() {
           ) : null}
 
           {/* Reviews */}
-          <View style={{ marginTop: 24 }} onLayout={(e) => { reviewsY.current = e.nativeEvent.layout.y; }}>
+          <View style={{ marginTop: 24 }} onLayout={(event) => { reviewsY.current = event.nativeEvent.layout.y; }}>
             <View style={styles.reviewHead}>
               <BlockLabel>Reviews</BlockLabel>
               <Text style={{ fontFamily: theme.font.sansSemibold, fontSize: 12.5, color: theme.color.mist }}>

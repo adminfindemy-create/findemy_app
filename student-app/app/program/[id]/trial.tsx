@@ -88,19 +88,19 @@ export default function ProgramTrialScreen() {
   const now = new Date();
   const rawSlots = slotsQuery.slots ?? [];
   const slotList = isSameDay(selectedDate, today)
-    ? rawSlots.filter((s) => new Date(s.slot_time) > now)
+    ? rawSlots.filter((slot) => new Date(slot.slot_time) > now)
     : rawSlots;
 
   const handleContinue = async () => {
     if (!selectedSlot) return;
     try {
-      const res = await createBooking.mutateAsync({
+      const response = await createBooking.mutateAsync({
         batch_id: selectedSlot.batch_id,
         trial_at: selectedSlot.id,
       });
-      router.push(`/booking/pay?booking_id=${(res as any).booking.id}`);
-    } catch (e: any) {
-      Alert.alert("Error", e?.message ?? "Booking failed");
+      router.push(`/booking/pay?booking_id=${(response as any).booking.id}`);
+    } catch (error: any) {
+      Alert.alert("Error", error?.message ?? "Booking failed");
     }
   };
 
@@ -127,13 +127,13 @@ export default function ProgramTrialScreen() {
           contentContainerStyle={styles.dateStripContent}
           style={styles.dateStrip}
         >
-          {dateRange.map((d) => {
-            const isSel = isSameDay(d, selectedDate);
+          {dateRange.map((date) => {
+            const isSel = isSameDay(date, selectedDate);
             return (
               <Pressable
-                key={d.toISOString()}
+                key={date.toISOString()}
                 onPress={() => {
-                  setSelectedDate(d);
+                  setSelectedDate(date);
                   setSelectedSlot(null);
                 }}
                 style={[
@@ -152,7 +152,7 @@ export default function ProgramTrialScreen() {
                     letterSpacing: 0.6,
                   }}
                 >
-                  {format(d, "EEE").toUpperCase()}
+                  {format(date, "EEE").toUpperCase()}
                 </Text>
                 <Text
                   style={{
@@ -162,7 +162,7 @@ export default function ProgramTrialScreen() {
                     marginTop: 4,
                   }}
                 >
-                  {format(d, "d")}
+                  {format(date, "d")}
                 </Text>
                 <Text
                   style={{
@@ -172,7 +172,7 @@ export default function ProgramTrialScreen() {
                     marginTop: 2,
                   }}
                 >
-                  {format(d, "MMM")}
+                  {format(date, "MMM")}
                 </Text>
               </Pressable>
             );

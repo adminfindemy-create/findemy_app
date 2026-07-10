@@ -11,15 +11,15 @@ function GridIcon({ size = 21, color }: { size?: number; color: string }) {
   const gap = size - cell * 2;
   return (
     <View style={{ width: size, height: size, flexDirection: 'row', flexWrap: 'wrap', gap }}>
-      {[0, 1, 2, 3].map((i) => (
-        <View key={i} style={{ width: cell, height: cell, borderRadius: 3, borderWidth: 2, borderColor: color }} />
+      {[0, 1, 2, 3].map((index) => (
+        <View key={index} style={{ width: cell, height: cell, borderRadius: 3, borderWidth: 2, borderColor: color }} />
       ))}
     </View>
   );
 }
 
 export default function TabLayout() {
-  const newCount = useInbox((s) => s.newCountSinceLastSeen);
+  const newCount = useInbox((state) => state.newCountSinceLastSeen);
 
   return (
     <Tabs
@@ -41,7 +41,7 @@ export default function TabLayout() {
             items={items}
             active={active}
             onChange={(key) => {
-              const route = state.routes.find((r) => r.name === key);
+              const route = state.routes.find((tabRoute) => tabRoute.name === key);
               if (route) navigation.navigate(route.name);
             }}
           />

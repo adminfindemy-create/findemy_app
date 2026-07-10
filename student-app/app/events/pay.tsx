@@ -27,7 +27,7 @@ try {
 export default function EventPayScreen() {
   const router = useRouter();
   const theme = useTheme();
-  const user = useAuth((s) => s.user);
+  const user = useAuth((state) => state.user);
   const [paying, setPaying] = useState(false);
   const [paid, setPaid] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
@@ -83,7 +83,7 @@ export default function EventPayScreen() {
           onPress: async () => {
             const apiUrl = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:8080";
             try {
-              const res = await fetch(`${apiUrl}/payments/webhook`, {
+              const response = await fetch(`${apiUrl}/payments/webhook`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "x-razorpay-signature": "" },
                 body: JSON.stringify({
@@ -91,9 +91,9 @@ export default function EventPayScreen() {
                   payload: { payment: { entity: { order_id: order.data!.razorpay_order_id, id: `pay_dev_${Date.now()}`, notes: { payment_type: "event" } } } },
                 }),
               });
-              if (!res.ok) { Alert.alert("Webhook failed", `API returned ${res.status}.`); return; }
-            } catch (e: any) {
-              Alert.alert("Cannot reach API", `Webhook URL ${apiUrl} unreachable. ${e?.message ?? ""}`);
+              if (!response.ok) { Alert.alert("Webhook failed", `API returned ${response.status}.`); return; }
+            } catch (error: any) {
+              Alert.alert("Cannot reach API", `Webhook URL ${apiUrl} unreachable. ${error?.message ?? ""}`);
               return;
             }
             setPaid(true);
@@ -118,8 +118,8 @@ export default function EventPayScreen() {
       };
       await RazorpayCheckout.open(options);
       setPaid(true);
-    } catch (err: any) {
-      Alert.alert("Payment failed", err?.description ?? "Something went wrong. Please try again.");
+    } catch (error: any) {
+      Alert.alert("Payment failed", error?.description ?? "Something went wrong. Please try again.");
     } finally {
       setPaying(false);
     }

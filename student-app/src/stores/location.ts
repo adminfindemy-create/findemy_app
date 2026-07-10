@@ -5,7 +5,7 @@ type LocationState = {
   lng: number | null;
   permission: "granted" | "denied" | "prompt" | null;
   setLocation: (lat: number, lng: number) => void;
-  setPermission: (p: "granted" | "denied" | "prompt") => void;
+  setPermission: (permission: "granted" | "denied" | "prompt") => void;
   clear: () => void;
 };
 

@@ -34,7 +34,7 @@ type AcademyCardProps = {
 
 function variantForId(id: string | undefined): 1 | 2 | 3 | 4 {
   if (!id) return 1;
-  const sum = Array.from(id).reduce((a, c) => a + c.charCodeAt(0), 0);
+  const sum = Array.from(id).reduce((total, char) => total + char.charCodeAt(0), 0);
   return (((sum % 4) + 1) as 1 | 2 | 3 | 4);
 }
 

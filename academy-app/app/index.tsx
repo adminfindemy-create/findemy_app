@@ -7,17 +7,17 @@ import { useTheme } from '@findemy/ui';
 export default function SplashScreen() {
   const router = useRouter();
   const theme = useTheme();
-  const accessToken = useAuth((s) => s.accessToken);
+  const accessToken = useAuth((state) => state.accessToken);
 
   useEffect(() => {
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       if (accessToken) {
         router.replace('/(tabs)/studio');
       } else {
         router.replace('/(auth)');
       }
     }, 300);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [accessToken, router]);
 
   return (

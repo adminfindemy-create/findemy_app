@@ -11,12 +11,12 @@ export function useEventRegistrationStatus(eventId: string) {
 }
 
 export const useRegisterForEvent = () => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (eventId: string) => api.events.register(eventId),
     onSuccess: (_, eventId) => {
-      qc.invalidateQueries({ queryKey: ["event-registration", eventId] });
-      qc.invalidateQueries({ queryKey: ["events", eventId] });
+      queryClient.invalidateQueries({ queryKey: ["event-registration", eventId] });
+      queryClient.invalidateQueries({ queryKey: ["events", eventId] });
     },
     onError: (err: any) => {
       Alert.alert("Could not register", err?.message ?? "Please try again.");
@@ -25,13 +25,13 @@ export const useRegisterForEvent = () => {
 };
 
 export const useCancelEventRegistration = () => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ registrationId, eventId }: { registrationId: string; eventId: string }) =>
       api.events.cancelRegistration(registrationId),
     onSuccess: (_, { eventId }) => {
-      qc.invalidateQueries({ queryKey: ["event-registration", eventId] });
-      qc.invalidateQueries({ queryKey: ["events", eventId] });
+      queryClient.invalidateQueries({ queryKey: ["event-registration", eventId] });
+      queryClient.invalidateQueries({ queryKey: ["events", eventId] });
     },
     onError: (err: any) => {
       Alert.alert("Could not cancel", err?.message ?? "Please try again.");

@@ -251,7 +251,7 @@ export function CancelSheet({
                   </View>
 
                   <Pressable
-                    onPress={() => setAckChecked((v) => !v)}
+                    onPress={() => setAckChecked((prevChecked) => !prevChecked)}
                     style={{
                       flexDirection: "row",
                       alignItems: "center",

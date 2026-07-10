@@ -61,12 +61,12 @@ export default function ProfileEditScreen() {
   }, [academy, reset]);
 
   const addSpec = () => {
-    const v = newSpec.trim();
-    if (!v || specialities.includes(v)) return;
-    setSpecialities((s) => [...s, v]);
+    const trimmed = newSpec.trim();
+    if (!trimmed || specialities.includes(trimmed)) return;
+    setSpecialities((prev) => [...prev, trimmed]);
     setNewSpec('');
   };
-  const removeSpec = (v: string) => setSpecialities((s) => s.filter((x) => x !== v));
+  const removeSpec = (spec: string) => setSpecialities((prev) => prev.filter((existingSpec) => existingSpec !== spec));
 
   const onSubmit = async (values: FormData) => {
     try {
@@ -82,8 +82,8 @@ export default function ProfileEditScreen() {
       });
       showToast('Profile saved', 'success');
       router.back();
-    } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to save profile');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to save profile');
     }
   };
 
@@ -118,15 +118,15 @@ export default function ProfileEditScreen() {
         type: asset.mimeType ?? 'image/jpeg',
       } as any);
 
-      const json = await uploadMultipart<{ url: string; images: string[] }>(
+      const uploaded = await uploadMultipart<{ url: string; images: string[] }>(
         '/studio/academy/upload',
         formData
       );
-      setImages(json.images);
+      setImages(uploaded.images);
       showToast('Image uploaded', 'success');
       refetch();
-    } catch (e: any) {
-      Alert.alert('Upload failed', e.message || 'Could not upload image');
+    } catch (error: any) {
+      Alert.alert('Upload failed', error.message || 'Could not upload image');
     } finally {
       setUploading(false);
     }
@@ -140,11 +140,11 @@ export default function ProfileEditScreen() {
         style: 'destructive',
         onPress: async () => {
           try {
-            const json = await deleteJson<{ images: string[] }>(
+            const updated = await deleteJson<{ images: string[] }>(
               '/studio/academy/image',
               { url }
             );
-            setImages(json.images);
+            setImages(updated.images);
             refetch();
           } catch {
             Alert.alert('Error', 'Could not remove image');
@@ -221,8 +221,8 @@ export default function ProfileEditScreen() {
         {/* Specialities */}
         <Text style={[styles.sectionLabel, { color: theme.color.whisper }]}>SPECIALITIES</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
-          {specialities.map((s) => (
-            <Chip key={s} label={`${s}  ✕`} selected onPress={() => removeSpec(s)} />
+          {specialities.map((spec) => (
+            <Chip key={spec} label={`${spec}  ✕`} selected onPress={() => removeSpec(spec)} />
           ))}
         </View>
         <View style={{ flexDirection: 'row', gap: 8, alignItems: 'flex-end' }}>
@@ -237,10 +237,10 @@ export default function ProfileEditScreen() {
           <>
             <Text style={[styles.sectionLabel, { color: theme.color.whisper }]}>MODES OFFERED</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              {academy.modes_offered.map((m: string) => (
-                <View key={m} style={{ backgroundColor: theme.color.paperWarm, borderWidth: 1, borderColor: theme.color.hairline, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999 }}>
+              {academy.modes_offered.map((mode: string) => (
+                <View key={mode} style={{ backgroundColor: theme.color.paperWarm, borderWidth: 1, borderColor: theme.color.hairline, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999 }}>
                   <Text style={{ fontFamily: theme.font.sans, fontSize: 12, color: theme.color.ink }}>
-                    {({ in_studio: 'In-studio', online: 'Online', home_visit: 'Home visit' } as Record<string, string>)[m] ?? m}
+                    {({ in_studio: 'In-studio', online: 'Online', home_visit: 'Home visit' } as Record<string, string>)[mode] ?? mode}
                   </Text>
                 </View>
               ))}
@@ -308,7 +308,7 @@ export default function ProfileEditScreen() {
             <Input
               label="IFSC code"
               value={field.value}
-              onChangeText={(t) => field.onChange(t.toUpperCase())}
+              onChangeText={(text) => field.onChange(text.toUpperCase())}
               placeholder="IFSC code"
               error={error?.message}
             />

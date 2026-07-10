@@ -26,7 +26,7 @@ function StudentRow({ student }: { student: any }) {
   const theme = useTheme();
   const router = useRouter();
   const initial = student.name?.[0]?.toUpperCase() ?? '?';
-  const batches = student.batches?.map((b: any) => b.title ?? b).filter(Boolean) ?? [];
+  const batches = student.batches?.map((batch: any) => batch.title ?? batch).filter(Boolean) ?? [];
   const sub = [
     batches[0] ?? 'No active batch',
     student.attendance_pct != null ? `${student.attendance_pct}% attendance` : null,
@@ -65,10 +65,10 @@ export default function StudentsScreen() {
   // Draft filters inside the sheet — applied on "Apply".
   const [draftBatch, setDraftBatch] = useState('');
   const [draftTier, setDraftTier] = useState('');
-  const q = useDebounce(query, 300);
+  const debouncedQuery = useDebounce(query, 300);
 
   const { data: studentsData, isLoading } = useStudioStudents({
-    q,
+    q: debouncedQuery,
     batch_id: batchId || undefined,
     attendance_tier: attendanceTier || undefined,
   });
@@ -76,7 +76,7 @@ export default function StudentsScreen() {
 
   const allStudents = studentsData?.items ?? [];
   const allBatches = batchesData?.items ?? [];
-  const unfiltered = !attendanceTier && !batchId && !q;
+  const unfiltered = !attendanceTier && !batchId && !debouncedQuery;
 
   const renderStudent = useCallback(({ item }: { item: any }) => <StudentRow student={item} />, []);
 
@@ -179,15 +179,15 @@ export default function StudentsScreen() {
           <Text style={[styles.sheetLabel, { color: theme.color.whisper }]}>BATCH</Text>
           <View style={styles.sheetWrap}>
             <Chip label="All batches" selected={!draftBatch} onPress={() => setDraftBatch('')} />
-            {allBatches.map((b: any) => (
-              <Chip key={b.id} label={b.title} selected={draftBatch === b.id} onPress={() => setDraftBatch(b.id)} />
+            {allBatches.map((batch: any) => (
+              <Chip key={batch.id} label={batch.title} selected={draftBatch === batch.id} onPress={() => setDraftBatch(batch.id)} />
             ))}
           </View>
 
           <Text style={[styles.sheetLabel, { color: theme.color.whisper, marginTop: 18 }]}>ATTENDANCE</Text>
           <View style={styles.sheetWrap}>
-            {ATTENDANCE_FULL.map((t) => (
-              <Chip key={t.key} label={t.label} selected={draftTier === t.key} onPress={() => setDraftTier(t.key)} />
+            {ATTENDANCE_FULL.map((tier) => (
+              <Chip key={tier.key} label={tier.label} selected={draftTier === tier.key} onPress={() => setDraftTier(tier.key)} />
             ))}
           </View>
 

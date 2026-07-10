@@ -14,11 +14,11 @@ import { useMyEventRegistrations } from "@/hooks/useEvents";
 import { getWorkshopImage, getEventImage } from "@/lib/eventImages";
 
 function inr(paise?: number | null): string {
-  const n = Math.round((paise ?? 0) / 100);
-  const s = String(n);
-  if (s.length <= 3) return `₹${s}`;
-  const last3 = s.slice(-3);
-  const rest = s.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",");
+  const rupees = Math.round((paise ?? 0) / 100);
+  const rupeesStr = String(rupees);
+  if (rupeesStr.length <= 3) return `₹${rupeesStr}`;
+  const last3 = rupeesStr.slice(-3);
+  const rest = rupeesStr.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",");
   return `₹${rest},${last3}`;
 }
 
@@ -64,89 +64,89 @@ export default function BookingsScreen() {
     const out: Row[] = [];
     const now = Date.now();
 
-    const pushTrial = (t: any, past: boolean) => {
-      const at = t.scheduled_at ?? t.trial_at ?? t.trialAt;
+    const pushTrial = (trial: any, past: boolean) => {
+      const at = trial.scheduled_at ?? trial.trial_at ?? trial.trialAt;
       const when = at ? `${format(new Date(at), "EEE d MMM · h:mm a")}` : "";
-      const st = (t.status ?? "").toLowerCase();
+      const trialStatus = (trial.status ?? "").toLowerCase();
       const badge = past
-        ? st === "missed" || st === "cancelled"
-          ? { label: st === "missed" ? "Missed" : "Cancelled", ...rose }
+        ? trialStatus === "missed" || trialStatus === "cancelled"
+          ? { label: trialStatus === "missed" ? "Missed" : "Cancelled", ...rose }
           : { label: "Attended", ...neutral }
         : { label: "Booked", ...jade };
       out.push({
-        key: `trial-${t.id}`,
-        title: t.batch_title ?? "Trial",
+        key: `trial-${trial.id}`,
+        title: trial.batch_title ?? "Trial",
         badge,
         subText: when,
-        footLeft: t.academy_name ?? "",
-        footRight: t.trial_fee_paise != null ? (t.trial_fee_paise === 0 ? "Free" : inr(t.trial_fee_paise)) : undefined,
-        thumb: { category: t.category ?? "music" },
-        onPress: () => router.push(`/trials/${t.id}` as any),
+        footLeft: trial.academy_name ?? "",
+        footRight: trial.trial_fee_paise != null ? (trial.trial_fee_paise === 0 ? "Free" : inr(trial.trial_fee_paise)) : undefined,
+        thumb: { category: trial.category ?? "music" },
+        onPress: () => router.push(`/trials/${trial.id}` as any),
         sortDate: at ? new Date(at).getTime() : 0,
         past,
       });
     };
 
-    for (const t of (upcomingTrials.data?.items ?? []) as any[]) pushTrial(t, false);
-    for (const t of (pastTrials.data?.items ?? []) as any[]) pushTrial(t, true);
+    for (const trial of (upcomingTrials.data?.items ?? []) as any[]) pushTrial(trial, false);
+    for (const trial of (pastTrials.data?.items ?? []) as any[]) pushTrial(trial, true);
 
-    for (const w of (workshopRegs.data?.items ?? []) as any[]) {
-      const at = w.start_at ? new Date(w.start_at).getTime() : 0;
+    for (const workshop of (workshopRegs.data?.items ?? []) as any[]) {
+      const at = workshop.start_at ? new Date(workshop.start_at).getTime() : 0;
       const past = at ? at < now : false;
-      const online = (w.workshop_type ?? "") === "online";
+      const online = (workshop.workshop_type ?? "") === "online";
       out.push({
-        key: `workshop-${w.id}`,
-        title: w.workshop_title ?? "Workshop",
+        key: `workshop-${workshop.id}`,
+        title: workshop.workshop_title ?? "Workshop",
         badge: online ? { label: "Online", ...jade } : { label: "Workshop", bg: theme.color.marigoldSoft, fg: theme.color.marigold },
-        subText: w.start_at ? format(new Date(w.start_at), "d MMM · h:mm a") : "",
-        footLeft: w.academy_name ? `By ${w.academy_name}` : "",
-        footRight: w.price_paise > 0 ? inr(w.price_paise) : "Free",
+        subText: workshop.start_at ? format(new Date(workshop.start_at), "d MMM · h:mm a") : "",
+        footLeft: workshop.academy_name ? `By ${workshop.academy_name}` : "",
+        footRight: workshop.price_paise > 0 ? inr(workshop.price_paise) : "Free",
         thumb: "workshop",
-        workshopType: w.workshop_type,
-        onPress: () => router.push(`/workshop/${w.workshop_id}` as any),
+        workshopType: workshop.workshop_type,
+        onPress: () => router.push(`/workshop/${workshop.workshop_id}` as any),
         sortDate: at,
         past,
       });
     }
 
-    for (const ev of (eventRegs.data?.items ?? []) as any[]) {
-      const at = ev.start_at ? new Date(ev.start_at).getTime() : 0;
+    for (const event of (eventRegs.data?.items ?? []) as any[]) {
+      const at = event.start_at ? new Date(event.start_at).getTime() : 0;
       const past = at ? at < now : false;
       out.push({
-        key: `event-${ev.id}`,
-        title: ev.event_title ?? "Event",
+        key: `event-${event.id}`,
+        title: event.event_title ?? "Event",
         badge: { label: "Event", ...jade },
-        subText: ev.start_at ? format(new Date(ev.start_at), "d MMM · h:mm a") : "",
-        footLeft: ev.organizer_name ? `By ${ev.organizer_name}` : (ev.location ?? ""),
-        footRight: ev.price_paise > 0 ? inr(ev.price_paise) : "Free",
+        subText: event.start_at ? format(new Date(event.start_at), "d MMM · h:mm a") : "",
+        footLeft: event.organizer_name ? `By ${event.organizer_name}` : (event.location ?? ""),
+        footRight: event.price_paise > 0 ? inr(event.price_paise) : "Free",
         thumb: "event",
-        eventType: ev.event_type,
-        onPress: () => router.push(`/events/${ev.event_id}` as any),
+        eventType: event.event_type,
+        onPress: () => router.push(`/events/${event.event_id}` as any),
         sortDate: at,
         past,
       });
     }
 
-    return out.sort((a, b) => b.sortDate - a.sortDate);
+    return out.sort((rowA, rowB) => rowB.sortDate - rowA.sortDate);
   }, [upcomingTrials.data, pastTrials.data, workshopRegs.data, eventRegs.data, theme]);
 
-  const shown = rows.filter((r) => (seg === "past" ? r.past : !r.past));
+  const shown = rows.filter((row) => (seg === "past" ? row.past : !row.past));
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={["top"]}>
       <ScreenHeader title="Your bookings" />
 
       <View style={[styles.seg, { backgroundColor: theme.color.paperWarm }]}>
-        {(["upcoming", "past"] as const).map((s) => {
-          const active = seg === s;
+        {(["upcoming", "past"] as const).map((segment) => {
+          const active = seg === segment;
           return (
             <Pressable
-              key={s}
-              onPress={() => setSeg(s)}
+              key={segment}
+              onPress={() => setSeg(segment)}
               style={[styles.segBtn, active && { backgroundColor: "#fff", ...theme.shadow.sm }]}
             >
               <Text style={{ fontFamily: theme.font.sansBold, fontSize: 13.5, color: active ? theme.color.ink : theme.color.inkSoft }}>
-                {s === "upcoming" ? "Upcoming" : "Past"}
+                {segment === "upcoming" ? "Upcoming" : "Past"}
               </Text>
             </Pressable>
           );
@@ -155,7 +155,7 @@ export default function BookingsScreen() {
 
       {isLoading ? (
         <View style={{ paddingHorizontal: 20, gap: 12 }}>
-          {[0, 1, 2].map((i) => <SkeletonLoader key={i} height={90} borderRadius={20} />)}
+          {[0, 1, 2].map((index) => <SkeletonLoader key={index} height={90} borderRadius={20} />)}
         </View>
       ) : shown.length === 0 ? (
         <EmptyState message={seg === "past" ? "No past bookings yet." : "No upcoming bookings. Book a trial or register for a workshop."} />
@@ -165,37 +165,37 @@ export default function BookingsScreen() {
           showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.color.persimmon} />}
         >
-          {shown.map((r) => (
+          {shown.map((row) => (
             <Pressable
-              key={r.key}
-              onPress={r.onPress}
+              key={row.key}
+              onPress={row.onPress}
               style={[styles.card, { backgroundColor: "#fff", borderColor: theme.color.hairline, ...theme.shadow.sm }]}
             >
-              {r.thumb === "workshop" ? (
-                <Image source={{ uri: getWorkshopImage(r.workshopType) }} style={styles.thumb} contentFit="cover" transition={150} />
-              ) : r.thumb === "event" ? (
-                <Image source={{ uri: getEventImage(r.eventType) }} style={styles.thumb} contentFit="cover" transition={150} />
+              {row.thumb === "workshop" ? (
+                <Image source={{ uri: getWorkshopImage(row.workshopType) }} style={styles.thumb} contentFit="cover" transition={150} />
+              ) : row.thumb === "event" ? (
+                <Image source={{ uri: getEventImage(row.eventType) }} style={styles.thumb} contentFit="cover" transition={150} />
               ) : (
-                <BlockPrintCover category={r.thumb.category as any} variant={1} height={66} hideLetter style={styles.thumb} />
+                <BlockPrintCover category={row.thumb.category as any} variant={1} height={66} hideLetter style={styles.thumb} />
               )}
               <View style={styles.body}>
                 <Text style={[styles.ttl, { fontFamily: theme.font.sansBold, color: theme.color.ink }]} numberOfLines={1}>
-                  {r.title}
+                  {row.title}
                 </Text>
                 <View style={styles.subRow}>
-                  <View style={[styles.badge, { backgroundColor: r.badge.bg }]}>
-                    <Text style={[styles.badgeText, { color: r.badge.fg }]}>{r.badge.label}</Text>
+                  <View style={[styles.badge, { backgroundColor: row.badge.bg }]}>
+                    <Text style={[styles.badgeText, { color: row.badge.fg }]}>{row.badge.label}</Text>
                   </View>
                   <Text style={[styles.sub, { fontFamily: theme.font.sansMedium, color: theme.color.mist }]} numberOfLines={1}>
-                    {r.subText}
+                    {row.subText}
                   </Text>
                 </View>
                 <View style={styles.foot}>
                   <Text style={[styles.footText, { fontFamily: theme.font.sansMedium, color: theme.color.mist }]} numberOfLines={1}>
-                    {r.footLeft}
+                    {row.footLeft}
                   </Text>
-                  {r.footRight ? (
-                    <Text style={{ fontFamily: theme.font.sansBold, fontSize: 14, color: theme.color.ink }}>{r.footRight}</Text>
+                  {row.footRight ? (
+                    <Text style={{ fontFamily: theme.font.sansBold, fontSize: 14, color: theme.color.ink }}>{row.footRight}</Text>
                   ) : null}
                   <IconChevR size={18} color={theme.color.whisper} />
                 </View>

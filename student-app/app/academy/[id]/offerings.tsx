@@ -80,7 +80,7 @@ export default function OfferingsScreen() {
         ) : workshops.length === 0 ? (
           <EmptyState message="No upcoming workshops from this academy." />
         ) : (
-          workshops.map((w) => <WorkshopRowCard key={w.id} w={w} onPress={() => router.push(`/workshop/${w.id}`)} />)
+          workshops.map((workshop) => <WorkshopRowCard key={workshop.id} workshop={workshop} onPress={() => router.push(`/workshop/${workshop.id}`)} />)
         )}
       </ScrollView>
     </SafeAreaView>

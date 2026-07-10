@@ -30,7 +30,7 @@ type FormData = z.infer<typeof schema>;
 export default function SignupScreen() {
   const router = useRouter();
   const theme = useTheme();
-  const setOnboardingMany = useOnboarding((s) => s.setMany);
+  const setOnboardingMany = useOnboarding((state) => state.setMany);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -43,19 +43,19 @@ export default function SignupScreen() {
     setLoading(true);
     setErrorMsg('');
     try {
-      const res = await api.auth.requestOtp({ phone: data.phone, role: 'academy' });
+      const response = await api.auth.requestOtp({ phone: data.phone, role: 'academy' });
       // Stash whatever basics were supplied so onboarding pre-fills them.
       setOnboardingMany({
         phone: data.phone,
         ...(data.academyName?.trim() ? { academyName: data.academyName.trim() } : {}),
         ...(data.category ? { category: data.category } : {}),
       });
-      router.push(`/(auth)/verify-otp?otp_id=${res.otp_id}&phone=${data.phone}&from=signup`);
-    } catch (e: any) {
-      if (e?.code === 'RATE_LIMITED') {
+      router.push(`/(auth)/verify-otp?otp_id=${response.otp_id}&phone=${data.phone}&from=signup`);
+    } catch (error: any) {
+      if (error?.code === 'RATE_LIMITED') {
         setErrorMsg('Too many attempts, try in a few minutes.');
       } else {
-        setErrorMsg(e?.message ?? 'Something went wrong. Please try again.');
+        setErrorMsg(error?.message ?? 'Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -99,7 +99,7 @@ export default function SignupScreen() {
               keyboardType="number-pad"
               maxLength={10}
               value={value}
-              onChangeText={(t) => onChange(t.replace(/\D/g, '').slice(0, 10))}
+              onChangeText={(digits) => onChange(digits.replace(/\D/g, '').slice(0, 10))}
               error={error?.message}
             />
           )}
@@ -114,12 +114,12 @@ export default function SignupScreen() {
             name="category"
             render={({ field: { onChange, value } }) => (
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
-                {CATEGORIES.map((c) => (
+                {CATEGORIES.map((category) => (
                   <Chip
-                    key={c.key}
-                    label={c.label}
-                    selected={value === c.key}
-                    onPress={() => onChange(c.key)}
+                    key={category.key}
+                    label={category.label}
+                    selected={value === category.key}
+                    onPress={() => onChange(category.key)}
                   />
                 ))}
               </View>

@@ -22,10 +22,10 @@ export default function GeneralInfoScreen() {
       <ScreenHeader title="General info" />
       <View style={{ paddingHorizontal: 20, paddingTop: 8 }}>
         <View style={[styles.pmenu, { borderColor: theme.color.hairline, ...theme.shadow.sm }]}>
-          {items.map((it, i) => (
-            <Pressable key={it.label} onPress={it.onPress} style={[styles.prow, i < items.length - 1 && { borderBottomWidth: 1, borderBottomColor: theme.color.hairline }]}>
-              {it.icon}
-              <Text style={{ flex: 1, fontFamily: theme.font.sansSemibold, fontSize: 14.5, color: theme.color.ink }}>{it.label}</Text>
+          {items.map((item, index) => (
+            <Pressable key={item.label} onPress={item.onPress} style={[styles.prow, index < items.length - 1 && { borderBottomWidth: 1, borderBottomColor: theme.color.hairline }]}>
+              {item.icon}
+              <Text style={{ flex: 1, fontFamily: theme.font.sansSemibold, fontSize: 14.5, color: theme.color.ink }}>{item.label}</Text>
               <IconChevR size={18} color={theme.color.whisper} />
             </Pressable>
           ))}

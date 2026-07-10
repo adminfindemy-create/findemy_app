@@ -11,7 +11,7 @@ export default function ReviewRespondScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data, isLoading } = useStudioReviews();
-  const review = data?.items.find((r) => r.id === id);
+  const review = data?.items.find((reviewItem) => reviewItem.id === id);
   const [response, setResponse] = useState('');
   const respond = useRespondReview();
 
@@ -27,8 +27,8 @@ export default function ReviewRespondScreen() {
     try {
       await respond.mutateAsync({ id, response });
       router.back();
-    } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to submit your response. Please try again.');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to submit your response. Please try again.');
     }
   };
 
@@ -92,13 +92,13 @@ export default function ReviewRespondScreen() {
 
         {/* Tone chips */}
         <View style={styles.chips}>
-          {toneChips.map((c) => (
+          {toneChips.map((chip) => (
             <Pressable
-              key={c.label}
-              onPress={() => setResponse(c.text)}
+              key={chip.label}
+              onPress={() => setResponse(chip.text)}
               style={[styles.chip, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}
             >
-              <Text style={{ fontFamily: sansFor(600), fontSize: 13, color: theme.color.inkSoft }}>{c.label}</Text>
+              <Text style={{ fontFamily: sansFor(600), fontSize: 13, color: theme.color.inkSoft }}>{chip.label}</Text>
             </Pressable>
           ))}
         </View>

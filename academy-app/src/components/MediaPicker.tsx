@@ -48,31 +48,31 @@ export function MediaPicker({
         name: asset.fileName ?? (isVideo ? 'video.mp4' : 'photo.jpg'),
         type: asset.mimeType ?? (isVideo ? 'video/mp4' : 'image/jpeg'),
       } as any);
-      const json = await uploadMultipart<MediaItem>('/studio/media/upload', form);
-      onChange([...value, { url: json.url, type: json.type }]);
-    } catch (e: any) {
-      Alert.alert('Upload failed', e.message || 'Could not upload media');
+      const uploaded = await uploadMultipart<MediaItem>('/studio/media/upload', form);
+      onChange([...value, { url: uploaded.url, type: uploaded.type }]);
+    } catch (error: any) {
+      Alert.alert('Upload failed', error.message || 'Could not upload media');
     } finally {
       setUploading(false);
     }
   };
 
-  const remove = (url: string) => onChange(value.filter((m) => m.url !== url));
+  const remove = (url: string) => onChange(value.filter((mediaItem) => mediaItem.url !== url));
 
   return (
     <View>
       <View style={styles.grid}>
-        {value.map((m) => (
-          <View key={m.url} style={[styles.tile, { borderColor: theme.color.hairline, backgroundColor: theme.color.charcoal }]}>
-            {m.type === 'photo' ? (
-              <Image source={{ uri: m.url }} style={StyleSheet.absoluteFill} contentFit="cover" />
+        {value.map((mediaItem) => (
+          <View key={mediaItem.url} style={[styles.tile, { borderColor: theme.color.hairline, backgroundColor: theme.color.charcoal }]}>
+            {mediaItem.type === 'photo' ? (
+              <Image source={{ uri: mediaItem.url }} style={StyleSheet.absoluteFill} contentFit="cover" />
             ) : (
               <View style={[StyleSheet.absoluteFill, styles.videoTile]}>
                 <Text style={{ color: '#fff', fontSize: 22 }}>▶</Text>
                 <Text style={{ fontFamily: sansFor(700), fontSize: 9.5, letterSpacing: 0.6, color: 'rgba(255,255,255,0.8)', marginTop: 4 }}>VIDEO</Text>
               </View>
             )}
-            <Pressable onPress={() => remove(m.url)} style={styles.removeBtn} hitSlop={6}>
+            <Pressable onPress={() => remove(mediaItem.url)} style={styles.removeBtn} hitSlop={6}>
               <IconX size={12} color="#fff" />
             </Pressable>
           </View>

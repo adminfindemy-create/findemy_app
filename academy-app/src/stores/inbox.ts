@@ -6,8 +6,8 @@ export type InboxState = {
   filter: InboxFilter;
   lastSeenCount: number;
   newCountSinceLastSeen: number;
-  setFilter: (f: InboxFilter) => void;
-  setLastSeen: (c: number) => void;
+  setFilter: (filter: InboxFilter) => void;
+  setLastSeen: (count: number) => void;
   bumpNew: () => void;
   resetNew: () => void;
 };
@@ -16,8 +16,8 @@ export const useInbox = create<InboxState>((set) => ({
   filter: 'new',
   lastSeenCount: 0,
   newCountSinceLastSeen: 0,
-  setFilter: (f) => set({ filter: f }),
-  setLastSeen: (c) => set({ lastSeenCount: c }),
-  bumpNew: () => set((s) => ({ newCountSinceLastSeen: s.newCountSinceLastSeen + 1 })),
+  setFilter: (filter) => set({ filter }),
+  setLastSeen: (count) => set({ lastSeenCount: count }),
+  bumpNew: () => set((state) => ({ newCountSinceLastSeen: state.newCountSinceLastSeen + 1 })),
   resetNew: () => set({ newCountSinceLastSeen: 0 }),
 }));

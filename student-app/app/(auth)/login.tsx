@@ -29,10 +29,10 @@ export default function LoginScreen() {
     setLoading(true);
     setErrorMsg("");
     try {
-      const res = await api.auth.requestOtp({ phone: data.phone, role: "student" });
-      router.push(`/(auth)/signup-otp?otp_id=${res.otp_id}&phone=${data.phone}`);
-    } catch (e: any) {
-      if (e.code === "RATE_LIMITED") {
+      const response = await api.auth.requestOtp({ phone: data.phone, role: "student" });
+      router.push(`/(auth)/signup-otp?otp_id=${response.otp_id}&phone=${data.phone}`);
+    } catch (error: any) {
+      if (error.code === "RATE_LIMITED") {
         setErrorMsg("Too many attempts, try in a few minutes.");
       } else {
         setErrorMsg("Something went wrong. Please try again.");

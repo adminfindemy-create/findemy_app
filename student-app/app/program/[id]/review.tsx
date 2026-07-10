@@ -26,11 +26,11 @@ const DAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 // Indian-grouped rupees from paise (e.g. 3072000 -> "₹30,720").
 function inr(paise: number): string {
-  const n = Math.round((paise ?? 0) / 100);
-  const s = String(n);
-  if (s.length <= 3) return `₹${s}`;
-  const last3 = s.slice(-3);
-  const rest = s.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",");
+  const rupees = Math.round((paise ?? 0) / 100);
+  const rupeesStr = String(rupees);
+  if (rupeesStr.length <= 3) return `₹${rupeesStr}`;
+  const last3 = rupeesStr.slice(-3);
+  const rest = rupeesStr.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",");
   return `₹${rest},${last3}`;
 }
 
@@ -71,35 +71,35 @@ function planPricing(monthlyPaise: number, qBps: number, aBps: number): PlanPric
   });
 }
 
-function planSub(p: PlanPrice): string {
-  if (p.key === "monthly") return `${inr(p.amount)}/mo · Billed monthly`;
-  const term = p.months === 12 ? "yr" : `${p.months} mo`;
-  const save = p.discountPct > 0 ? ` · save ${p.discountPct}%` : "";
-  const badge = p.badge ? ` · ${p.badge}` : "";
-  return `${inr(p.amount)} / ${term} · ${inr(p.perMonth)}/mo${save}${badge}`;
+function planSub(plan: PlanPrice): string {
+  if (plan.key === "monthly") return `${inr(plan.amount)}/mo · Billed monthly`;
+  const term = plan.months === 12 ? "yr" : `${plan.months} mo`;
+  const save = plan.discountPct > 0 ? ` · save ${plan.discountPct}%` : "";
+  const badge = plan.badge ? ` · ${plan.badge}` : "";
+  return `${inr(plan.amount)} / ${term} · ${inr(plan.perMonth)}/mo${save}${badge}`;
 }
 
 function formatBatchSummary(timings: any[]): { days: string; time: string } {
   if (!timings?.length) return { days: "", time: "" };
-  const days = [...new Set(timings.map((t) => t.day_of_week))]
+  const days = [...new Set(timings.map((timing) => timing.day_of_week))]
     .sort()
-    .map((d) => DAY_SHORT[d])
+    .map((dayOfWeek) => DAY_SHORT[dayOfWeek])
     .join(" · ");
-  const t = timings[0];
-  if (!t.start_time) return { days, time: "" };
-  const [h, m] = t.start_time.split(":").map(Number);
-  const ampm = h >= 12 ? "PM" : "AM";
-  const hour = h % 12 || 12;
-  const startStr = `${hour}:${String(m).padStart(2, "0")} ${ampm}`;
-  if (!t.duration_min) return { days, time: startStr };
-  const endMin = h * 60 + m + t.duration_min;
-  const endH = Math.floor(endMin / 60) % 24;
-  const endM = endMin % 60;
-  const endAmpm = endH >= 12 ? "PM" : "AM";
-  const endHour = endH % 12 || 12;
+  const firstTiming = timings[0];
+  if (!firstTiming.start_time) return { days, time: "" };
+  const [hour24, minute] = firstTiming.start_time.split(":").map(Number);
+  const ampm = hour24 >= 12 ? "PM" : "AM";
+  const hour12 = hour24 % 12 || 12;
+  const startStr = `${hour12}:${String(minute).padStart(2, "0")} ${ampm}`;
+  if (!firstTiming.duration_min) return { days, time: startStr };
+  const endMin = hour24 * 60 + minute + firstTiming.duration_min;
+  const endHour24 = Math.floor(endMin / 60) % 24;
+  const endMinute = endMin % 60;
+  const endAmpm = endHour24 >= 12 ? "PM" : "AM";
+  const endHour12 = endHour24 % 12 || 12;
   return {
     days,
-    time: `${startStr} – ${endHour}:${String(endM).padStart(2, "0")} ${endAmpm}`,
+    time: `${startStr} – ${endHour12}:${String(endMinute).padStart(2, "0")} ${endAmpm}`,
   };
 }
 
@@ -127,7 +127,7 @@ export default function EnrollSelectScreen() {
   );
 
   const batch = useMemo(
-    () => program?.batches.find((b: any) => b.id === batch_id) ?? null,
+    () => program?.batches.find((programBatch: any) => programBatch.id === batch_id) ?? null,
     [program, batch_id]
   );
 
@@ -149,7 +149,7 @@ export default function EnrollSelectScreen() {
     [monthlyPaise, batch]
   );
 
-  const selected = plans.find((p) => p.key === selectedPlan) ?? plans[0];
+  const selected = plans.find((plan) => plan.key === selectedPlan) ?? plans[0];
   const { days, time } = formatBatchSummary(batch?.timings ?? []);
 
   const handlePay = async () => {
@@ -164,8 +164,8 @@ export default function EnrollSelectScreen() {
       } else {
         router.replace("/enrollments");
       }
-    } catch (e: any) {
-      Alert.alert("Enrollment failed", e?.message ?? "Please try again.");
+    } catch (error: any) {
+      Alert.alert("Enrollment failed", error?.message ?? "Please try again.");
     } finally {
       setPaying(false);
     }
@@ -263,13 +263,13 @@ export default function EnrollSelectScreen() {
         >
           CHOOSE A PLAN
         </Text>
-        {plans.map((p) => (
+        {plans.map((plan) => (
           <OptionRow
-            key={p.key}
-            selected={selectedPlan === p.key}
-            onPress={() => setSelectedPlan(p.key)}
-            title={p.label}
-            sub={planSub(p)}
+            key={plan.key}
+            selected={selectedPlan === plan.key}
+            onPress={() => setSelectedPlan(plan.key)}
+            title={plan.label}
+            sub={planSub(plan)}
           />
         ))}
 

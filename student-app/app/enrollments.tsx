@@ -18,19 +18,19 @@ function getNextClass(
   if (!timings || !timings.length) return null;
   const now = new Date();
   let closest: Date | null = null;
-  for (const t of timings) {
-    const [h, m] = t.start_time.split(":").map(Number);
-    const d = new Date();
-    d.setHours(h, m, 0, 0);
-    let diff = t.day_of_week - d.getDay();
+  for (const timing of timings) {
+    const [hour, minute] = timing.start_time.split(":").map(Number);
+    const candidateDate = new Date();
+    candidateDate.setHours(hour, minute, 0, 0);
+    let diff = timing.day_of_week - candidateDate.getDay();
     if (diff === 0) {
-      const minutesPast = (now.getTime() - d.getTime()) / 60000;
-      if (minutesPast > (t.duration_min ?? 60)) diff = 7;
+      const minutesPast = (now.getTime() - candidateDate.getTime()) / 60000;
+      if (minutesPast > (timing.duration_min ?? 60)) diff = 7;
     } else if (diff < 0) {
       diff += 7;
     }
-    d.setDate(d.getDate() + diff);
-    if (!closest || d < closest) closest = d;
+    candidateDate.setDate(candidateDate.getDate() + diff);
+    if (!closest || candidateDate < closest) closest = candidateDate;
   }
   return closest;
 }
@@ -223,9 +223,9 @@ export default function EnrollmentsScreen() {
                 {/* Day chips */}
                 {(batch.timings?.length ?? 0) > 0 && (
                   <View style={styles.dayChips}>
-                    {(batch.timings ?? []).map((t: any, i: number) => (
+                    {(batch.timings ?? []).map((timing: any, index: number) => (
                       <View
-                        key={i}
+                        key={index}
                         style={[styles.dayChip, { backgroundColor: theme.color.persimmonSoft }]}
                       >
                         <Text
@@ -235,7 +235,7 @@ export default function EnrollmentsScreen() {
                             color: theme.color.persimmon,
                           }}
                         >
-                          {DAY_LABELS[t.day_of_week]}
+                          {DAY_LABELS[timing.day_of_week]}
                         </Text>
                       </View>
                     ))}

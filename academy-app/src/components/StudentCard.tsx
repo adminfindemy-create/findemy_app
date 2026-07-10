@@ -19,7 +19,7 @@ export function StudentCard({ student }: { student: StudentListItem }) {
           {student.name}
         </Text>
         <Text style={{ fontFamily: theme.font.sans, fontSize: 12, color: theme.color.mist }}>
-          {student.batches.map((b) => b.title).join(', ') || 'No batches'}
+          {student.batches.map((batch) => batch.title).join(', ') || 'No batches'}
         </Text>
       </View>
       <Spill state={student.status} />

@@ -31,12 +31,12 @@ export default function SignupScreen() {
     setLoading(true);
     setErrorMsg("");
     try {
-      const res = await api.auth.requestOtp({ phone: data.phone, role: "student" });
+      const response = await api.auth.requestOtp({ phone: data.phone, role: "student" });
       router.push(
-        `/(auth)/signup-otp?otp_id=${res.otp_id}&phone=${data.phone}&name=${encodeURIComponent(data.name)}&age=${data.age}&is_signup=1`
+        `/(auth)/signup-otp?otp_id=${response.otp_id}&phone=${data.phone}&name=${encodeURIComponent(data.name)}&age=${data.age}&is_signup=1`
       );
-    } catch (e: any) {
-      if (e.code === "RATE_LIMITED") {
+    } catch (error: any) {
+      if (error.code === "RATE_LIMITED") {
         setErrorMsg("Too many attempts, try in a few minutes.");
       } else {
         setErrorMsg("Something went wrong. Please try again.");

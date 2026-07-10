@@ -13,7 +13,7 @@ export default function BookingConfirmationScreen() {
   const router = useRouter();
   const { booking_id } = useLocalSearchParams<{ booking_id: string }>();
   const theme = useTheme();
-  const attendanceOtp = useAuth((s) => s.attendanceOtp);
+  const attendanceOtp = useAuth((state) => state.attendanceOtp);
   const { data, refetch } = useBooking(booking_id);
   const [timedOut, setTimedOut] = useState(false);
 

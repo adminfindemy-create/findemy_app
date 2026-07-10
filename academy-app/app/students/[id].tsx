@@ -38,12 +38,12 @@ export default function StudentDetailScreen() {
   }
 
   const { student, enrollments, trial_history, attendance_history } = data as any;
-  const activeEnrollments = (enrollments ?? []).filter((e: any) => e.status === 'active');
+  const activeEnrollments = (enrollments ?? []).filter((enrollment: any) => enrollment.status === 'active');
   const primary = activeEnrollments[0] ?? enrollments?.[0];
 
   const initial = student.name?.[0]?.toUpperCase() ?? '?';
   const batchLine = activeEnrollments.length
-    ? activeEnrollments.map((e: any) => e.batch_title).join(', ')
+    ? activeEnrollments.map((enrollment: any) => enrollment.batch_title).join(', ')
     : (enrollments?.[0]?.batch_title ?? 'No active batch');
   const sinceDate = primary?.started_at ? new Date(primary.started_at) : null;
   const sinceValid = sinceDate && !isNaN(sinceDate.getTime());
@@ -139,8 +139,8 @@ export default function StudentDetailScreen() {
           <>
             <SectionHeader title="Recent attendance" />
             <View style={styles.attGrid}>
-              {(attendance_history as any[]).slice(0, 20).map((a: any, i: number) => (
-                <View key={i} style={[styles.attDot, { backgroundColor: a.present ? theme.color.jade : theme.color.rose }]} />
+              {(attendance_history as any[]).slice(0, 20).map((record: any, index: number) => (
+                <View key={index} style={[styles.attDot, { backgroundColor: record.present ? theme.color.jade : theme.color.rose }]} />
               ))}
             </View>
             <Text style={{ fontFamily: theme.font.sans, fontSize: 11, color: theme.color.mist, marginTop: 6 }}>

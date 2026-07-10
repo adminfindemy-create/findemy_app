@@ -7,18 +7,18 @@ import { getWorkshopImage } from "@/lib/eventImages";
 
 // Prototype `.row-card`: thumb + title + "Workshop · date" sub + fee/seats foot.
 // Tapping the card opens the detail screen (register happens there).
-export function WorkshopRowCard({ w, onPress }: { w: any; onPress: () => void }) {
+export function WorkshopRowCard({ workshop, onPress }: { workshop: any; onPress: () => void }) {
   const theme = useTheme();
 
-  const rawStart = w.start_at ?? w.startAt;
+  const rawStart = workshop.start_at ?? workshop.startAt;
   const date = rawStart ? new Date(rawStart) : null;
   const dateValid = date && !isNaN(date.getTime());
 
-  const pricePaise = w.price_paise ?? w.pricePaise ?? 0;
+  const pricePaise = workshop.price_paise ?? workshop.pricePaise ?? 0;
   const price = pricePaise === 0 ? "Free" : `₹${Math.round(pricePaise / 100).toLocaleString("en-IN")}`;
 
-  const capacity = w.capacity ?? 0;
-  const registered = w.registered_count ?? w.registeredCount ?? 0;
+  const capacity = workshop.capacity ?? 0;
+  const registered = workshop.registered_count ?? workshop.registeredCount ?? 0;
   const spotsLeft = capacity - registered;
   const isFull = spotsLeft <= 0;
 
@@ -27,17 +27,17 @@ export function WorkshopRowCard({ w, onPress }: { w: any; onPress: () => void })
       onPress={onPress}
       style={[styles.card, { backgroundColor: "#fff", borderColor: theme.color.hairline, ...theme.shadow.sm }]}
     >
-      <Image source={{ uri: getWorkshopImage(w.type) }} style={styles.thumb} contentFit="cover" transition={150} />
+      <Image source={{ uri: getWorkshopImage(workshop.type) }} style={styles.thumb} contentFit="cover" transition={150} />
 
       <View style={styles.body}>
         <Text style={[styles.ttl, { fontFamily: theme.font.sansBold, color: theme.color.ink }]} numberOfLines={1}>
-          {w.title}
+          {workshop.title}
         </Text>
 
         <View style={styles.subRow}>
           <View style={[styles.badge, { backgroundColor: theme.color.persimmonSoft }]}>
             <Text style={[styles.badgeText, { color: theme.color.persimmon }]}>
-              {w.type === "online" ? "Online" : "Workshop"}
+              {workshop.type === "online" ? "Online" : "Workshop"}
             </Text>
           </View>
           {dateValid ? (

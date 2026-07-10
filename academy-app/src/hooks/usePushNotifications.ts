@@ -34,7 +34,7 @@ export function usePushNotifications() {
   const router = useRouter();
   // Gate on the stable account id, NOT the access token: the token rotates on
   // every refresh, which would otherwise re-trigger registration each refresh.
-  const accountId = useAuth((s) => s.account?.id ?? null);
+  const accountId = useAuth((state) => state.account?.id ?? null);
   const notificationListener = useRef<any>(null);
   const responseListener = useRef<any>(null);
   const registeredToken = useRef<string | null>(null);

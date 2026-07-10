@@ -16,11 +16,11 @@ export default function WorkshopConfirmationScreen() {
 
   const regStatus = useWorkshopRegistrationStatus(workshop_id);
   const workshopQ = useWorkshop(workshop_id);
-  const w = (workshopQ.data as any)?.workshop;
-  const wsTitle = w?.title ?? title ?? "Workshop";
-  const start = w?.start_at ? new Date(w.start_at) : null;
+  const workshop = (workshopQ.data as any)?.workshop;
+  const wsTitle = workshop?.title ?? title ?? "Workshop";
+  const start = workshop?.start_at ? new Date(workshop.start_at) : null;
   const whenLabel = start && !isNaN(start.getTime()) ? format(start, "EEE, d MMM · h:mm a") : null;
-  const cover = getWorkshopImage(w?.type);
+  const cover = getWorkshopImage(workshop?.type);
 
   const [timedOut, setTimedOut] = useState(false);
   const isConfirmed = regStatus.data?.status === "confirmed";

@@ -25,7 +25,7 @@ const GENERIC_FALLBACK =
   "https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=600&q=80&auto=format";
 
 export function getProgramImage(category: string, level: string): string {
-  const c = (category ?? "").toLowerCase();
-  const l = (level ?? "").toLowerCase();
-  return TABLE[`${c}-${l}`] ?? CATEGORY_FALLBACK[c] ?? GENERIC_FALLBACK;
+  const normalizedCategory = (category ?? "").toLowerCase();
+  const normalizedLevel = (level ?? "").toLowerCase();
+  return TABLE[`${normalizedCategory}-${normalizedLevel}`] ?? CATEGORY_FALLBACK[normalizedCategory] ?? GENERIC_FALLBACK;
 }

@@ -29,16 +29,16 @@ type Props = {
 
 function formatBatchSummary(batch: ProgramBatch | null): string {
   if (!batch?.timings?.length) return "";
-  const days = [...new Set(batch.timings.map((t) => t.day_of_week))]
+  const days = [...new Set(batch.timings.map((timing) => timing.day_of_week))]
     .sort()
-    .map((d) => DAY_SHORT[d])
+    .map((dayOfWeek) => DAY_SHORT[dayOfWeek])
     .join("/");
-  const t = batch.timings[0];
-  if (!t.start_time) return days;
-  const [h, m] = t.start_time.split(":").map(Number);
-  const ampm = h >= 12 ? "PM" : "AM";
-  const hour = h % 12 || 12;
-  return `${days} · ${hour}:${String(m).padStart(2, "0")} ${ampm}`;
+  const firstTiming = batch.timings[0];
+  if (!firstTiming.start_time) return days;
+  const [hour24, minute] = firstTiming.start_time.split(":").map(Number);
+  const ampm = hour24 >= 12 ? "PM" : "AM";
+  const hour12 = hour24 % 12 || 12;
+  return `${days} · ${hour12}:${String(minute).padStart(2, "0")} ${ampm}`;
 }
 
 export function TrialBookingSheet({
@@ -67,7 +67,7 @@ export function TrialBookingSheet({
 
   const batchDays = useMemo(() => {
     if (!selectedBatch?.timings?.length) return new Set<number>();
-    return new Set(selectedBatch.timings.map((t) => t.day_of_week));
+    return new Set(selectedBatch.timings.map((timing) => timing.day_of_week));
   }, [selectedBatch]);
 
   const batchMeta = useMemo(() => {
@@ -86,7 +86,7 @@ export function TrialBookingSheet({
   const now = new Date();
   const rawSlots = slotsQuery.slots ?? [];
   const slotList = isSameDay(selectedDate, today)
-    ? rawSlots.filter((s) => new Date(s.slot_time) > now)
+    ? rawSlots.filter((slot) => new Date(slot.slot_time) > now)
     : rawSlots;
 
   const trialFee = `₹${Math.round(program.trial_fee_paise / 100)}`;
@@ -95,14 +95,14 @@ export function TrialBookingSheet({
   const handleConfirm = async () => {
     if (!selectedSlot) return;
     try {
-      const res = await createBooking.mutateAsync({
+      const response = await createBooking.mutateAsync({
         batch_id: selectedSlot.batch_id,
         trial_at: selectedSlot.id,
       });
       onClose();
-      router.push(`/booking/pay?booking_id=${(res as any).booking.id}`);
-    } catch (e: any) {
-      Alert.alert("Error", e?.message ?? "Booking failed");
+      router.push(`/booking/pay?booking_id=${(response as any).booking.id}`);
+    } catch (error: any) {
+      Alert.alert("Error", error?.message ?? "Booking failed");
     }
   };
 
@@ -144,17 +144,17 @@ export function TrialBookingSheet({
           contentContainerStyle={styles.dateStripContent}
           style={styles.dateStrip}
         >
-          {dateRange.map((d) => {
-            const dayNum = d.getDay();
+          {dateRange.map((date) => {
+            const dayNum = date.getDay();
             const isAvailable =
               batchDays.size === 0 || batchDays.has(dayNum);
-            const isSel = isSameDay(d, selectedDate) && isAvailable;
+            const isSel = isSameDay(date, selectedDate) && isAvailable;
             return (
               <Pressable
-                key={d.toISOString()}
+                key={date.toISOString()}
                 disabled={!isAvailable}
                 onPress={() => {
-                  setSelectedDate(d);
+                  setSelectedDate(date);
                   setSelectedSlot(null);
                 }}
                 style={[
@@ -181,7 +181,7 @@ export function TrialBookingSheet({
                     letterSpacing: 0.5,
                   }}
                 >
-                  {format(d, "EEE").toUpperCase()}
+                  {format(date, "EEE").toUpperCase()}
                 </Text>
                 <Text
                   style={{
@@ -191,7 +191,7 @@ export function TrialBookingSheet({
                     marginTop: 2,
                   }}
                 >
-                  {format(d, "d")}
+                  {format(date, "d")}
                 </Text>
               </Pressable>
             );

@@ -31,7 +31,7 @@ export default function ProfileScreen() {
   const theme = useTheme();
   const { user, clear } = useAuth();
   const me = useMe();
-  const pushDenied = useAuth((s) => s.pushPermissionDenied);
+  const pushDenied = useAuth((state) => state.pushPermissionDenied);
   const [bannerDismissed, setBannerDismissed] = useState(false);
 
   const handleLogout = () => {
@@ -42,8 +42,8 @@ export default function ProfileScreen() {
         style: "destructive",
         onPress: async () => {
           try {
-            const rt = useAuth.getState().refreshToken;
-            if (rt) await api.auth.logout({ refresh_token: rt });
+            const refreshToken = useAuth.getState().refreshToken;
+            if (refreshToken) await api.auth.logout({ refresh_token: refreshToken });
           } catch { /* ignore */ }
           clear();
           router.replace("/(auth)");
@@ -123,10 +123,10 @@ export default function ProfileScreen() {
 
         {/* Quick grid */}
         <View style={styles.quickGrid}>
-          {quick.map((q) => (
-            <Pressable key={q.label} onPress={q.onPress} style={[styles.quick, { backgroundColor: "#fff", borderColor: theme.color.hairline, ...theme.shadow.sm }]}>
-              <View style={[styles.qic, { backgroundColor: theme.color.persimmonSoft }]}>{q.icon}</View>
-              <Text style={{ fontFamily: theme.font.sansBold, fontSize: 11.5, color: theme.color.ink, textAlign: "center" }}>{q.label}</Text>
+          {quick.map((quickItem) => (
+            <Pressable key={quickItem.label} onPress={quickItem.onPress} style={[styles.quick, { backgroundColor: "#fff", borderColor: theme.color.hairline, ...theme.shadow.sm }]}>
+              <View style={[styles.qic, { backgroundColor: theme.color.persimmonSoft }]}>{quickItem.icon}</View>
+              <Text style={{ fontFamily: theme.font.sansBold, fontSize: 11.5, color: theme.color.ink, textAlign: "center" }}>{quickItem.label}</Text>
             </Pressable>
           ))}
         </View>
@@ -134,10 +134,10 @@ export default function ProfileScreen() {
         {/* Your information */}
         <Text style={[styles.blockLabel, { fontFamily: theme.font.sansBold, color: theme.color.whisper }]}>YOUR INFORMATION</Text>
         <View style={[styles.pmenu, { borderColor: theme.color.hairline, ...theme.shadow.sm }]}>
-          {info.map((it, i) => (
-            <Pressable key={it.label} onPress={it.onPress} style={[styles.prow, i < info.length - 1 && { borderBottomWidth: 1, borderBottomColor: theme.color.hairline }]}>
-              {it.icon}
-              <Text style={{ flex: 1, fontFamily: theme.font.sansSemibold, fontSize: 14.5, color: theme.color.ink }}>{it.label}</Text>
+          {info.map((infoItem, index) => (
+            <Pressable key={infoItem.label} onPress={infoItem.onPress} style={[styles.prow, index < info.length - 1 && { borderBottomWidth: 1, borderBottomColor: theme.color.hairline }]}>
+              {infoItem.icon}
+              <Text style={{ flex: 1, fontFamily: theme.font.sansSemibold, fontSize: 14.5, color: theme.color.ink }}>{infoItem.label}</Text>
               <IconChevR size={18} color={theme.color.whisper} />
             </Pressable>
           ))}

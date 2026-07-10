@@ -9,7 +9,7 @@ import { ToastProvider } from "@/components/Toast";
 import { useAuth } from "@/stores/auth";
 import { nextOnboardingStep } from "@/lib/onboarding";
 
-const qc = new QueryClient({
+const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
@@ -23,8 +23,8 @@ function AuthGuard() {
   const router = useRouter();
   const segments = useSegments();
   const navState = useRootNavigationState();
-  const accessToken = useAuth((s) => s.accessToken);
-  const user = useAuth((s) => s.user);
+  const accessToken = useAuth((state) => state.accessToken);
+  const user = useAuth((state) => state.user);
 
   useEffect(() => {
     // Wait for the root navigator to mount before any redirect.
@@ -34,7 +34,7 @@ function AuthGuard() {
     // truthy, the navigator's child routes may not have finished registering
     // on the very first effect pass — calling router.replace synchronously
     // throws "Attempted to navigate before mounting the Root Layout component".
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       const inAuthGroup = segments[0] === "(auth)";
 
       if (!accessToken) {
@@ -58,7 +58,7 @@ function AuthGuard() {
       }
     }, 0);
 
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [accessToken, user, segments, router, navState?.key]);
 
   return null;
@@ -96,7 +96,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <QueryClientProvider client={qc}>
+      <QueryClientProvider client={queryClient}>
         <ThemeProvider mode="light">
           <ToastProvider>
             <PhoneStatusBar />

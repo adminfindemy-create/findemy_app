@@ -31,11 +31,11 @@ function toast(message: string) {
 }
 
 function inr(paise?: number | null): string {
-  const n = Math.round((paise ?? 0) / 100);
-  const s = String(n);
-  if (s.length <= 3) return `₹${s}`;
-  const last3 = s.slice(-3);
-  const rest = s.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",");
+  const rupees = Math.round((paise ?? 0) / 100);
+  const rupeesStr = String(rupees);
+  if (rupeesStr.length <= 3) return `₹${rupeesStr}`;
+  const last3 = rupeesStr.slice(-3);
+  const rest = rupeesStr.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",");
   return `₹${rest},${last3}`;
 }
 
@@ -45,7 +45,7 @@ export default function TrialDetailScreen() {
   const theme = useTheme();
   const { data, isLoading, error, refetch } = useTrial(id);
   const cancelBooking = useCancelBooking();
-  const attendanceOtp = useAuth((s) => s.attendanceOtp);
+  const attendanceOtp = useAuth((state) => state.attendanceOtp);
   const trial = data?.trial as any;
   const batchId = trial?.batch_id ?? trial?.batchId ?? "";
   const enrollStatus = useEnrollmentStatus(batchId);
@@ -103,12 +103,12 @@ export default function TrialDetailScreen() {
 
   const handleConfirmCancel = async ({ acknowledgeNoRefund, reason }: { acknowledgeNoRefund: boolean; reason?: string }) => {
     try {
-      const res = await cancelBooking.mutateAsync({ id: bookingId, acknowledgeNoRefund, reason });
+      const response = await cancelBooking.mutateAsync({ id: bookingId, acknowledgeNoRefund, reason });
       setCancelSheetOpen(false);
-      toast(res.refund_initiated ? `Trial cancelled — refund of ${inr(res.refund_amount_paise)} initiated.` : "Trial cancelled.");
+      toast(response.refund_initiated ? `Trial cancelled — refund of ${inr(response.refund_amount_paise)} initiated.` : "Trial cancelled.");
       router.replace("/bookings");
-    } catch (e: any) {
-      Alert.alert("Couldn't cancel", e?.message ?? "Please try again.");
+    } catch (error: any) {
+      Alert.alert("Couldn't cancel", error?.message ?? "Please try again.");
     }
   };
 
@@ -118,9 +118,9 @@ export default function TrialDetailScreen() {
   };
 
   const handleDirections = () => {
-    const q = encodeURIComponent(trial.academy_address ?? trial.academy_name ?? "");
-    Linking.openURL(Platform.OS === "ios" ? `maps://?q=${q}` : `geo:0,0?q=${q}`).catch(() =>
-      Linking.openURL(`https://maps.google.com/?q=${q}`)
+    const address = encodeURIComponent(trial.academy_address ?? trial.academy_name ?? "");
+    Linking.openURL(Platform.OS === "ios" ? `maps://?q=${address}` : `geo:0,0?q=${address}`).catch(() =>
+      Linking.openURL(`https://maps.google.com/?q=${address}`)
     );
   };
 
@@ -134,8 +134,8 @@ export default function TrialDetailScreen() {
       } else {
         Alert.alert("Enrolled!", "You've joined this batch. Find it under My Classes.");
       }
-    } catch (e: any) {
-      Alert.alert("Error", e?.message ?? "Could not enroll");
+    } catch (error: any) {
+      Alert.alert("Error", error?.message ?? "Could not enroll");
     }
   };
 

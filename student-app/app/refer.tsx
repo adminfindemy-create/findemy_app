@@ -32,14 +32,14 @@ export default function ReferScreen() {
   };
 
   const handleClaim = async () => {
-    const c = claimCode.trim().toUpperCase();
-    if (!c) return;
+    const trimmedCode = claimCode.trim().toUpperCase();
+    if (!trimmedCode) return;
     try {
-      const res = await claimMutation.mutateAsync(c);
+      const response = await claimMutation.mutateAsync(trimmedCode);
       setClaimCode("");
-      Alert.alert("Referral claimed!", `You earned ${(res as any).points_earned} points!`);
-    } catch (e: any) {
-      Alert.alert("Error", e.message || "Invalid or already used code");
+      Alert.alert("Referral claimed!", `You earned ${(response as any).points_earned} points!`);
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "Invalid or already used code");
     }
   };
 
@@ -116,13 +116,13 @@ export default function ReferScreen() {
             <Text style={{ fontFamily: theme.font.serif, fontSize: 20, color: theme.color.ink, marginBottom: 12 }}>
               Referrals
             </Text>
-            {history.map((r: any) => (
-              <View key={r.id} style={[styles.histRow, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
+            {history.map((referral: any) => (
+              <View key={referral.id} style={[styles.histRow, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontFamily: theme.font.sans, fontSize: 14, color: theme.color.ink }}>{r.referree_name}</Text>
-                  {r.claimed_at && (
+                  <Text style={{ fontFamily: theme.font.sans, fontSize: 14, color: theme.color.ink }}>{referral.referree_name}</Text>
+                  {referral.claimed_at && (
                     <Text style={{ fontFamily: theme.font.sans, fontSize: 11, color: theme.color.mist, marginTop: 2 }}>
-                      {new Date(r.claimed_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                      {new Date(referral.claimed_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                     </Text>
                   )}
                 </View>

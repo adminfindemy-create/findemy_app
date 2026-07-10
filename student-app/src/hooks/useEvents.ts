@@ -25,6 +25,6 @@ export const useInfiniteEvents = (type?: string) =>
     queryKey: ["events", "infinite", type],
     queryFn: ({ pageParam }) =>
       api.events.list({ type, cursor: pageParam, limit: 20 }),
-    getNextPageParam: (last) => last.next_cursor ?? undefined,
+    getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
     initialPageParam: undefined as string | undefined,
   });

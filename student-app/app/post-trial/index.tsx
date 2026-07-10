@@ -55,13 +55,13 @@ export default function PostTrialReviewScreen() {
       queryClient.invalidateQueries({ queryKey: ["trial", trialId] });
       setSubmitted(true);
     },
-    onError: (err: any) => {
-      Alert.alert("Error", err?.message || "Failed to submit review. Please try again.");
+    onError: (error: any) => {
+      Alert.alert("Error", error?.message || "Failed to submit review. Please try again.");
     },
   });
 
   const canSubmit = rating > 0;
-  const toggleTag = (t: string) => setTags((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
+  const toggleTag = (tag: string) => setTags((prev) => (prev.includes(tag) ? prev.filter((existingTag) => existingTag !== tag) : [...prev, tag]));
 
   const goEnroll = () => (academyId ? router.replace(`/academy/${academyId}` as any) : router.replace("/(tabs)"));
 
@@ -130,9 +130,9 @@ export default function PostTrialReviewScreen() {
 
         {/* Stars */}
         <View style={styles.starsRow}>
-          {[1, 2, 3, 4, 5].map((n) => (
-            <Pressable key={n} onPress={() => setRating(n)} style={{ padding: 4 }} accessibilityLabel={`${n} stars`}>
-              <IconStar size={38} color={n <= rating ? theme.color.persimmon : theme.color.hairline} />
+          {[1, 2, 3, 4, 5].map((star) => (
+            <Pressable key={star} onPress={() => setRating(star)} style={{ padding: 4 }} accessibilityLabel={`${star} stars`}>
+              <IconStar size={38} color={star <= rating ? theme.color.persimmon : theme.color.hairline} />
             </Pressable>
           ))}
         </View>
@@ -143,15 +143,15 @@ export default function PostTrialReviewScreen() {
         {/* Chips */}
         {rating > 0 ? (
           <View style={styles.chipRow}>
-            {STAND_OUT_CHIPS.map((t) => {
-              const on = tags.includes(t);
+            {STAND_OUT_CHIPS.map((tag) => {
+              const on = tags.includes(tag);
               return (
                 <Pressable
-                  key={t}
-                  onPress={() => toggleTag(t)}
+                  key={tag}
+                  onPress={() => toggleTag(tag)}
                   style={[styles.chip, { backgroundColor: on ? theme.color.persimmon : "#fff", borderColor: on ? theme.color.persimmon : theme.color.hairline }]}
                 >
-                  <Text style={{ fontFamily: theme.font.sansMedium, fontSize: 13, color: on ? "#fff" : theme.color.inkSoft }}>{t}</Text>
+                  <Text style={{ fontFamily: theme.font.sansMedium, fontSize: 13, color: on ? "#fff" : theme.color.inkSoft }}>{tag}</Text>
                 </Pressable>
               );
             })}

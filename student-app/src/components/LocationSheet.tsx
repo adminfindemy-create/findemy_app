@@ -28,10 +28,10 @@ export function LocationSheet({
   onUseCurrent: () => void;
 }) {
   const theme = useTheme();
-  const [q, setQ] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filtered = POPULAR_AREAS.filter(
-    (a) => a.name.toLowerCase().includes(q.trim().toLowerCase()) || a.sub.toLowerCase().includes(q.trim().toLowerCase())
+    (area) => area.name.toLowerCase().includes(searchQuery.trim().toLowerCase()) || area.sub.toLowerCase().includes(searchQuery.trim().toLowerCase())
   );
 
   return (
@@ -46,8 +46,8 @@ export function LocationSheet({
       <View style={[styles.search, { borderColor: theme.color.hairline }]}>
         <IconSearch size={18} color={theme.color.whisper} />
         <TextInput
-          value={q}
-          onChangeText={setQ}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
           placeholder="Search area, city or pincode…"
           placeholderTextColor={theme.color.whisper}
           style={{ flex: 1, fontFamily: theme.font.sans, fontSize: 15, color: theme.color.ink, paddingVertical: 0 }}
@@ -75,15 +75,15 @@ export function LocationSheet({
           <Text style={[styles.blockLabel, { fontFamily: theme.font.sansBold, color: theme.color.whisper }]}>POPULAR AREAS</Text>
         ) : (
           <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.mist, paddingVertical: 16, textAlign: "center" }}>
-            No areas match “{q}”.
+            No areas match “{searchQuery}”.
           </Text>
         )}
 
-        {filtered.map((a) => (
+        {filtered.map((area) => (
           <Pressable
-            key={a.name}
+            key={area.name}
             onPress={() => {
-              onPickArea(a);
+              onPickArea(area);
               onClose();
             }}
             style={[styles.opt, { borderColor: theme.color.hairline }]}
@@ -92,8 +92,8 @@ export function LocationSheet({
               <IconMappin size={16} color={theme.color.persimmon} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontFamily: theme.font.sansBold, fontSize: 15, color: theme.color.ink }}>{a.name}</Text>
-              <Text style={{ fontFamily: theme.font.sans, fontSize: 12, color: theme.color.mist }}>{a.sub}</Text>
+              <Text style={{ fontFamily: theme.font.sansBold, fontSize: 15, color: theme.color.ink }}>{area.name}</Text>
+              <Text style={{ fontFamily: theme.font.sans, fontSize: 12, color: theme.color.mist }}>{area.sub}</Text>
             </View>
           </Pressable>
         ))}

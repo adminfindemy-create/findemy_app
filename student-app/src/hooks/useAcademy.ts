@@ -13,7 +13,7 @@ export const useAcademyReviews = (id: string) =>
     queryKey: ["academy-reviews", id],
     queryFn: ({ pageParam }) =>
       api.academies.getReviews({ id, query: { cursor: pageParam, limit: 20 } }),
-    getNextPageParam: (last) => last.next_cursor ?? undefined,
+    getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
     initialPageParam: undefined as string | undefined,
   });
 

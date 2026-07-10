@@ -29,12 +29,12 @@ export const useMyWorkshopRegistrations = () =>
   });
 
 export const useRegisterWorkshop = () => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (workshopId: string) => api.workshops.register(workshopId),
     onSuccess: (_, workshopId) => {
-      qc.invalidateQueries({ queryKey: ["workshops", workshopId, "registration"] });
-      qc.invalidateQueries({ queryKey: ["me", "workshop-registrations"] });
+      queryClient.invalidateQueries({ queryKey: ["workshops", workshopId, "registration"] });
+      queryClient.invalidateQueries({ queryKey: ["me", "workshop-registrations"] });
     },
     onError: (err: any) => {
       Alert.alert("Could not register", err?.message ?? "Please try again.");
@@ -43,7 +43,7 @@ export const useRegisterWorkshop = () => {
 };
 
 export const useCancelWorkshopRegistration = () => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       registrationId,
@@ -60,8 +60,8 @@ export const useCancelWorkshopRegistration = () => {
         reason,
       }),
     onSuccess: (_, { workshopId }) => {
-      qc.invalidateQueries({ queryKey: ["workshops", workshopId, "registration"] });
-      qc.invalidateQueries({ queryKey: ["me", "workshop-registrations"] });
+      queryClient.invalidateQueries({ queryKey: ["workshops", workshopId, "registration"] });
+      queryClient.invalidateQueries({ queryKey: ["me", "workshop-registrations"] });
     },
     onError: (err: any) => {
       Alert.alert("Could not cancel", err?.message ?? "Please try again.");

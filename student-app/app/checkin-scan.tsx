@@ -19,8 +19,8 @@ export default function CheckinScanScreen() {
 
   const submit = async (token: string) => {
     try {
-      const res = await checkin.mutateAsync(token);
-      setDone(res.batch_title);
+      const response = await checkin.mutateAsync(token);
+      setDone(response.batch_title);
     } catch {
       // error surfaced below via checkin.error
     }

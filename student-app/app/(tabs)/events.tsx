@@ -28,18 +28,18 @@ const EMPTY: Record<string, string> = {
 };
 
 function inr(paise?: number | null): string {
-  const n = Math.round((paise ?? 0) / 100);
-  const s = String(n);
-  if (s.length <= 3) return `₹${s}`;
-  const last3 = s.slice(-3);
-  const rest = s.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",");
+  const rupees = Math.round((paise ?? 0) / 100);
+  const rupeesStr = String(rupees);
+  if (rupeesStr.length <= 3) return `₹${rupeesStr}`;
+  const last3 = rupeesStr.slice(-3);
+  const rest = rupeesStr.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",");
   return `₹${rest},${last3}`;
 }
 
 function eventDate(iso?: string) {
   if (!iso) return "";
-  const d = new Date(iso);
-  return isNaN(d.getTime()) ? "" : format(d, "d MMM · EEE");
+  const date = new Date(iso);
+  return isNaN(date.getTime()) ? "" : format(date, "d MMM · EEE");
 }
 
 export default function EventsScreen() {
@@ -62,8 +62,8 @@ export default function EventsScreen() {
   };
 
   const allItems: any[] = events.data?.items ?? [];
-  const spotlight = type === "all" ? allItems.find((i) => i.is_spotlight) : null;
-  const rest = spotlight ? allItems.filter((i) => i.id !== spotlight.id) : allItems;
+  const spotlight = type === "all" ? allItems.find((item) => item.is_spotlight) : null;
+  const rest = spotlight ? allItems.filter((item) => item.id !== spotlight.id) : allItems;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={["top"]}>
@@ -85,12 +85,12 @@ export default function EventsScreen() {
 
         {/* Pills */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillRow}>
-          {EVENT_TABS.map((t) => {
-            const active = type === t.key;
+          {EVENT_TABS.map((eventTab) => {
+            const active = type === eventTab.key;
             return (
               <Pressable
-                key={t.key}
-                onPress={() => setType(t.key)}
+                key={eventTab.key}
+                onPress={() => setType(eventTab.key)}
                 style={[
                   styles.pill,
                   active
@@ -105,7 +105,7 @@ export default function EventsScreen() {
                     color: active ? theme.color.ivory : theme.color.inkSoft,
                   }}
                 >
-                  {t.label}
+                  {eventTab.label}
                 </Text>
               </Pressable>
             );
@@ -131,8 +131,8 @@ export default function EventsScreen() {
                   {rest.map((item: any) => (
                     <EventRowCard key={item.id} event={item} onPress={() => router.push(`/events/${item.id}`)} />
                   ))}
-                  {(workshops.data?.items ?? []).map((w: any) => (
-                    <WorkshopRowCard key={w.id} w={w} onPress={() => router.push(`/workshop/${w.id}`)} />
+                  {(workshops.data?.items ?? []).map((workshop: any) => (
+                    <WorkshopRowCard key={workshop.id} workshop={workshop} onPress={() => router.push(`/workshop/${workshop.id}`)} />
                   ))}
                 </View>
               </>
@@ -146,8 +146,8 @@ export default function EventsScreen() {
               <EmptyState message={EMPTY.workshop} />
             ) : (
               <View style={styles.stack}>
-                {(workshops.data?.items ?? []).map((w: any) => (
-                  <WorkshopRowCard key={w.id} w={w} onPress={() => router.push(`/workshop/${w.id}`)} />
+                {(workshops.data?.items ?? []).map((workshop: any) => (
+                  <WorkshopRowCard key={workshop.id} workshop={workshop} onPress={() => router.push(`/workshop/${workshop.id}`)} />
                 ))}
               </View>
             )

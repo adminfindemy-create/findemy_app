@@ -26,7 +26,7 @@ type AuthState = {
   attendanceOtp: string | null;
   devBypass: boolean;
   pushPermissionDenied: boolean;
-  setPushPermissionDenied: (v: boolean) => void;
+  setPushPermissionDenied: (denied: boolean) => void;
   setAuth: (payload: {
     access: string;
     refresh: string;
@@ -50,8 +50,8 @@ export const useAuth = create<AuthState>()(
       setAuth: ({ access, refresh, user, attendanceOtp, devBypass = false }) =>
         set({ accessToken: access, refreshToken: refresh, user, attendanceOtp, devBypass }),
       setUser: (partial) =>
-        set((s) => ({ user: s.user ? { ...s.user, ...partial } : null })),
-      setPushPermissionDenied: (v) => set({ pushPermissionDenied: v }),
+        set((state) => ({ user: state.user ? { ...state.user, ...partial } : null })),
+      setPushPermissionDenied: (denied) => set({ pushPermissionDenied: denied }),
       clear: () =>
         set({ accessToken: null, refreshToken: null, user: null, attendanceOtp: null, devBypass: false, pushPermissionDenied: false }),
     }),

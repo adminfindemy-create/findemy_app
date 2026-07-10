@@ -30,7 +30,7 @@ async function doRefresh(): Promise<string | null> {
   });
 
   try {
-    const res = await Promise.race([
+    const response = await Promise.race([
       api.auth.refresh({ refresh_token: refreshToken }),
       timeout,
     ]);
@@ -42,16 +42,16 @@ async function doRefresh(): Promise<string | null> {
       return null;
     }
     current.setAuth({
-      access: res.access_token,
-      refresh: res.refresh_token,
+      access: response.access_token,
+      refresh: response.refresh_token,
       account: current.account,
       academy: current.academy,
     });
-    return res.access_token;
-  } catch (e) {
+    return response.access_token;
+  } catch (error) {
     // Only force re-login when the server actually rejected the refresh token.
     // Transient failures (network error, timeout) must not clear the session.
-    if (e instanceof ApiError) {
+    if (error instanceof ApiError) {
       useAuth.getState().clear();
     }
     return null;
@@ -98,8 +98,8 @@ async function authedFetch(
     });
   };
 
-  let res = await run();
-  if (res.status === 401) {
+  let response = await run();
+  if (response.status === 401) {
     // Single shared refresh (same promise concurrent JSON calls use).
     if (!refreshInFlight) {
       refreshInFlight = doRefresh().finally(() => {
@@ -107,32 +107,32 @@ async function authedFetch(
       });
     }
     const newToken = await refreshInFlight;
-    if (newToken) res = await run();
+    if (newToken) response = await run();
   }
-  return res;
+  return response;
 }
 
 /** Multipart upload (image picker asset). Returns parsed JSON or throws. */
 export async function uploadMultipart<T>(path: string, form: FormData): Promise<T> {
   // NOTE: do NOT set Content-Type — fetch sets the multipart boundary itself.
-  const res = await authedFetch(path, { method: 'POST', body: form });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error((err as any).message || 'Upload failed');
+  const response = await authedFetch(path, { method: 'POST', body: form });
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({}));
+    throw new Error((errorBody as any).message || 'Upload failed');
   }
-  return res.json() as Promise<T>;
+  return response.json() as Promise<T>;
 }
 
 /** DELETE with a JSON body (the api-client request() doesn't take a DELETE body). */
 export async function deleteJson<T>(path: string, body: unknown): Promise<T> {
-  const res = await authedFetch(path, {
+  const response = await authedFetch(path, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error((err as any).message || 'Request failed');
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({}));
+    throw new Error((errorBody as any).message || 'Request failed');
   }
-  return res.json() as Promise<T>;
+  return response.json() as Promise<T>;
 }

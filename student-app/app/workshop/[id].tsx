@@ -39,7 +39,7 @@ export default function WorkshopDetailScreen() {
   const registerMut = useRegisterWorkshop();
   const cancelRegMut = useCancelWorkshopRegistration();
 
-  const w = workshopQ.data?.workshop as any;
+  const workshop = workshopQ.data?.workshop as any;
   const regStatus = regStatusQ.data;
 
   const isRegistered = regStatus?.registered && regStatus?.status === "confirmed";
@@ -50,7 +50,7 @@ export default function WorkshopDetailScreen() {
       const result = await registerMut.mutateAsync(id);
       if (result.requires_payment) {
         router.push(
-          `/workshop/pay?registration_id=${result.registration_id}&workshop_id=${id}&title=${encodeURIComponent(w?.title ?? "")}&amount_paise=${result.amount_paise}`
+          `/workshop/pay?registration_id=${result.registration_id}&workshop_id=${id}&title=${encodeURIComponent(workshop?.title ?? "")}&amount_paise=${result.amount_paise}`
         );
       } else {
         Alert.alert("Booked!", "Your spot for this workshop is confirmed.", [
@@ -67,7 +67,7 @@ export default function WorkshopDetailScreen() {
       const result = await registerMut.mutateAsync(id);
       if (result.requires_payment) {
         router.push(
-          `/workshop/pay?registration_id=${result.registration_id}&workshop_id=${id}&title=${encodeURIComponent(w?.title ?? "")}&amount_paise=${result.amount_paise}`
+          `/workshop/pay?registration_id=${result.registration_id}&workshop_id=${id}&title=${encodeURIComponent(workshop?.title ?? "")}&amount_paise=${result.amount_paise}`
         );
       }
     } catch { /* onError in hook handles alert */ }
@@ -83,7 +83,7 @@ export default function WorkshopDetailScreen() {
     );
   }
 
-  if (!w) {
+  if (!workshop) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }}>
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 24 }}>
@@ -96,17 +96,17 @@ export default function WorkshopDetailScreen() {
     );
   }
 
-  const startAt = w.start_at ? new Date(w.start_at) : null;
+  const startAt = workshop.start_at ? new Date(workshop.start_at) : null;
   const dateValid = startAt && !isNaN(startAt.getTime());
   const canCancelRegistration = isRegistered && !!regStatus?.registration_id;
 
-  const cancelTarget: CancelSheetTarget | null = startAt && w
+  const cancelTarget: CancelSheetTarget | null = startAt && workshop
     ? {
-        title: w.title,
-        subtitle: w.academy_name,
+        title: workshop.title,
+        subtitle: workshop.academy_name,
         whenLabel: format(startAt, "EEE, d MMM yyyy · h:mm a"),
         scheduledAt: startAt,
-        amountPaise: w.price_paise ?? 0,
+        amountPaise: workshop.price_paise ?? 0,
       }
     : null;
 
@@ -119,32 +119,32 @@ export default function WorkshopDetailScreen() {
   }) => {
     if (!regStatus?.registration_id) return;
     try {
-      const res = await cancelRegMut.mutateAsync({
+      const response = await cancelRegMut.mutateAsync({
         registrationId: regStatus.registration_id,
         workshopId: id,
         acknowledgeNoRefund,
         reason,
       });
       setShowCancelSheet(false);
-      if (res.refund_initiated) {
-        showCancelToast(`Refund of ${formatRupees(res.refund_amount_paise)} initiated — arrives in 5–7 business days.`);
+      if (response.refund_initiated) {
+        showCancelToast(`Refund of ${formatRupees(response.refund_amount_paise)} initiated — arrives in 5–7 business days.`);
       } else {
         showCancelToast("Your registration has been cancelled.");
       }
     } catch { /* onError handles */ }
   };
 
-  const price = w.price_paise === 0 ? "Free" : `₹${Math.round(w.price_paise / 100).toLocaleString("en-IN")}`;
-  const spotsLeft = (w.capacity ?? 0) - (w.registered_count ?? 0);
+  const price = workshop.price_paise === 0 ? "Free" : `₹${Math.round(workshop.price_paise / 100).toLocaleString("en-IN")}`;
+  const spotsLeft = (workshop.capacity ?? 0) - (workshop.registered_count ?? 0);
   const isFull = spotsLeft <= 0;
-  const typeLabel = w.type === "masterclass" ? "Masterclass" : "Workshop";
+  const typeLabel = workshop.type === "masterclass" ? "Masterclass" : "Workshop";
 
   const isJoinable =
     isRegistered &&
-    w.type === "online" &&
+    workshop.type === "online" &&
     dateValid &&
     (() => {
-      const durationMin: number = w.duration_min ?? 60;
+      const durationMin: number = workshop.duration_min ?? 60;
       const now = Date.now();
       return now >= startAt!.getTime() - 10 * 60 * 1000 && now <= startAt!.getTime() + durationMin * 60 * 1000;
     })();
@@ -154,13 +154,13 @@ export default function WorkshopDetailScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 130 }}>
         {/* Hero image */}
         <View style={styles.hero}>
-          <Image source={{ uri: getWorkshopImage(w.type) }} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
+          <Image source={{ uri: getWorkshopImage(workshop.type) }} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
           <View style={styles.scrimTop} pointerEvents="none" />
           <View style={styles.heroBar}>
             <Pressable onPress={() => router.back()} style={[styles.roundBtn, { backgroundColor: "rgba(255,255,255,0.92)" }]}>
               <IconChevL size={20} color={theme.color.ink} />
             </Pressable>
-            <Pressable onPress={() => setSaved((s) => !s)} style={[styles.roundBtn, { backgroundColor: "rgba(255,255,255,0.92)" }]}>
+            <Pressable onPress={() => setSaved((prevSaved) => !prevSaved)} style={[styles.roundBtn, { backgroundColor: "rgba(255,255,255,0.92)" }]}>
               <IconHeart size={19} color={saved ? theme.color.persimmon : theme.color.ink} />
             </Pressable>
           </View>
@@ -169,15 +169,15 @@ export default function WorkshopDetailScreen() {
         <View style={{ paddingHorizontal: 20, marginTop: 16 }}>
           <View style={{ flexDirection: "row", gap: 8, marginBottom: 10 }}>
             <Tag label={typeLabel} tone="marigold" />
-            {w.type === "online" ? <Tag label="Online" tone="jade" /> : null}
+            {workshop.type === "online" ? <Tag label="Online" tone="jade" /> : null}
           </View>
 
           {/* Title */}
           <Text style={{ fontFamily: theme.font.serif, fontSize: 32, color: theme.color.ink, lineHeight: 34, letterSpacing: -0.4 }}>
-            {w.title}
+            {workshop.title}
           </Text>
           <Text style={{ fontFamily: theme.font.sansMedium, fontSize: 13.5, color: theme.color.mist, marginTop: 6 }}>
-            {w.academy_name}
+            {workshop.academy_name}
           </Text>
 
           {/* Key facts */}
@@ -185,27 +185,27 @@ export default function WorkshopDetailScreen() {
             <SummaryRow
               icon={<IconCal size={18} color={theme.color.persimmon} />}
               label="When"
-              value={dateValid ? `${format(startAt!, "EEE, d MMM · h:mm a")}${w.duration_min ? ` · ${w.duration_min} min` : ""}` : "—"}
+              value={dateValid ? `${format(startAt!, "EEE, d MMM · h:mm a")}${workshop.duration_min ? ` · ${workshop.duration_min} min` : ""}` : "—"}
             />
-            {w.location ? (
-              <SummaryRow icon={<IconMappin size={18} color={theme.color.persimmon} />} label="Where" value={w.location} />
+            {workshop.location ? (
+              <SummaryRow icon={<IconMappin size={18} color={theme.color.persimmon} />} label="Where" value={workshop.location} />
             ) : null}
             <SummaryRow
               icon={<IconUsers size={18} color={theme.color.persimmon} />}
               label="Spots left"
-              value={isFull ? "Fully booked" : `${spotsLeft} of ${w.capacity ?? 0}`}
+              value={isFull ? "Fully booked" : `${spotsLeft} of ${workshop.capacity ?? 0}`}
               last
             />
           </Summary>
 
           {/* About */}
-          {w.description ? (
+          {workshop.description ? (
             <View style={{ marginTop: 22 }}>
               <Text style={[styles.blockLabel, { fontFamily: theme.font.sansBold, color: theme.color.whisper }]}>
                 About this workshop
               </Text>
               <Text style={{ fontFamily: theme.font.sans, fontSize: 14.5, lineHeight: 23, color: theme.color.inkSoft }}>
-                {w.description}
+                {workshop.description}
               </Text>
             </View>
           ) : null}
@@ -243,7 +243,7 @@ export default function WorkshopDetailScreen() {
               </Pressable>
             )}
           </View>
-        ) : isPending && w.price_paise > 0 ? (
+        ) : isPending && workshop.price_paise > 0 ? (
           <View style={{ flex: 1 }}>
             <Button onPress={handlePayNow} block>Complete payment · {price}</Button>
           </View>

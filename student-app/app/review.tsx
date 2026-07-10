@@ -58,17 +58,17 @@ export default function ReviewScreen() {
 
         {/* Stars */}
         <View style={{ flexDirection: "row", gap: 10, marginTop: 28, justifyContent: "center" }}>
-          {[1, 2, 3, 4, 5].map((n) => (
+          {[1, 2, 3, 4, 5].map((star) => (
             <Pressable
-              key={n}
-              onPress={() => setRating(n)}
+              key={star}
+              onPress={() => setRating(star)}
               hitSlop={8}
               accessibilityRole="button"
-              accessibilityLabel={`Rate ${n} star${n === 1 ? "" : "s"}`}
-              accessibilityState={{ selected: n <= rating }}
+              accessibilityLabel={`Rate ${star} star${star === 1 ? "" : "s"}`}
+              accessibilityState={{ selected: star <= rating }}
               style={{ minWidth: 44, minHeight: 44, alignItems: "center", justifyContent: "center" }}
             >
-              <Text style={{ fontSize: 40, color: n <= rating ? theme.color.marigold : theme.color.hairline }}>★</Text>
+              <Text style={{ fontSize: 40, color: star <= rating ? theme.color.marigold : theme.color.hairline }}>★</Text>
             </Pressable>
           ))}
         </View>

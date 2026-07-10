@@ -7,7 +7,7 @@ import { SectionRule } from "./SectionRule";
 // "Your details" card — the logged-in learner's name + phone/location.
 export function PayContactCard() {
   const theme = useTheme();
-  const user = useAuth((s) => s.user) as any;
+  const user = useAuth((state) => state.user) as any;
   return (
     <>
       <SectionRule label="YOUR DETAILS" />

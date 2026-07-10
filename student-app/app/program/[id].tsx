@@ -25,21 +25,21 @@ const rupees = (paise?: number | null) => `₹${Math.round(Number(paise ?? 0) / 
 
 function formatBatchSchedule(timings: any[]): { days: string; time: string } {
   if (!timings?.length) return { days: "", time: "" };
-  const days = [...new Set(timings.map((t) => t.day_of_week))].sort().map((d) => DAY_SHORT[d]).join(" · ");
-  const t = timings[0];
+  const days = [...new Set(timings.map((timing) => timing.day_of_week))].sort().map((dayOfWeek) => DAY_SHORT[dayOfWeek]).join(" · ");
+  const firstTiming = timings[0];
   let time = "";
-  if (t.start_time) {
-    const [h, m] = t.start_time.split(":").map(Number);
-    const ampm = h >= 12 ? "PM" : "AM";
-    const hour = h % 12 || 12;
-    const startStr = `${hour}:${String(m).padStart(2, "0")} ${ampm}`;
-    if (t.duration_min) {
-      const endMin = h * 60 + m + t.duration_min;
-      const endH = Math.floor(endMin / 60) % 24;
-      const endM = endMin % 60;
-      const endAmpm = endH >= 12 ? "PM" : "AM";
-      const endHour = endH % 12 || 12;
-      time = `${startStr} – ${endHour}:${String(endM).padStart(2, "0")} ${endAmpm}`;
+  if (firstTiming.start_time) {
+    const [hour24, minute] = firstTiming.start_time.split(":").map(Number);
+    const ampm = hour24 >= 12 ? "PM" : "AM";
+    const hour12 = hour24 % 12 || 12;
+    const startStr = `${hour12}:${String(minute).padStart(2, "0")} ${ampm}`;
+    if (firstTiming.duration_min) {
+      const endMin = hour24 * 60 + minute + firstTiming.duration_min;
+      const endHour24 = Math.floor(endMin / 60) % 24;
+      const endMinute = endMin % 60;
+      const endAmpm = endHour24 >= 12 ? "PM" : "AM";
+      const endHour12 = endHour24 % 12 || 12;
+      time = `${startStr} – ${endHour12}:${String(endMinute).padStart(2, "0")} ${endAmpm}`;
     } else {
       time = startStr;
     }
@@ -72,7 +72,7 @@ export default function ProgramScreen() {
   const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
   const effectiveBatchId = selectedBatchId ?? (program?.batches[0]?.id ?? null);
   const selectedBatch = useMemo(
-    () => program?.batches.find((b) => b.id === effectiveBatchId) ?? program?.batches[0] ?? null,
+    () => program?.batches.find((batch) => batch.id === effectiveBatchId) ?? program?.batches[0] ?? null,
     [program, effectiveBatchId]
   );
 
@@ -118,7 +118,7 @@ export default function ProgramScreen() {
   const heroMedia: { url: string; type: "photo" | "video" }[] =
     program.media?.length > 0
       ? program.media
-      : ((academy?.images ?? []) as string[]).map((u) => ({ url: u, type: "photo" as const }));
+      : ((academy?.images ?? []) as string[]).map((url) => ({ url, type: "photo" as const }));
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.color.paper }}>
@@ -131,7 +131,7 @@ export default function ProgramScreen() {
               horizontal
               pagingEnabled
               showsHorizontalScrollIndicator={false}
-              keyExtractor={(_i, i) => `media-${i}`}
+              keyExtractor={(_item, index) => `media-${index}`}
               renderItem={({ item }) =>
                 item.type === "video" ? (
                   <Pressable onPress={() => Linking.openURL(item.url)} style={{ width: heroW, height: 230, backgroundColor: "#000", alignItems: "center", justifyContent: "center" }}>
@@ -215,10 +215,10 @@ export default function ProgramScreen() {
             <View style={{ marginTop: 14 }}>
               <Text style={[styles.blockLabel, { fontFamily: theme.font.sansBold, color: theme.color.whisper }]}>Things to know</Text>
               <View style={{ gap: 6 }}>
-                {program.things_to_know.map((t, i) => (
-                  <View key={i} style={{ flexDirection: "row", gap: 8 }}>
+                {program.things_to_know.map((tip, index) => (
+                  <View key={index} style={{ flexDirection: "row", gap: 8 }}>
                     <Text style={{ color: theme.color.persimmon, fontFamily: theme.font.sansBold, fontSize: 13.5 }}>•</Text>
-                    <Text style={{ flex: 1, fontFamily: theme.font.sans, fontSize: 13.5, lineHeight: 21, color: theme.color.inkSoft }}>{t}</Text>
+                    <Text style={{ flex: 1, fontFamily: theme.font.sans, fontSize: 13.5, lineHeight: 21, color: theme.color.inkSoft }}>{tip}</Text>
                   </View>
                 ))}
               </View>

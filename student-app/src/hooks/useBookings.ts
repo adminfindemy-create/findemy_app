@@ -8,18 +8,18 @@ export const useBooking = (id: string) =>
   });
 
 export const useCreateBooking = () => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: api.bookings.create,
     onSuccess: (_, { batch_id }) => {
-      qc.invalidateQueries({ queryKey: ["slots", batch_id] });
-      qc.invalidateQueries({ queryKey: ["batch-availability", batch_id] });
+      queryClient.invalidateQueries({ queryKey: ["slots", batch_id] });
+      queryClient.invalidateQueries({ queryKey: ["batch-availability", batch_id] });
     },
   });
 };
 
 export const useCancelBooking = () => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       id,
@@ -36,9 +36,9 @@ export const useCancelBooking = () => {
         reason,
       }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["trials"] });
-      qc.invalidateQueries({ queryKey: ["trial"] });
-      qc.invalidateQueries({ queryKey: ["booking"] });
+      queryClient.invalidateQueries({ queryKey: ["trials"] });
+      queryClient.invalidateQueries({ queryKey: ["trial"] });
+      queryClient.invalidateQueries({ queryKey: ["booking"] });
     },
   });
 };

@@ -16,11 +16,11 @@ export function useReferralHistory() {
 }
 
 export function useClaimReferral() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (code: string) => api.me.referral.claim(code),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["me", "referral"] });
+      queryClient.invalidateQueries({ queryKey: ["me", "referral"] });
     },
   });
 }

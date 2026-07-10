@@ -16,7 +16,7 @@ export default function SettingsScreen() {
   const update = useUpdateStudioSettings();
   const { show: showToast } = useToast();
   const settings = data?.settings as Settings | undefined;
-  const n = settings?.notifications;
+  const notifications = settings?.notifications;
 
   const onSettingsError = () => showToast('Could not save setting', 'error');
   const setNotif = (group: 'new_trial' | 'classes' | 'reviews_activity' | 'quiet_hours', key: string, value: boolean) => {
@@ -39,7 +39,7 @@ export default function SettingsScreen() {
     label: string;
     sub?: string;
     value: boolean;
-    onChange: (v: boolean) => void;
+    onChange: (enabled: boolean) => void;
     last?: boolean;
   }) => (
     <View style={[styles.row, !last && { borderBottomWidth: 1, borderBottomColor: theme.color.hairline }]}>
@@ -65,27 +65,27 @@ export default function SettingsScreen() {
       <View style={{ paddingTop: 8, paddingBottom: 16 }}>
         <SectionLabel>New trial alerts</SectionLabel>
         <Card>
-          <Row label="Push" value={n?.new_trial?.push ?? true} onChange={(v) => setNotif('new_trial', 'push', v)} />
-          <Row label="WhatsApp" sub={settings?.contact?.whatsapp} value={n?.new_trial?.whatsapp ?? false} onChange={(v) => setNotif('new_trial', 'whatsapp', v)} />
-          <Row label="Email" sub={settings?.contact?.email} value={n?.new_trial?.email ?? false} onChange={(v) => setNotif('new_trial', 'email', v)} last />
+          <Row label="Push" value={notifications?.new_trial?.push ?? true} onChange={(enabled) => setNotif('new_trial', 'push', enabled)} />
+          <Row label="WhatsApp" sub={settings?.contact?.whatsapp} value={notifications?.new_trial?.whatsapp ?? false} onChange={(enabled) => setNotif('new_trial', 'whatsapp', enabled)} />
+          <Row label="Email" sub={settings?.contact?.email} value={notifications?.new_trial?.email ?? false} onChange={(enabled) => setNotif('new_trial', 'email', enabled)} last />
         </Card>
 
         <SectionLabel>Classes</SectionLabel>
         <Card>
-          <Row label="Reminder 30 min before" value={n?.classes?.reminder_30min ?? true} onChange={(v) => setNotif('classes', 'reminder_30min', v)} />
-          <Row label="Attendance reminder" value={n?.classes?.attendance_reminder ?? true} onChange={(v) => setNotif('classes', 'attendance_reminder', v)} last />
+          <Row label="Reminder 30 min before" value={notifications?.classes?.reminder_30min ?? true} onChange={(enabled) => setNotif('classes', 'reminder_30min', enabled)} />
+          <Row label="Attendance reminder" value={notifications?.classes?.attendance_reminder ?? true} onChange={(enabled) => setNotif('classes', 'attendance_reminder', enabled)} last />
         </Card>
 
         <SectionLabel>Reviews & activity</SectionLabel>
         <Card>
-          <Row label="New review" value={n?.reviews_activity?.new_review ?? true} onChange={(v) => setNotif('reviews_activity', 'new_review', v)} />
-          <Row label="Leaderboard updates" value={n?.reviews_activity?.leaderboard ?? false} onChange={(v) => setNotif('reviews_activity', 'leaderboard', v)} />
-          <Row label="Reels tagging" value={n?.reviews_activity?.reels ?? false} onChange={(v) => setNotif('reviews_activity', 'reels', v)} />
+          <Row label="New review" value={notifications?.reviews_activity?.new_review ?? true} onChange={(enabled) => setNotif('reviews_activity', 'new_review', enabled)} />
+          <Row label="Leaderboard updates" value={notifications?.reviews_activity?.leaderboard ?? false} onChange={(enabled) => setNotif('reviews_activity', 'leaderboard', enabled)} />
+          <Row label="Reels tagging" value={notifications?.reviews_activity?.reels ?? false} onChange={(enabled) => setNotif('reviews_activity', 'reels', enabled)} />
           <Row
             label="Quiet hours"
-            sub={n?.quiet_hours ? `${n.quiet_hours.start} – ${n.quiet_hours.end}` : '22:00 – 07:00'}
-            value={n?.quiet_hours?.enabled ?? false}
-            onChange={(v) => setNotif('quiet_hours', 'enabled', v)}
+            sub={notifications?.quiet_hours ? `${notifications.quiet_hours.start} – ${notifications.quiet_hours.end}` : '22:00 – 07:00'}
+            value={notifications?.quiet_hours?.enabled ?? false}
+            onChange={(enabled) => setNotif('quiet_hours', 'enabled', enabled)}
             last
           />
         </Card>

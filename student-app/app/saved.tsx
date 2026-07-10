@@ -45,11 +45,11 @@ export default function SavedScreen() {
             />
           }
         >
-          {items.map((a: any) => (
+          {items.map((academy: any) => (
             <AcademyCard
-              key={a.id}
-              academy={a}
-              onPress={() => router.push(`/academy/${a.id}`)}
+              key={academy.id}
+              academy={academy}
+              onPress={() => router.push(`/academy/${academy.id}`)}
               isSaved
               onToggleSave={(id) => toggleSave.mutate(id)}
             />

@@ -8,7 +8,7 @@ import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { ToastProvider } from '@/components/Toast';
 import { useAuth } from '@/stores/auth';
 
-const qc = new QueryClient({
+const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
@@ -22,9 +22,9 @@ function AuthGuard() {
   const router = useRouter();
   const segments = useSegments();
   const navState = useRootNavigationState();
-  const accessToken = useAuth((s) => s.accessToken);
-  const academy = useAuth((s) => s.academy);
-  const hasHydrated = useAuth((s) => s._hasHydrated);
+  const accessToken = useAuth((state) => state.accessToken);
+  const academy = useAuth((state) => state.academy);
+  const hasHydrated = useAuth((state) => state._hasHydrated);
 
   useEffect(() => {
     if (!navState?.key) return;
@@ -32,7 +32,7 @@ function AuthGuard() {
     // accessToken reads null on first frame, which would falsely log the user out.
     if (!hasHydrated) return;
 
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       const inAuthGroup = segments[0] === '(auth)';
       const onOnboarding = (segments as string[]).includes('onboarding');
 
@@ -60,7 +60,7 @@ function AuthGuard() {
       }
     }, 0);
 
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [accessToken, academy, segments, router, navState?.key, hasHydrated]);
 
   return null;
@@ -89,7 +89,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <QueryClientProvider client={qc}>
+      <QueryClientProvider client={queryClient}>
         <ThemeProvider mode="light">
           <ToastProvider>
             <PhoneStatusBar />

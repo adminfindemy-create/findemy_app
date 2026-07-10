@@ -39,7 +39,7 @@ function ClassesIcon({ size, color }: { size: number; color: string }) {
 
 export default function TabLayout() {
   const router = useRouter();
-  const user = useAuth((s) => s.user);
+  const user = useAuth((state) => state.user);
 
   // S3.1: the Classes tab is shown only once the student has at least one class.
   const { data: classes } = useClasses();

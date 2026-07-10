@@ -21,7 +21,7 @@ import type {
 } from '@findemy/types';
 
 export function useStudioDashboard() {
-  const token = useAuth((s) => s.accessToken);
+  const token = useAuth((state) => state.accessToken);
   return useQuery<DashboardData>({
     queryKey: ['studio', 'dashboard'],
     queryFn: () => api.studio.dashboard(),
@@ -37,7 +37,7 @@ export function useStudioInbox({
   status?: string;
   refetchInterval?: number;
 }) {
-  const token = useAuth((s) => s.accessToken);
+  const token = useAuth((state) => state.accessToken);
   return useQuery<InboxResponse>({
     queryKey: ['studio', 'inbox', status],
     queryFn: () => api.studio.inbox.list({ status, limit: 20 }),
@@ -48,7 +48,7 @@ export function useStudioInbox({
 }
 
 export function useStudioTrial(id: string) {
-  const token = useAuth((s) => s.accessToken);
+  const token = useAuth((state) => state.accessToken);
   return useQuery<{ trial: TrialDetail; student: StudentSnapshot }>({
     queryKey: ['studio', 'trial', id],
     queryFn: () => api.studio.trials.get(id),
@@ -57,7 +57,7 @@ export function useStudioTrial(id: string) {
 }
 
 export function useStudioActivity() {
-  const token = useAuth((s) => s.accessToken);
+  const token = useAuth((state) => state.accessToken);
   return useQuery<{ items: ActivityItem[] }>({
     queryKey: ['studio', 'activity'],
     queryFn: () => api.studio.activity.list(),
@@ -66,30 +66,30 @@ export function useStudioActivity() {
 }
 
 export function useMarkAttendance() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, otp_code }: { id: string; otp_code: string }) =>
       api.studio.trials.markAttendance({ id, otp_code }),
     onSuccess: (_, vars) => {
-      qc.invalidateQueries({ queryKey: ['studio', 'inbox'] });
-      qc.invalidateQueries({ queryKey: ['studio', 'trial', vars.id] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'inbox'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'trial', vars.id] });
     },
   });
 }
 
 export function useMarkNoShow() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.studio.trials.markNoShow(id),
     onSuccess: (_, id) => {
-      qc.invalidateQueries({ queryKey: ['studio', 'inbox'] });
-      qc.invalidateQueries({ queryKey: ['studio', 'trial', id] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'inbox'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'trial', id] });
     },
   });
 }
 
 export function useStudioSchedule({ week_start }: { week_start: string }) {
-  const token = useAuth((s) => s.accessToken);
+  const token = useAuth((state) => state.accessToken);
   return useQuery<{ days: { date: string; items: ScheduleItem[] }[] }>({
     queryKey: ['studio', 'schedule', week_start],
     queryFn: () => api.studio.schedule.get({ week_start }),
@@ -105,7 +105,7 @@ export function useStudioBatches() {
 }
 
 export function useStudioBatch(id: string) {
-  const token = useAuth((s) => s.accessToken);
+  const token = useAuth((state) => state.accessToken);
   return useQuery<{ batch: Batch }>({
     queryKey: ['studio', 'batch', id],
     queryFn: () => api.studio.batches.get(id),
@@ -114,7 +114,7 @@ export function useStudioBatch(id: string) {
 }
 
 export function useCreateBatch() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     // Batches are created under a program. Title/category/description are owned by the
     // program and derived server-side, so the batch form no longer sends them.
@@ -127,10 +127,10 @@ export function useCreateBatch() {
       mode?: 'in-studio' | 'online';
       timings?: { day_of_week: number; start_time: string; duration_min: number }[];
     }) => api.studio.batches.create(body),
-    onSuccess: (_res, vars) => {
-      qc.invalidateQueries({ queryKey: ['studio', 'batches'] });
-      qc.invalidateQueries({ queryKey: ['studio', 'programs'] });
-      qc.invalidateQueries({ queryKey: ['studio', 'program', vars.program_id] });
+    onSuccess: (_response, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['studio', 'batches'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'programs'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'program', vars.program_id] });
     },
   });
 }
@@ -155,7 +155,7 @@ export function useStudioPrograms() {
 }
 
 export function useStudioProgram(id: string) {
-  const token = useAuth((s) => s.accessToken);
+  const token = useAuth((state) => state.accessToken);
   return useQuery<{ program: any; batches: any[] }>({
     queryKey: ['studio', 'program', id],
     queryFn: () => api.studio.programs.get(id) as any,
@@ -166,34 +166,34 @@ export function useStudioProgram(id: string) {
 export type ProgramMedia = { url: string; type: 'photo' | 'video' };
 
 export function useCreateProgram() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: { title: string; category: string; description: string; things_to_know?: string[]; media: ProgramMedia[] }) =>
       api.studio.programs.create(body),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'programs'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'programs'] });
     },
   });
 }
 
 export function useUpdateProgram(id: string) {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: { title?: string; description?: string; things_to_know?: string[]; media?: ProgramMedia[] }) =>
       api.studio.programs.update(id, body),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'programs'] });
-      qc.invalidateQueries({ queryKey: ['studio', 'program', id] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'programs'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'program', id] });
     },
   });
 }
 
 export function useDeleteProgram() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.studio.programs.delete(id),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'programs'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'programs'] });
     },
   });
 }
@@ -201,7 +201,7 @@ export function useDeleteProgram() {
 // --- Batch discontinuation (active → closing → ended) ---
 
 export function useBatchDiscontinuation(id: string, enabled = true) {
-  const token = useAuth((s) => s.accessToken);
+  const token = useAuth((state) => state.accessToken);
   return useQuery({
     queryKey: ['studio', 'batch', id, 'discontinuation'],
     queryFn: () => api.studio.batches.discontinuation(id),
@@ -210,39 +210,39 @@ export function useBatchDiscontinuation(id: string, enabled = true) {
 }
 
 function useBatchLifecycleMutation(id: string, fn: (id: string) => Promise<unknown>) {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => fn(id),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'batch', id] });
-      qc.invalidateQueries({ queryKey: ['studio', 'batch', id, 'discontinuation'] });
-      qc.invalidateQueries({ queryKey: ['studio', 'batches'] });
-      qc.invalidateQueries({ queryKey: ['studio', 'programs'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'batch', id] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'batch', id, 'discontinuation'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'batches'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'programs'] });
     },
   });
 }
 
 export function useDiscontinueBatch(id: string) {
-  return useBatchLifecycleMutation(id, (bid) => api.studio.batches.discontinue(bid));
+  return useBatchLifecycleMutation(id, (batchId) => api.studio.batches.discontinue(batchId));
 }
 
 export function useFinishDiscontinuation(id: string) {
-  return useBatchLifecycleMutation(id, (bid) => api.studio.batches.finishDiscontinuation(bid));
+  return useBatchLifecycleMutation(id, (batchId) => api.studio.batches.finishDiscontinuation(batchId));
 }
 
 export function useRefundBlocker(id: string) {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (enrollmentId: string) => api.studio.batches.refundDiscontinuation(id, enrollmentId),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'batch', id, 'discontinuation'] });
-      qc.invalidateQueries({ queryKey: ['studio', 'students'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'batch', id, 'discontinuation'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'students'] });
     },
   });
 }
 
 export function useUpdateBatch(id: string) {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: {
       title?: string; category?: 'music' | 'dance' | 'arts' | 'yoga';
@@ -256,15 +256,15 @@ export function useUpdateBatch(id: string) {
       timings?: { day_of_week: number; start_time: string; duration_min: number }[];
     }) => api.studio.batches.update(id, body),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'batches'] });
-      qc.invalidateQueries({ queryKey: ['studio', 'batch', id] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'batches'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'batch', id] });
     },
   });
 }
 
 // S3.2: live "N of M checked in" roster (scanned / not-yet). Polls while the QR is shown.
 export function useSessionAttendance({ batchId, date, enabled = true }: { batchId: string; date?: string; enabled?: boolean }) {
-  const token = useAuth((s) => s.accessToken);
+  const token = useAuth((state) => state.accessToken);
   return useQuery({
     queryKey: ['studio', 'batch', batchId, 'session-attendance', date ?? 'today'],
     queryFn: () => api.studio.batches.attendance.sessionAttendance(batchId, date),
@@ -322,12 +322,12 @@ export function useStudioReviewsSummary() {
 }
 
 export function useRespondReview() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, response }: { id: string; response: string }) =>
       api.studio.reviews.respond({ id, response }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'reviews'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'reviews'] });
     },
   });
 }
@@ -353,26 +353,26 @@ export function useStudioSettings() {
 // in `mutationFn`; here it only drives the optimistic cache value.
 function mergeSettings(base: any, patch: any): any {
   if (patch == null || typeof patch !== 'object') return patch;
-  const out: any = Array.isArray(base) ? [...(base ?? [])] : { ...(base ?? {}) };
+  const merged: any = Array.isArray(base) ? [...(base ?? [])] : { ...(base ?? {}) };
   for (const key of Object.keys(patch)) {
-    const pv = patch[key];
-    out[key] =
-      pv != null && typeof pv === 'object' && !Array.isArray(pv)
-        ? mergeSettings(out[key], pv)
-        : pv;
+    const patchValue = patch[key];
+    merged[key] =
+      patchValue != null && typeof patchValue === 'object' && !Array.isArray(patchValue)
+        ? mergeSettings(merged[key], patchValue)
+        : patchValue;
   }
-  return out;
+  return merged;
 }
 
 export function useUpdateStudioSettings() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (req: any) => api.studio.settings.update(req),
     onMutate: async (patch: any) => {
-      await qc.cancelQueries({ queryKey: ['studio', 'settings'] });
-      const previous = qc.getQueryData<{ settings: Settings }>(['studio', 'settings']);
+      await queryClient.cancelQueries({ queryKey: ['studio', 'settings'] });
+      const previous = queryClient.getQueryData<{ settings: Settings }>(['studio', 'settings']);
       if (previous) {
-        qc.setQueryData<{ settings: Settings }>(['studio', 'settings'], {
+        queryClient.setQueryData<{ settings: Settings }>(['studio', 'settings'], {
           settings: mergeSettings(previous.settings, patch),
         });
       }
@@ -380,11 +380,11 @@ export function useUpdateStudioSettings() {
     },
     onError: (_err, _patch, ctx) => {
       if (ctx?.previous) {
-        qc.setQueryData(['studio', 'settings'], ctx.previous);
+        queryClient.setQueryData(['studio', 'settings'], ctx.previous);
       }
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'settings'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'settings'] });
     },
   });
 }
@@ -414,41 +414,41 @@ export function useWorkshopRegistrations(id: string) {
 }
 
 export function useCreateWorkshop() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: CreateWorkshopRequestType) => api.studio.workshops.create(body),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'workshops'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'workshops'] });
     },
   });
 }
 
 export function useUpdateWorkshop(id: string) {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: UpdateWorkshopRequestType) => api.studio.workshops.update(id, body),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'workshops'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'workshops'] });
     },
   });
 }
 
 export function useDeleteWorkshop() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.studio.workshops.delete(id),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'workshops'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'workshops'] });
     },
   });
 }
 
 export function useDeleteBatch() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.studio.batches.delete(id),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'batches'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'batches'] });
     },
   });
 }
@@ -471,59 +471,59 @@ export function useCoach(id: string) {
 
 // S4.2: assign a coach to a batch — reuses the batch update (backend ownership-checks the coach).
 export function useAssignCoachToBatch() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ batchId, coachId }: { batchId: string; coachId: string }) =>
       api.studio.batches.update(batchId, { coach_id: coachId }),
-    onSuccess: (_d, vars) => {
-      qc.invalidateQueries({ queryKey: ['studio', 'coaches'] });
-      qc.invalidateQueries({ queryKey: ['studio', 'coach', vars.coachId] });
-      qc.invalidateQueries({ queryKey: ['studio', 'batches'] });
+    onSuccess: (_data, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['studio', 'coaches'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'coach', vars.coachId] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'batches'] });
     },
   });
 }
 
 export function useCreateCoach() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: { name: string; specialty: string; bio?: string; phone?: string; avatar_url?: string | null }) =>
       api.studio.coaches.create(body),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'coaches'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'coaches'] });
     },
   });
 }
 
 export function useUpdateCoach(id: string) {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: { name?: string; specialty?: string; bio?: string; phone?: string; avatar_url?: string | null }) =>
       api.studio.coaches.update(id, body),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'coaches'] });
-      qc.invalidateQueries({ queryKey: ['studio', 'coach', id] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'coaches'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'coach', id] });
     },
   });
 }
 
 export function useDeleteCoach() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.studio.coaches.delete(id),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'coaches'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'coaches'] });
     },
   });
 }
 
 // S3.4: cancel a class session → unbilled + make-good (replaces the slot hard-delete).
 export function useCancelSession() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: { batch_id: string; session_date: string }) => api.studio.sessions.cancel(body),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['studio', 'batches'] });
-      qc.invalidateQueries({ queryKey: ['studio', 'schedule'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'batches'] });
+      queryClient.invalidateQueries({ queryKey: ['studio', 'schedule'] });
     },
   });
 }

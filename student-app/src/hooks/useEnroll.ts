@@ -11,13 +11,13 @@ export function useEnrollmentStatus(batchId: string) {
 }
 
 export function useEnrollBatch() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ batchId, package_type }: { batchId: string; package_type: string }) =>
       api.batches.enroll(batchId, { package_type }),
     onSuccess: (_, { batchId }) => {
-      qc.invalidateQueries({ queryKey: ["enrollment", batchId] });
-      qc.invalidateQueries({ queryKey: ["me", "enrollments"] });
+      queryClient.invalidateQueries({ queryKey: ["enrollment", batchId] });
+      queryClient.invalidateQueries({ queryKey: ["me", "enrollments"] });
     },
     onError: (err: any) => {
       Alert.alert("Could not enroll", err?.message ?? "Please try again.");
@@ -26,12 +26,12 @@ export function useEnrollBatch() {
 }
 
 export function useUnenrollBatch() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (batchId: string) => api.batches.unenroll(batchId),
     onSuccess: (_, batchId) => {
-      qc.invalidateQueries({ queryKey: ["enrollment", batchId] });
-      qc.invalidateQueries({ queryKey: ["me", "enrollments"] });
+      queryClient.invalidateQueries({ queryKey: ["enrollment", batchId] });
+      queryClient.invalidateQueries({ queryKey: ["me", "enrollments"] });
     },
   });
 }

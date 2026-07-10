@@ -82,8 +82,8 @@ function coerceAcademy(raw: Record<string, unknown> | undefined): Academy | null
 export default function WelcomeScreen() {
   const router = useRouter();
   const theme = useTheme();
-  const setAuth = useAuth((s) => s.setAuth);
-  const setOnboardingMany = useOnboarding((s) => s.setMany);
+  const setAuth = useAuth((state) => state.setAuth);
+  const setOnboardingMany = useOnboarding((state) => state.setMany);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [appleLoading, setAppleLoading] = useState(false);
   const googleConfiguredRef = useRef(false);
@@ -134,34 +134,34 @@ export default function WelcomeScreen() {
         setOnboardingMany({ ownerName: composedName });
       }
 
-      const res = await api.auth.oauthApple({
+      const response = await api.auth.oauthApple({
         idToken: credential.identityToken,
         nonce: rawNonce,
         role: 'academy',
       });
 
-      const account = coerceAccount(res.account);
-      const academy = coerceAcademy(res.academy);
+      const account = coerceAccount(response.account);
+      const academy = coerceAcademy(response.academy);
       if (!account) {
         Alert.alert('Sign in failed', 'Server returned no account.');
         return;
       }
       setAuth({
-        access: res.access_token,
-        refresh: res.refresh_token,
+        access: response.access_token,
+        refresh: response.refresh_token,
         account,
         academy,
       });
       routeAfterAuth(academy);
-    } catch (e: any) {
+    } catch (error: any) {
       // Silent on user cancellation (expo-apple-authentication has no error enum;
       // it surfaces cancellation as this string code).
-      if (e?.code === 'ERR_REQUEST_CANCELED') {
+      if (error?.code === 'ERR_REQUEST_CANCELED') {
         return;
       }
       Alert.alert(
         'Sign in failed',
-        e?.message ?? "Couldn't sign in with Apple. Try again or use phone."
+        error?.message ?? "Couldn't sign in with Apple. Try again or use phone."
       );
     } finally {
       setAppleLoading(false);
@@ -192,26 +192,26 @@ export default function WelcomeScreen() {
         return;
       }
 
-      const res = await api.auth.oauthGoogle({
+      const response = await api.auth.oauthGoogle({
         idToken,
         role: 'academy',
       });
 
-      const account = coerceAccount(res.account);
-      const academy = coerceAcademy(res.academy);
+      const account = coerceAccount(response.account);
+      const academy = coerceAcademy(response.academy);
       if (!account) {
         Alert.alert('Sign in failed', 'Server returned no account.');
         return;
       }
       setAuth({
-        access: res.access_token,
-        refresh: res.refresh_token,
+        access: response.access_token,
+        refresh: response.refresh_token,
         account,
         academy,
       });
       routeAfterAuth(academy);
-    } catch (e: any) {
-      const code = e?.code;
+    } catch (error: any) {
+      const code = error?.code;
       // Silent on user cancellation / in-progress
       if (
         googleStatusCodes &&
@@ -222,7 +222,7 @@ export default function WelcomeScreen() {
       }
       Alert.alert(
         'Sign in failed',
-        e?.message ?? "Couldn't sign in with Google. Try again or use phone."
+        error?.message ?? "Couldn't sign in with Google. Try again or use phone."
       );
     } finally {
       setGoogleLoading(false);
@@ -261,11 +261,11 @@ export default function WelcomeScreen() {
 
         {/* Category art grid (block-print covers) */}
         <View style={styles.catGrid}>
-          {TILES.map((tile, i) => (
+          {TILES.map((tile, index) => (
             <View key={tile.label} style={styles.catTile}>
               <BlockPrintCover
                 category={tile.cat}
-                variant={(i + 1) as 1 | 2 | 3 | 4}
+                variant={(index + 1) as 1 | 2 | 3 | 4}
                 height={90}
                 hideLetter
                 style={{ width: '100%', height: 90, borderRadius: 18, overflow: 'hidden' }}
