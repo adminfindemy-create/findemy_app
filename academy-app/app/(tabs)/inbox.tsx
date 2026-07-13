@@ -7,7 +7,7 @@ import { useStudioDashboard, useStudioSchedule, useStudioActivity } from '@/hook
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useInbox } from '@/stores/inbox';
 import { format, startOfWeek } from 'date-fns';
-import { ActivityRow } from '@/components/ActivityRow';
+import { ActivityRow } from '@/components/inbox/ActivityRow';
 
 function fmtAmount(paise: number): string {
   const amount = Math.round(paise / 100);

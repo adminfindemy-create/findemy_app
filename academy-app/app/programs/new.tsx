@@ -5,11 +5,11 @@ import { useTheme, Input, Button, Chip, sansFor } from '@findemy/ui';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { useToast } from '@/components/Toast';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { useToast } from '@/components/common/Toast';
 import { useCreateProgram } from '@/hooks/useStudioQueries';
-import { MediaPicker, type MediaItem } from '@/components/MediaPicker';
+import { MediaPicker, type MediaItem } from '@/components/media/MediaPicker';
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),

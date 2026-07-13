@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Alert, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTheme, Input, Button, sansFor } from '@findemy/ui';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { useToast } from '@/components/Toast';
-import { ErrorState } from '@/components/ErrorState';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { useToast } from '@/components/common/Toast';
+import { ErrorState } from '@/components/common/ErrorState';
 import { useStudioProgram, useUpdateProgram } from '@/hooks/useStudioQueries';
-import { MediaPicker, type MediaItem } from '@/components/MediaPicker';
+import { MediaPicker, type MediaItem } from '@/components/media/MediaPicker';
 
 export default function EditProgramScreen() {
   const theme = useTheme();

@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import * as AppleAuthentication from "expo-apple-authentication";
 import * as Crypto from "expo-crypto";
 import { useTheme, BlockPrintCover, Button } from "@findemy/ui";
-import { Em } from "@/components/AuthScaffold";
+import { Em } from "@/components/auth/AuthScaffold";
 import { api } from "@/lib/api";
 import { useAuth } from "@/stores/auth";
 import type { User } from "@/stores/auth";

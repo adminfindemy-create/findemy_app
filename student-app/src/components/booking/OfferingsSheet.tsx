@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Pressable, ScrollView, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { tokens, useTheme } from "@findemy/ui";
-import { BottomSheet } from "@/components/BottomSheet";
+import { BottomSheet } from "@/components/common/BottomSheet";
 import type { Program } from "@/lib/programs";
 
 type Workshop = {

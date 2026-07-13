@@ -7,10 +7,10 @@ import {
   addWeeks, addMonths, addYears, format,
 } from 'date-fns';
 import { useStudioEarnings } from '@/hooks/useStudioQueries';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { SkeletonLoader } from '@/components/SkeletonLoader';
-import { ErrorState } from '@/components/ErrorState';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { SkeletonLoader } from '@/components/common/SkeletonLoader';
+import { ErrorState } from '@/components/common/ErrorState';
 import { formatRupees } from '@/lib/format';
 
 function fmt(paise: number) {

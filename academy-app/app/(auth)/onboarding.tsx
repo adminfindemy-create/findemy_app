@@ -9,7 +9,7 @@ import type { AcademyAccount, Academy } from '@findemy/types';
 import { api } from '@/lib/api';
 import { useAuth } from '@/stores/auth';
 import { useOnboarding } from '@/stores/onboarding';
-import { AuthScaffold, AuthHeading, AuthSub, Em } from '@/components/AuthScaffold';
+import { AuthScaffold, AuthHeading, AuthSub, Em } from '@/components/auth/AuthScaffold';
 
 const CATEGORIES = [
   { key: 'music', label: 'Music' },

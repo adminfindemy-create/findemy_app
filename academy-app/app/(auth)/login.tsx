@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTheme, Input, Button } from '@findemy/ui';
-import { AuthScaffold, AuthHeading, AuthSub, AuthBadge } from '@/components/AuthScaffold';
+import { AuthScaffold, AuthHeading, AuthSub, AuthBadge } from '@/components/auth/AuthScaffold';
 import { api } from '@/lib/api';
 
 // Matches signup: India 10-digit bare number. The backend looks the account up by

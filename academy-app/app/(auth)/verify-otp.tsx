@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { OtpVerifyRequest } from '@findemy/types';
 import { useTheme, Button, OTPInput } from '@findemy/ui';
-import { AuthScaffold, AuthHeading, AuthSub } from '@/components/AuthScaffold';
+import { AuthScaffold, AuthHeading, AuthSub } from '@/components/auth/AuthScaffold';
 import { api } from '@/lib/api';
 import { useAuth } from '@/stores/auth';
 

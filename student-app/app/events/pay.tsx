@@ -4,7 +4,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTheme, Button, Summary, SummaryRow, IconCheck, IconCal, IconClock, IconMappin } from "@findemy/ui";
 import { Image } from "expo-image";
 import { useAuth } from "@/stores/auth";
-import { ScreenHeader } from "@/components/ScreenHeader";
+import { ScreenHeader } from "@/components/common/ScreenHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";

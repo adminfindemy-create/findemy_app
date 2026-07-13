@@ -2,9 +2,9 @@ import React from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet, Linking, Alert } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useTheme, sansFor, IconPhone, IconWa } from '@findemy/ui';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { ErrorState } from '@/components/ErrorState';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { ErrorState } from '@/components/common/ErrorState';
 import { useWorkshopRegistrations } from '@/hooks/useStudioQueries';
 import { formatRupees } from '@/lib/format';
 

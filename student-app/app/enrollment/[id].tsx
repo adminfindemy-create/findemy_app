@@ -32,10 +32,10 @@ import {
 } from "@findemy/ui";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { format } from "date-fns";
-import { ScreenHeader } from "@/components/ScreenHeader";
-import { OptionRow } from "@/components/OptionRow";
-import { SkeletonLoader } from "@/components/SkeletonLoader";
-import { EmptyState } from "@/components/EmptyState";
+import { ScreenHeader } from "@/components/common/ScreenHeader";
+import { OptionRow } from "@/components/common/OptionRow";
+import { SkeletonLoader } from "@/components/common/SkeletonLoader";
+import { EmptyState } from "@/components/common/EmptyState";
 import { useEnrollments } from "@/hooks/useEnrollments";
 import { useAcademy } from "@/hooks/useAcademy";
 import { useRenewalOptions, useRenewEnrollment } from "@/hooks/useRenewal";

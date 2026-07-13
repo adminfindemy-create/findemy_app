@@ -17,10 +17,10 @@ import { PLAN_MONTHS, DISCOUNT_BPS_CAP, type Plan } from "@findemy/types";
 import { useProgram } from "@/hooks/useProgram";
 import { enrichProgram } from "@/lib/programs";
 import { useEnrollBatch } from "@/hooks/useEnroll";
-import { ScreenHeader } from "@/components/ScreenHeader";
-import { OptionRow } from "@/components/OptionRow";
-import { ErrorState } from "@/components/ErrorState";
-import { SkeletonLoader } from "@/components/SkeletonLoader";
+import { ScreenHeader } from "@/components/common/ScreenHeader";
+import { OptionRow } from "@/components/common/OptionRow";
+import { ErrorState } from "@/components/common/ErrorState";
+import { SkeletonLoader } from "@/components/common/SkeletonLoader";
 
 const DAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 

@@ -3,10 +3,10 @@ import { View, ScrollView, StyleSheet, RefreshControl } from "react-native";
 import { useRouter } from "expo-router";
 import { useTheme } from "@findemy/ui";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScreenHeader } from "@/components/ScreenHeader";
-import { EmptyState } from "@/components/EmptyState";
-import { SkeletonCard } from "@/components/SkeletonLoader";
-import { AcademyCard } from "@/components/AcademyCard";
+import { ScreenHeader } from "@/components/common/ScreenHeader";
+import { EmptyState } from "@/components/common/EmptyState";
+import { SkeletonCard } from "@/components/common/SkeletonLoader";
+import { AcademyCard } from "@/components/academy/AcademyCard";
 import { useSavedAcademies, useToggleSavedAcademy } from "@/hooks/useSaved";
 
 export default function SavedScreen() {

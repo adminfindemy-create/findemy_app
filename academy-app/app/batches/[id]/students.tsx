@@ -3,9 +3,9 @@ import { View, Text, FlatList, Pressable, StyleSheet, Linking, Alert } from 'rea
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme, sansFor } from '@findemy/ui';
 import { useBatchStudents, useStudioBatch } from '@/hooks/useStudioQueries';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { TierBadge } from '@/components/TierBadge';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { TierBadge } from '@/components/students/TierBadge';
 
 function StudentRow({ student }: { student: any }) {
   const theme = useTheme();

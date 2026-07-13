@@ -5,9 +5,9 @@ import { useTheme, Button, IconChevL, IconChevR } from "@findemy/ui";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useBatchSlots } from "@/hooks/useSlots";
 import { useCreateBooking, useRescheduleBooking } from "@/hooks/useBookings";
-import { ScreenHeader } from "@/components/ScreenHeader";
-import { Stepper } from "@/components/Stepper";
-import { ErrorState } from "@/components/ErrorState";
+import { ScreenHeader } from "@/components/common/ScreenHeader";
+import { Stepper } from "@/components/common/Stepper";
+import { ErrorState } from "@/components/common/ErrorState";
 import {
   format,
   addMonths,

@@ -4,9 +4,9 @@ import { useTheme, sansFor, Button, IconChevR } from '@findemy/ui';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/stores/auth';
 import { useStudioSettings, useUpdateStudioSettings } from '@/hooks/useStudioQueries';
-import { Screen, ScreenHeader } from '@/components/Screen';
+import { Screen, ScreenHeader } from '@/components/common/Screen';
 import type { Settings } from '@findemy/types';
-import { useToast } from '@/components/Toast';
+import { useToast } from '@/components/common/Toast';
 
 export default function SettingsScreen() {
   const theme = useTheme();

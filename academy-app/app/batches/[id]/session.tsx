@@ -3,7 +3,7 @@ import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme, sansFor, IconChevL, IconCheck } from '@findemy/ui';
-import { SessionRoster } from '@/components/SessionRoster';
+import { SessionRoster } from '@/components/schedule/SessionRoster';
 import { useSessionAttendance } from '@/hooks/useStudioQueries';
 
 // Read-only record of a PAST class session (reached from the Schedule tab). No QR /

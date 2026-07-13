@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useTheme, sansFor, Button, IconQr } from '@findemy/ui';
 import { useLocalSearchParams } from 'expo-router';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { SessionRoster } from '@/components/SessionRoster';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { SessionRoster } from '@/components/schedule/SessionRoster';
 import { useSessionAttendance, useCheckinToken, useStudioBatch } from '@/hooks/useStudioQueries';
 
 // S3.2: in-studio attendance is QR-only. The academy shows a per-session QR; students scan it

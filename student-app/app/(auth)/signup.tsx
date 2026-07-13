@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTheme, Input, Button } from "@findemy/ui";
-import { AuthScaffold, AuthHeading, AuthSub, AuthKicker, Em } from "@/components/AuthScaffold";
+import { AuthScaffold, AuthHeading, AuthSub, AuthKicker, Em } from "@/components/auth/AuthScaffold";
 import { api } from "@/lib/api";
 
 const schema = z.object({

@@ -5,13 +5,13 @@ import { useTheme } from "@findemy/ui";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAcademy, useAcademyWorkshops } from "@/hooks/useAcademy";
 import { enrichProgram } from "@/lib/programs";
-import { ScreenHeader } from "@/components/ScreenHeader";
-import { SegTabs } from "@/components/SegTabs";
-import { ProgramRowCard } from "@/components/ProgramRowCard";
-import { WorkshopRowCard } from "@/components/WorkshopRowCard";
-import { ErrorState } from "@/components/ErrorState";
-import { EmptyState } from "@/components/EmptyState";
-import { SkeletonLoader } from "@/components/SkeletonLoader";
+import { ScreenHeader } from "@/components/common/ScreenHeader";
+import { SegTabs } from "@/components/common/SegTabs";
+import { ProgramRowCard } from "@/components/listings/ProgramRowCard";
+import { WorkshopRowCard } from "@/components/listings/WorkshopRowCard";
+import { ErrorState } from "@/components/common/ErrorState";
+import { EmptyState } from "@/components/common/EmptyState";
+import { SkeletonLoader } from "@/components/common/SkeletonLoader";
 
 type Tab = "programs" | "workshops";
 

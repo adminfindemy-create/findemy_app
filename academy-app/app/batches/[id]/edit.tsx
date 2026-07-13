@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, Alert, Pressable, TextInput } from 'react-nativ
 import { useTheme, Button, Chip, sansFor, tokens } from '@findemy/ui';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useStudioBatch, useDeleteBatch, useUpdateBatch, useStudioCoaches } from '@/hooks/useStudioQueries';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
 
 const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const CATEGORIES = ['music', 'dance', 'arts', 'yoga'] as const;

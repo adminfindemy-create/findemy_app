@@ -20,10 +20,10 @@ import { format } from "date-fns";
 import { useTrial } from "@/hooks/useTrials";
 import { useCancelBooking } from "@/hooks/useBookings";
 import { useEnrollmentStatus, useEnrollBatch } from "@/hooks/useEnroll";
-import { ScreenHeader } from "@/components/ScreenHeader";
-import { ErrorState } from "@/components/ErrorState";
+import { ScreenHeader } from "@/components/common/ScreenHeader";
+import { ErrorState } from "@/components/common/ErrorState";
 import { useAuth } from "@/stores/auth";
-import { CancelSheet, type CancelSheetTarget } from "@/components/CancelSheet";
+import { CancelSheet, type CancelSheetTarget } from "@/components/booking/CancelSheet";
 
 function toast(message: string) {
   if (Platform.OS === "android") ToastAndroid.show(message, ToastAndroid.LONG);

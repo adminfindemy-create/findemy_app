@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTheme, Input, Button } from "@findemy/ui";
-import { AuthScaffold, AuthHeading, AuthSub, Em } from "@/components/AuthScaffold";
+import { AuthScaffold, AuthHeading, AuthSub, Em } from "@/components/auth/AuthScaffold";
 import { api } from "@/lib/api";
 import { useOnboarding } from "@/stores/onboarding";
 import { useAuth } from "@/stores/auth";

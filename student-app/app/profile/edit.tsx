@@ -9,7 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useAuth } from "@/stores/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScreenHeader } from "@/components/ScreenHeader";
+import { ScreenHeader } from "@/components/common/ScreenHeader";
 import * as ImagePicker from "expo-image-picker";
 
 const schema = z.object({

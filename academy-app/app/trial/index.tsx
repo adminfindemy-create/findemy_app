@@ -2,9 +2,9 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useTheme, sansFor, Spill, IconChevR } from '@findemy/ui';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { SkeletonLoader } from '@/components/SkeletonLoader';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { SkeletonLoader } from '@/components/common/SkeletonLoader';
 import { useStudioInbox } from '@/hooks/useStudioQueries';
 import { format } from 'date-fns';
 

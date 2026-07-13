@@ -11,7 +11,7 @@ import {
   useRegisterWorkshop,
   useCancelWorkshopRegistration,
 } from "@/hooks/useWorkshops";
-import { CancelSheet, type CancelSheetTarget } from "@/components/CancelSheet";
+import { CancelSheet, type CancelSheetTarget } from "@/components/booking/CancelSheet";
 import { getWorkshopImage } from "@/lib/eventImages";
 
 function formatRupees(paise: number): string {

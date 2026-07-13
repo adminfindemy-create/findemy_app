@@ -5,10 +5,10 @@ import { useTheme, sansFor, Input, Button, IconUsers, IconChevR } from '@findemy
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { SegChoice } from '@/components/SegChoice';
-import { ErrorState } from '@/components/ErrorState';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { SegChoice } from '@/components/common/SegChoice';
+import { ErrorState } from '@/components/common/ErrorState';
 import { useStudioWorkshops, useUpdateWorkshop, useDeleteWorkshop } from '@/hooks/useStudioQueries';
 import type { WorkshopType } from '@findemy/types';
 

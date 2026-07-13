@@ -13,10 +13,10 @@ import {
   IconPlus,
 } from '@findemy/ui';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useToast } from '@/components/Toast';
+import { useToast } from '@/components/common/Toast';
 import { useStudioProgram, useDeleteProgram } from '@/hooks/useStudioQueries';
-import { ErrorState } from '@/components/ErrorState';
-import { SkeletonLoader } from '@/components/SkeletonLoader';
+import { ErrorState } from '@/components/common/ErrorState';
+import { SkeletonLoader } from '@/components/common/SkeletonLoader';
 
 const DAY_LETTER = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const CATS = ['music', 'dance', 'arts', 'yoga'] as const;

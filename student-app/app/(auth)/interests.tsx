@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, Modal, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { useTheme, Button, Chip } from "@findemy/ui";
-import { AuthScaffold, AuthHeading, AuthSub, Em } from "@/components/AuthScaffold";
+import { AuthScaffold, AuthHeading, AuthSub, Em } from "@/components/auth/AuthScaffold";
 import { api } from "@/lib/api";
 import { useAuth } from "@/stores/auth";
 import type { Category } from "@findemy/types";

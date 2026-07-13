@@ -16,7 +16,7 @@ import { useAuth } from "@/stores/auth";
 import { useMe } from "@/hooks/useMe";
 import { api } from "@/lib/api";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ErrorState } from "@/components/ErrorState";
+import { ErrorState } from "@/components/common/ErrorState";
 
 function formatPhone(phone: string | undefined): string {
   if (!phone) return "";

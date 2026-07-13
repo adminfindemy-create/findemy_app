@@ -5,9 +5,9 @@ import { useTheme, Input, Button, Chip, sansFor } from '@findemy/ui';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { useToast } from '@/components/Toast';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { useToast } from '@/components/common/Toast';
 import { useStudioCoaches, useCreateBatch, useCreateCoach, useStudioProgram } from '@/hooks/useStudioQueries';
 
 // S1.3: discounts are entered as whole percentages, capped at 30% (≡ 3000 bps server-side).

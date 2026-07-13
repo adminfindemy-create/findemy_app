@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { tokens, useTheme, Button } from "@findemy/ui";
-import { BottomSheet } from "@/components/BottomSheet";
+import { BottomSheet } from "@/components/common/BottomSheet";
 import { format, addDays, isSameDay, startOfToday } from "date-fns";
 import { useProgramSlots } from "@/hooks/useSlots";
 import { useCreateBooking } from "@/hooks/useBookings";

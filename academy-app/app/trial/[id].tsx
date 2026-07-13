@@ -2,11 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet, Linking } from 'react-native';
 import { useTheme, sansFor, Summary, SummaryRow, Button, IconUser, IconCal, IconMappin, IconUsers, IconCheck } from '@findemy/ui';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { useStudioTrial } from '@/hooks/useStudioQueries';
 import { formatRupees } from '@/lib/format';
-import { ErrorState } from '@/components/ErrorState';
+import { ErrorState } from '@/components/common/ErrorState';
 
 export default function TrialDetailScreen() {
   const theme = useTheme();

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, Alert, ActivityIndicator } from 'react-native';
 import { useTheme, sansFor, Button, IconHelp } from '@findemy/ui';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { useStudioReviews, useRespondReview } from '@/hooks/useStudioQueries';
 
 export default function ReviewRespondScreen() {

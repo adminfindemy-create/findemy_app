@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useTheme, Button } from "@findemy/ui";
-import { BottomSheet } from "@/components/BottomSheet";
+import { BottomSheet } from "@/components/common/BottomSheet";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { api } from "@/lib/api";

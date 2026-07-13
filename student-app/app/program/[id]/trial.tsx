@@ -13,10 +13,10 @@ import { useProgram } from "@/hooks/useProgram";
 import { enrichProgram } from "@/lib/programs";
 import { useProgramSlots } from "@/hooks/useSlots";
 import { useCreateBooking } from "@/hooks/useBookings";
-import { ScreenHeader } from "@/components/ScreenHeader";
-import { ErrorState } from "@/components/ErrorState";
-import { EmptyState } from "@/components/EmptyState";
-import { SkeletonLoader } from "@/components/SkeletonLoader";
+import { ScreenHeader } from "@/components/common/ScreenHeader";
+import { ErrorState } from "@/components/common/ErrorState";
+import { EmptyState } from "@/components/common/EmptyState";
+import { SkeletonLoader } from "@/components/common/SkeletonLoader";
 
 const DAYS_AHEAD = 14;
 

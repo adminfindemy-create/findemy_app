@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Pressable, Alert, StyleSheet } from "react-native";
 import { useTheme, IconEdit, IconShield, IconSparkle, IconHelp, IconChevR } from "@findemy/ui";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScreenHeader } from "@/components/ScreenHeader";
+import { ScreenHeader } from "@/components/common/ScreenHeader";
 import Constants from "expo-constants";
 
 const appVersion = Constants.expoConfig?.version ?? "1.0.0";

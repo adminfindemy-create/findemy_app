@@ -5,9 +5,9 @@ import { useTheme, sansFor, Input, Button } from '@findemy/ui';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { SegChoice } from '@/components/SegChoice';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { SegChoice } from '@/components/common/SegChoice';
 import { useCreateWorkshop } from '@/hooks/useStudioQueries';
 import type { WorkshopType } from '@findemy/types';
 

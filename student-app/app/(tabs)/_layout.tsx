@@ -3,7 +3,7 @@ import { IconSearch, IconCal, IconUser } from "@findemy/ui";
 import { View } from "react-native";
 import { useAuth } from "@/stores/auth";
 import { useClasses } from "@/hooks/useClasses";
-import { TabBar } from "@/components/TabBar";
+import { TabBar } from "@/components/common/TabBar";
 
 /** Graduation cap — Classes */
 function ClassesIcon({ size, color }: { size: number; color: string }) {

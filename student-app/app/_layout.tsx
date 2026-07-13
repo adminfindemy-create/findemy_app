@@ -5,7 +5,7 @@ import { useFonts } from "expo-font";
 import { ThemeProvider, PhoneStatusBar } from "@findemy/ui";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
-import { ToastProvider } from "@/components/Toast";
+import { ToastProvider } from "@/components/common/Toast";
 import { useAuth } from "@/stores/auth";
 import { nextOnboardingStep } from "@/lib/onboarding";
 

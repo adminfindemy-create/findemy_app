@@ -5,10 +5,10 @@ import { useTheme, sansFor, Button, IconChevL, IconChevR, IconX } from '@findemy
 // S0.2: trial-availability publishing + class reschedule removed (Schedule is cancel-only).
 import { useStudioSchedule, useStudioInbox, useCancelSession } from '@/hooks/useStudioQueries';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ErrorState } from '@/components/ErrorState';
-import { SkeletonLoader } from '@/components/SkeletonLoader';
+import { ErrorState } from '@/components/common/ErrorState';
+import { SkeletonLoader } from '@/components/common/SkeletonLoader';
 import { startOfWeek, addDays, format, isToday } from 'date-fns';
-import { useToast } from '@/components/Toast';
+import { useToast } from '@/components/common/Toast';
 import { istDateKey } from '@/lib/ist';
 
 // Plum/olive/teal have no theme tokens — kept as local consts. `arts` maps to

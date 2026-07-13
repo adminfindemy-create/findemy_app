@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Text, Pressable, Alert, StyleSheet } from 'react-native';
 import { useTheme, sansFor, Button } from '@findemy/ui';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { useToast } from '@/components/Toast';
-import { ErrorState } from '@/components/ErrorState';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { useToast } from '@/components/common/Toast';
+import { ErrorState } from '@/components/common/ErrorState';
 import { useBatchDiscontinuation, useDiscontinueBatch, useFinishDiscontinuation, useRefundBlocker } from '@/hooks/useStudioQueries';
 
 function inr(paise?: number): string {

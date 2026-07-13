@@ -5,10 +5,10 @@ import { Input, Button, useTheme, sansFor } from '@findemy/ui';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { useCreateCoach } from '@/hooks/useStudioQueries';
-import { AvatarPicker } from '@/components/AvatarPicker';
+import { AvatarPicker } from '@/components/media/AvatarPicker';
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),

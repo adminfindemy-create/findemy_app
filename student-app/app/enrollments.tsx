@@ -3,9 +3,9 @@ import { View, Text, ScrollView, StyleSheet, Pressable, RefreshControl } from "r
 import { useRouter } from "expo-router";
 import { useTheme, Tag } from "@findemy/ui";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScreenHeader } from "@/components/ScreenHeader";
-import { EmptyState } from "@/components/EmptyState";
-import { SkeletonLoader } from "@/components/SkeletonLoader";
+import { ScreenHeader } from "@/components/common/ScreenHeader";
+import { EmptyState } from "@/components/common/EmptyState";
+import { SkeletonLoader } from "@/components/common/SkeletonLoader";
 import { useEnrollments } from "@/hooks/useEnrollments";
 import { format } from "date-fns";
 import { formatRupees } from "@/lib/format";

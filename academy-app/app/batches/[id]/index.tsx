@@ -3,11 +3,11 @@ import { View, Text, Pressable, StyleSheet, Linking, TextInput, Alert, ScrollVie
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, sansFor, IconChevL, IconChevR, IconQr, IconUsers } from '@findemy/ui';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { TierBadge } from '@/components/TierBadge';
-import { SegChoice } from '@/components/SegChoice';
-import { SessionRoster } from '@/components/SessionRoster';
+import { TierBadge } from '@/components/students/TierBadge';
+import { SegChoice } from '@/components/common/SegChoice';
+import { SessionRoster } from '@/components/schedule/SessionRoster';
 import { useStudioBatch, useBatchStudents, useUpdateBatch, useSessionAttendance } from '@/hooks/useStudioQueries';
-import { ErrorState } from '@/components/ErrorState';
+import { ErrorState } from '@/components/common/ErrorState';
 
 const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];

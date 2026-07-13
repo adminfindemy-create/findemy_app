@@ -3,10 +3,10 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { useTheme, sansFor, Button, IconChevR, IconPlus } from '@findemy/ui';
 import { useRouter } from 'expo-router';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { useStudioCoaches } from '@/hooks/useStudioQueries';
-import { ErrorState } from '@/components/ErrorState';
+import { ErrorState } from '@/components/common/ErrorState';
 
 export default function CoachesScreen() {
   const theme = useTheme();

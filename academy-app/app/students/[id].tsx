@@ -2,11 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet, Linking } from 'react-native';
 import { useTheme, sansFor, Summary, SummaryRow, Button, SectionHeader, Spill, IconUsers, IconCheck } from '@findemy/ui';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { useStudioStudent } from '@/hooks/useStudioQueries';
-import { ErrorState } from '@/components/ErrorState';
-import { TierBadge } from '@/components/TierBadge';
+import { ErrorState } from '@/components/common/ErrorState';
+import { TierBadge } from '@/components/students/TierBadge';
 import { format } from 'date-fns';
 
 function money(paise?: number): string {

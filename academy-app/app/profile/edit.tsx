@@ -6,11 +6,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import * as ImagePicker from 'expo-image-picker';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { useStudioAcademy } from '@/hooks/useStudioAcademy';
 import { api, uploadMultipart, deleteJson } from '@/lib/api';
-import { useToast } from '@/components/Toast';
+import { useToast } from '@/components/common/Toast';
 
 const schema = z.object({
   name: z.string().min(1, 'Academy name is required'),

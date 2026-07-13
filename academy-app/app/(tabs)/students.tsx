@@ -5,7 +5,7 @@ import { useTheme, sansFor, Button, Chip, IconSearch, IconSliders, IconX } from 
 import { useStudioStudents, useStudioBatches } from '@/hooks/useStudioQueries';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDebounce } from '@/hooks/useDebounce';
-import { TierBadge } from '@/components/TierBadge';
+import { TierBadge } from '@/components/students/TierBadge';
 
 const ATTENDANCE_TIERS = [
   { key: '', label: 'All' },

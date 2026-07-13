@@ -3,7 +3,7 @@ import { View, Text, Alert, StyleSheet, ScrollView } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTheme, BlockPrintCover, IconCal, IconShield } from "@findemy/ui";
 import { useAuth } from "@/stores/auth";
-import { ScreenHeader } from "@/components/ScreenHeader";
+import { ScreenHeader } from "@/components/common/ScreenHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PaySummaryCard } from "@/components/pay/PaySummaryCard";
 import { PayContactCard } from "@/components/pay/PayContactCard";

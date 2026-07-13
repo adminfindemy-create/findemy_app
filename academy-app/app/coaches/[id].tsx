@@ -3,12 +3,12 @@ import { View, Text, Pressable, Modal, ScrollView, StyleSheet, Alert, Linking } 
 import { Image } from 'expo-image';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Input, Button, useTheme, sansFor, Summary, SummaryRow, IconCal, IconPhone, IconUser, IconChevR } from '@findemy/ui';
-import { AvatarPicker } from '@/components/AvatarPicker';
+import { AvatarPicker } from '@/components/media/AvatarPicker';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
 import {
   useStudioCoaches,
   useUpdateCoach,

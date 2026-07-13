@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, Modal, Pressable, ScrollView, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { tokens, useTheme, Button } from "@findemy/ui";
-import { BottomSheet } from "@/components/BottomSheet";
+import { BottomSheet } from "@/components/common/BottomSheet";
 import { useEnrollBatch, useEnrollmentStatus } from "@/hooks/useEnroll";
 
 const DAY_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];

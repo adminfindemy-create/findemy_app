@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { Tabs } from 'expo-router';
 import { IconCal, IconUsers, IconHome } from '@findemy/ui';
-import { TabBar } from '@/components/TabBar';
+import { TabBar } from '@/components/common/TabBar';
 import { useInbox } from '@/stores/inbox';
 
 /** Home / dashboard — a 2×2 grid of rounded squares (prototype icon). */

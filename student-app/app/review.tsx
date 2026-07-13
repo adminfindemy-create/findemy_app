@@ -5,7 +5,7 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTheme, Button, ActionBar } from "@findemy/ui";
 import { ApiError } from "@findemy/types";
 import { useCreateReview } from "@/hooks/useCreateReview";
-import { ScreenHeader } from "@/components/ScreenHeader";
+import { ScreenHeader } from "@/components/common/ScreenHeader";
 
 // S4.3: leave one review per academy, from an attended trial or an enrolment. No decision step.
 // Params: academy_id, source ('trial'|'enrollment'), batch_id, trial_id?, academy_name?

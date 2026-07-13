@@ -15,10 +15,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { useProgram } from "@/hooks/useProgram";
 import { enrichProgram } from "@/lib/programs";
-import { ErrorState } from "@/components/ErrorState";
-import { EmptyState } from "@/components/EmptyState";
-import { SkeletonLoader } from "@/components/SkeletonLoader";
-import { OptionRow } from "@/components/OptionRow";
+import { ErrorState } from "@/components/common/ErrorState";
+import { EmptyState } from "@/components/common/EmptyState";
+import { SkeletonLoader } from "@/components/common/SkeletonLoader";
+import { OptionRow } from "@/components/common/OptionRow";
 
 const DAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const rupees = (paise?: number | null) => `₹${Math.round(Number(paise ?? 0) / 100).toLocaleString("en-IN")}`;

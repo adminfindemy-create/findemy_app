@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, Alert, Pressable } from 'react-native';
 import { useTheme, sansFor, Button, OTPInput, Spill } from '@findemy/ui';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useMarkAttendance, useMarkNoShow, useStudioTrial } from '@/hooks/useStudioQueries';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
 
 type Stage =
   | { stage: 'entry'; code: string; attempts: number }

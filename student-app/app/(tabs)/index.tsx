@@ -14,12 +14,12 @@ import { useTheme, Button, IconSearch, IconSliders, IconMappin } from "@findemy/
 import { useLocation } from "@/stores/location";
 import { useAuth } from "@/stores/auth";
 import { useDiscoverTopRated, useInfiniteDiscover } from "@/hooks/useDiscover";
-import { AcademyCard } from "@/components/AcademyCard";
+import { AcademyCard } from "@/components/academy/AcademyCard";
 import { useSavedAcademies, useToggleSavedAcademy } from "@/hooks/useSaved";
-import { ErrorState } from "@/components/ErrorState";
-import { BottomSheet } from "@/components/BottomSheet";
-import { LocationSheet, type Area } from "@/components/LocationSheet";
-import { SkeletonLoader, SkeletonCard, SkeletonCompactCard } from "@/components/SkeletonLoader";
+import { ErrorState } from "@/components/common/ErrorState";
+import { BottomSheet } from "@/components/common/BottomSheet";
+import { LocationSheet, type Area } from "@/components/booking/LocationSheet";
+import { SkeletonLoader, SkeletonCard, SkeletonCompactCard } from "@/components/common/SkeletonLoader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import type { Category } from "@findemy/types";

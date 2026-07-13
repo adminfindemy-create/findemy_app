@@ -6,8 +6,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { format, differenceInCalendarMonths } from "date-fns";
 import type { ClassItem } from "@findemy/types";
 import { useClasses } from "@/hooks/useClasses";
-import { SkeletonLoader } from "@/components/SkeletonLoader";
-import { ErrorState } from "@/components/ErrorState";
+import { SkeletonLoader } from "@/components/common/SkeletonLoader";
+import { ErrorState } from "@/components/common/ErrorState";
 
 const DAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 

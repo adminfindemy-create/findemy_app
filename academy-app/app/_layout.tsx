@@ -5,7 +5,7 @@ import { ThemeProvider, PhoneStatusBar } from '@findemy/ui';
 import { Stack, useRouter, useSegments, useRootNavigationState } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
-import { ToastProvider } from '@/components/Toast';
+import { ToastProvider } from '@/components/common/Toast';
 import { useAuth } from '@/stores/auth';
 
 const queryClient = new QueryClient({

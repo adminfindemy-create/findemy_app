@@ -17,8 +17,8 @@ import { useEvent } from "@/hooks/useEvents";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { format } from "date-fns";
 import { getEventImage } from "@/lib/eventImages";
-import { ScreenHeader } from "@/components/ScreenHeader";
-import { ErrorState } from "@/components/ErrorState";
+import { ScreenHeader } from "@/components/common/ScreenHeader";
+import { ErrorState } from "@/components/common/ErrorState";
 import {
   useEventRegistrationStatus,
   useRegisterForEvent,

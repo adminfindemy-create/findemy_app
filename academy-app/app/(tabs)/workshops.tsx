@@ -4,10 +4,10 @@ import { useRouter } from 'expo-router';
 import { useTheme, sansFor, Button, BlockPrintCover, IconPlus } from '@findemy/ui';
 import { useStudioWorkshops } from '@/hooks/useStudioQueries';
 import { formatRupees } from '@/lib/format';
-import { Screen } from '@/components/Screen';
-import { SegChoice } from '@/components/SegChoice';
-import { SkeletonLoader } from '@/components/SkeletonLoader';
-import { ErrorState } from '@/components/ErrorState';
+import { Screen } from '@/components/common/Screen';
+import { SegChoice } from '@/components/common/SegChoice';
+import { SkeletonLoader } from '@/components/common/SkeletonLoader';
+import { ErrorState } from '@/components/common/ErrorState';
 import type { Workshop } from '@findemy/types';
 
 function statusInfo(workshop: Workshop, theme: any): { label: string; bg: string; fg: string } {

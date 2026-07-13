@@ -5,7 +5,7 @@ import {
 } from "react-native";
 import { useTheme, Button } from "@findemy/ui";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScreenHeader } from "@/components/ScreenHeader";
+import { ScreenHeader } from "@/components/common/ScreenHeader";
 import { useReferral, useReferralHistory, useClaimReferral } from "@/hooks/useReferral";
 import * as Clipboard from "expo-clipboard";
 

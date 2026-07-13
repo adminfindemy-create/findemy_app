@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTheme, sansFor, Button, IconUser } from '@findemy/ui';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { SessionRoster } from '@/components/SessionRoster';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { SessionRoster } from '@/components/schedule/SessionRoster';
 import { useStartLive, useSessionAttendance, useStudioBatch } from '@/hooks/useStudioQueries';
 
 // S3.3: academy host screen for an ONLINE batch. "Start live class" gets a host token for the

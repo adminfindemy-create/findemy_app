@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, TextInput, ScrollView, StyleSheet } from "react-native";
 import { useTheme, IconLoc, IconMappin, IconSearch } from "@findemy/ui";
-import { BottomSheet } from "@/components/BottomSheet";
+import { BottomSheet } from "@/components/common/BottomSheet";
 
 export type Area = { name: string; sub: string; lat: number; lng: number };
 

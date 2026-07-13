@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTheme, OTPInput, Button } from "@findemy/ui";
-import { AuthScaffold, AuthHeading, AuthSub } from "@/components/AuthScaffold";
+import { AuthScaffold, AuthHeading, AuthSub } from "@/components/auth/AuthScaffold";
 import { api } from "@/lib/api";
 import { useAuth } from "@/stores/auth";
 import { useOnboarding } from "@/stores/onboarding";
-import { useToast } from "@/components/Toast";
+import { useToast } from "@/components/common/Toast";
 
 export default function SignupOtpScreen() {
   const router = useRouter();

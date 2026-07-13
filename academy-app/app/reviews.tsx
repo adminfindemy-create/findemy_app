@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { useTheme, sansFor, StarRating } from '@findemy/ui';
 import { useRouter } from 'expo-router';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { SkeletonLoader } from '@/components/SkeletonLoader';
-import { ErrorState } from '@/components/ErrorState';
+import { Screen } from '@/components/common/Screen';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { SkeletonLoader } from '@/components/common/SkeletonLoader';
+import { ErrorState } from '@/components/common/ErrorState';
 import { useStudioReviews, useStudioReviewsSummary } from '@/hooks/useStudioQueries';
 import type { Review } from '@findemy/types';
 
