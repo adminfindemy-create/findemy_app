@@ -35,29 +35,29 @@ export default function ProgramsScreen() {
           </View>
         ) : (
           <View style={{ gap: 10 }}>
-            {programs.map((p) => {
-              const cat = (p.category ?? '').toLowerCase();
+            {programs.map((program) => {
+              const cat = (program.category ?? '').toLowerCase();
               const dot = cat === 'arts' ? theme.color.persimmon : (CATEGORY_COLORS[cat] ?? theme.color.mist);
               const sub = [
                 cat ? cat[0].toUpperCase() + cat.slice(1) : null,
-                `${p.batch_count} batch${p.batch_count === 1 ? '' : 'es'}`,
+                `${program.batch_count} batch${program.batch_count === 1 ? '' : 'es'}`,
               ].filter(Boolean).join(' · ');
               return (
                 <Pressable
-                  key={p.id}
-                  onPress={() => router.push(`/programs/${p.id}`)}
+                  key={program.id}
+                  onPress={() => router.push(`/programs/${program.id}`)}
                   style={[styles.rowCard, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}
                 >
-                  {(p as any).cover_url ? (
-                    <Image source={{ uri: (p as any).cover_url }} style={styles.thumb} contentFit="cover" />
+                  {(program as any).cover_url ? (
+                    <Image source={{ uri: (program as any).cover_url }} style={styles.thumb} contentFit="cover" />
                   ) : (
                     <View style={[styles.thumb, { backgroundColor: dot, alignItems: 'center', justifyContent: 'center' }]}>
-                      <Text style={{ fontFamily: theme.font.serif, fontSize: 20, color: '#fff' }}>{p.title?.[0]}</Text>
+                      <Text style={{ fontFamily: theme.font.serif, fontSize: 20, color: '#fff' }}>{program.title?.[0]}</Text>
                     </View>
                   )}
                   <View style={{ flex: 1, minWidth: 0 }}>
                     <Text style={{ fontFamily: sansFor(700), fontSize: 14.5, color: theme.color.ink }} numberOfLines={1}>
-                      {p.title}
+                      {program.title}
                     </Text>
                     <Text style={{ fontFamily: sansFor(500), fontSize: 12.5, color: theme.color.mist, marginTop: 3 }} numberOfLines={1}>
                       {sub}

@@ -56,8 +56,8 @@ export default function NewWorkshopScreen() {
           status,
         });
         router.back();
-      } catch (e: any) {
-        Alert.alert('Error', e.message || 'Failed to create workshop');
+      } catch (error: any) {
+        Alert.alert('Error', error.message || 'Failed to create workshop');
       }
     });
 

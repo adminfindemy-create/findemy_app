@@ -52,7 +52,7 @@ export default function InboxScreen() {
   const allActivity = activityData?.items ?? [];
   const activityItems = allActivity.slice(0, activityLimit);
   const todaySchedule =
-    ((schedData as any)?.days ?? []).find((d: any) => d.date === todayStr)?.items ?? [];
+    ((schedData as any)?.days ?? []).find((day: any) => day.date === todayStr)?.items ?? [];
 
   const dateLabel = format(new Date(), 'EEE d MMM');
   const newCount = dash?.inbox_counts?.new ?? 0;
@@ -141,8 +141,8 @@ export default function InboxScreen() {
         </View>
         {activityItems.length > 0 ? (
           <View style={[styles.activityList, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
-            {activityItems.map((a, idx) => (
-              <ActivityRow key={a.id} item={a} isLast={idx === activityItems.length - 1} />
+            {activityItems.map((activityItem, index) => (
+              <ActivityRow key={activityItem.id} item={activityItem} isLast={index === activityItems.length - 1} />
             ))}
           </View>
         ) : (
@@ -155,7 +155,7 @@ export default function InboxScreen() {
         {allActivity.length > activityLimit ? (
           <Pressable
             style={[styles.seeMore, { borderColor: theme.color.hairline }]}
-            onPress={() => setActivityLimit((n) => n + PAGE)}
+            onPress={() => setActivityLimit((prev) => prev + PAGE)}
           >
             <Text style={{ fontFamily: sansFor(700), fontSize: 13, color: theme.color.ink }}>
               {`See ${Math.min(PAGE, allActivity.length - activityLimit)} more`}

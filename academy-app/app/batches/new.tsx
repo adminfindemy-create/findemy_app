@@ -86,8 +86,8 @@ export default function NewBatchScreen() {
       });
       showToast('Batch created', 'success');
       router.back();
-    } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to create batch');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to create batch');
     }
   };
 
@@ -97,21 +97,21 @@ export default function NewBatchScreen() {
       return;
     }
     try {
-      const res = await createCoach.mutateAsync({ name: coachName.trim(), specialty: coachSpecialty.trim() });
+      const response = await createCoach.mutateAsync({ name: coachName.trim(), specialty: coachSpecialty.trim() });
       await refetchCoaches();
-      const newCoachId = (res as any)?.coach?.id;
+      const newCoachId = (response as any)?.coach?.id;
       if (typeof newCoachId === 'string' && newCoachId) {
         setCoachId(newCoachId);
       } else {
         // Don't silently clear the current selection if the response shape changed.
-        console.warn('[batches/new] createCoach returned no coach.id; leaving selection unchanged', res);
+        console.warn('[batches/new] createCoach returned no coach.id; leaving selection unchanged', response);
       }
       setCoachName('');
       setCoachSpecialty('');
       setShowCoachModal(false);
       showToast('Coach added', 'success');
-    } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to create coach');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to create coach');
     }
   };
 
@@ -140,8 +140,8 @@ export default function NewBatchScreen() {
 
         <Text style={[fgh, { marginTop: 2, marginBottom: 10 }]}>Level</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-          {LEVELS.map((l) => (
-            <Chip key={l} label={l} selected={level === l} onPress={() => setLevel(l)} />
+          {LEVELS.map((levelOption) => (
+            <Chip key={levelOption} label={levelOption} selected={level === levelOption} onPress={() => setLevel(levelOption)} />
           ))}
         </View>
 
@@ -221,8 +221,8 @@ export default function NewBatchScreen() {
           </View>
           {coaches.length > 0 ? (
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              {coaches.map((c: any) => (
-                <Chip key={c.id} label={c.name} selected={coachId === c.id} onPress={() => setCoachId(c.id)} />
+              {coaches.map((coach: any) => (
+                <Chip key={coach.id} label={coach.name} selected={coachId === coach.id} onPress={() => setCoachId(coach.id)} />
               ))}
             </View>
           ) : (

@@ -44,12 +44,12 @@ export function Spill({
     paid: { label: 'Paid', tone: theme.color.jade },
     failed: { label: 'Failed', tone: theme.color.rose },
   };
-  const s = map[state] || { label: state, tone: theme.color.mist };
+  const matched = map[state] || { label: state, tone: theme.color.mist };
 
   return (
-    <View style={[styles.spill, { backgroundColor: s.tone + '20' }]}>
-      <Text style={{ color: s.tone, fontFamily: theme.font.sans, fontSize: 11, fontWeight: '600' }}>
-        {s.label}
+    <View style={[styles.spill, { backgroundColor: matched.tone + '20' }]}>
+      <Text style={{ color: matched.tone, fontFamily: theme.font.sans, fontSize: 11, fontWeight: '600' }}>
+        {matched.label}
       </Text>
     </View>
   );

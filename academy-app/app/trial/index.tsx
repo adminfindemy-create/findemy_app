@@ -106,7 +106,7 @@ export default function TrialsListScreen() {
       {allTrials.length > trialLimit ? (
         <Pressable
           style={[styles.seeMore, { borderColor: theme.color.hairline }]}
-          onPress={() => setTrialLimit((n) => n + PAGE)}
+          onPress={() => setTrialLimit((prev) => prev + PAGE)}
         >
           <Text style={{ fontFamily: sansFor(700), fontSize: 13, color: theme.color.ink }}>
             {`See ${Math.min(PAGE, allTrials.length - trialLimit)} more`}

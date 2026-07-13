@@ -40,29 +40,29 @@ export function OTPInput({
     }
   };
 
-  const handleKeyPress = (e: any, index: number) => {
-    if (e.nativeEvent.key === 'Backspace' && !value[index] && index > 0) {
+  const handleKeyPress = (event: any, index: number) => {
+    if (event.nativeEvent.key === 'Backspace' && !value[index] && index > 0) {
       inputs.current[index - 1]?.focus();
     }
   };
 
   return (
     <View style={styles.row}>
-      {Array.from({ length }).map((_, i) => (
+      {Array.from({ length }).map((_, index) => (
         <TextInput
-          key={i}
-          ref={(el) => { inputs.current[i] = el; }}
-          value={value[i] || ''}
-          onChangeText={(text) => handleChange(text, i)}
-          onKeyPress={(e) => handleKeyPress(e, i)}
+          key={index}
+          ref={(el) => { inputs.current[index] = el; }}
+          value={value[index] || ''}
+          onChangeText={(text) => handleChange(text, index)}
+          onKeyPress={(event) => handleKeyPress(event, index)}
           keyboardType={keyboardType}
           maxLength={2}
           selectTextOnFocus
-          accessibilityLabel={`Digit ${i + 1} of ${length}`}
+          accessibilityLabel={`Digit ${index + 1} of ${length}`}
           style={[
             styles.cell,
             {
-              borderColor: value[i] ? theme.color.persimmon : theme.color.hairline,
+              borderColor: value[index] ? theme.color.persimmon : theme.color.hairline,
               backgroundColor: theme.color.ivory,
               color: theme.color.ink,
               fontFamily: theme.font.sansBold,

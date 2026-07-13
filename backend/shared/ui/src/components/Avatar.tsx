@@ -21,16 +21,16 @@ export function Avatar({
     plum: theme.color.plum,
     ink: theme.color.ink,
   };
-  const s = sizeMap[size];
+  const sizePx = sizeMap[size];
 
   return (
     <View
       style={[
         styles.circle,
         {
-          width: s,
-          height: s,
-          borderRadius: s / 2,
+          width: sizePx,
+          height: sizePx,
+          borderRadius: sizePx / 2,
           backgroundColor: toneMap[tone] + '20',
         },
       ]}

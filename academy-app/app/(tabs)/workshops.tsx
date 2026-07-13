@@ -10,10 +10,10 @@ import { SkeletonLoader } from '@/components/SkeletonLoader';
 import { ErrorState } from '@/components/ErrorState';
 import type { Workshop } from '@findemy/types';
 
-function statusInfo(w: Workshop, theme: any): { label: string; bg: string; fg: string } {
-  if (w.status === 'draft') return { label: 'Draft', bg: theme.color.paperWarm, fg: theme.color.mist };
-  if (w.live) return { label: 'Live now', bg: theme.color.persimmon, fg: '#fff' };
-  const start = new Date(w.start_at).getTime();
+function statusInfo(workshop: Workshop, theme: any): { label: string; bg: string; fg: string } {
+  if (workshop.status === 'draft') return { label: 'Draft', bg: theme.color.paperWarm, fg: theme.color.mist };
+  if (workshop.live) return { label: 'Live now', bg: theme.color.persimmon, fg: '#fff' };
+  const start = new Date(workshop.start_at).getTime();
   const soon = start - Date.now() > 0 && start - Date.now() < 60 * 60 * 1000;
   if (soon) return { label: 'Live soon', bg: theme.color.marigold, fg: '#fff' };
   if (start < Date.now()) return { label: 'Done', bg: theme.color.jade, fg: '#fff' };
@@ -29,15 +29,15 @@ function WorkshopCard({ workshop, variant, onPress }: { workshop: Workshop; vari
     workshop.duration_min >= 60
       ? `${(workshop.duration_min / 60).toFixed(workshop.duration_min % 60 ? 1 : 0)} hrs`
       : `${workshop.duration_min} min`;
-  const st = statusInfo(workshop, theme);
+  const status = statusInfo(workshop, theme);
   const place = workshop.type === 'online' ? 'Online' : workshop.location || 'In-studio';
   const verb = free ? 'registered' : 'booked';
 
   return (
     <Pressable onPress={onPress} style={[styles.card, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}>
       <BlockPrintCover category="music" variant={variant} letter={workshop.title?.[0] ?? 'W'} height={120}>
-        <View style={[styles.badge, { backgroundColor: st.bg }]}>
-          <Text style={{ fontFamily: sansFor(800), fontSize: 10, letterSpacing: 0.4, color: st.fg, textTransform: 'uppercase' }}>{st.label}</Text>
+        <View style={[styles.badge, { backgroundColor: status.bg }]}>
+          <Text style={{ fontFamily: sansFor(800), fontSize: 10, letterSpacing: 0.4, color: status.fg, textTransform: 'uppercase' }}>{status.label}</Text>
         </View>
       </BlockPrintCover>
       <View style={{ padding: 14 }}>
@@ -64,11 +64,11 @@ export default function WorkshopsScreen() {
 
   const now = new Date();
   const all: Workshop[] = data?.items ?? [];
-  const items = all.filter((w) => {
-    const start = new Date(w.start_at);
-    if (tab === 'live') return !!w.live || (w.status === 'upcoming' && start.getTime() - now.getTime() > 0 && start.getTime() - now.getTime() < 60 * 60 * 1000);
-    if (tab === 'up') return w.status !== 'completed' && start >= now;
-    return start < now && !w.live;
+  const items = all.filter((workshop) => {
+    const start = new Date(workshop.start_at);
+    if (tab === 'live') return !!workshop.live || (workshop.status === 'upcoming' && start.getTime() - now.getTime() > 0 && start.getTime() - now.getTime() < 60 * 60 * 1000);
+    if (tab === 'up') return workshop.status !== 'completed' && start >= now;
+    return start < now && !workshop.live;
   });
 
   const onRefresh = () => {
@@ -119,8 +119,8 @@ export default function WorkshopsScreen() {
               : 'No past workshops.'}
           </Text>
         ) : (
-          items.map((w, i) => (
-            <WorkshopCard key={w.id} workshop={w} variant={((i % 4) + 1) as 1 | 2 | 3 | 4} onPress={() => router.push(`/workshops/${w.id}`)} />
+          items.map((workshop, index) => (
+            <WorkshopCard key={workshop.id} workshop={workshop} variant={((index % 4) + 1) as 1 | 2 | 3 | 4} onPress={() => router.push(`/workshops/${workshop.id}`)} />
           ))
         )}
 

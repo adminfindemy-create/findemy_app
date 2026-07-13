@@ -13,9 +13,9 @@ function inr(paise?: number): string {
 }
 
 function fmtDate(iso: string): string {
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  const date = new Date(iso);
+  if (isNaN(date.getTime())) return '';
+  return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 export default function DiscontinueBatchScreen() {
@@ -29,10 +29,10 @@ export default function DiscontinueBatchScreen() {
   const finish = useFinishDiscontinuation(id);
   const refundBlocker = useRefundBlocker(id);
 
-  const onRefund = (b: { enrollment_id: string; student_name: string | null; amount_paise: number }) => {
+  const onRefund = (blocker: { enrollment_id: string; student_name: string | null; amount_paise: number }) => {
     Alert.alert(
       'Refund & release?',
-      `Refund the unused part of ${b.student_name ?? 'this student'}'s paid term and remove them from the batch. This is issued immediately.`,
+      `Refund the unused part of ${blocker.student_name ?? 'this student'}'s paid term and remove them from the batch. This is issued immediately.`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -40,11 +40,11 @@ export default function DiscontinueBatchScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              const res = await refundBlocker.mutateAsync(b.enrollment_id);
-              showToast(`Refunded ${inr((res as any)?.refund_amount_paise)}`, 'success');
+              const response = await refundBlocker.mutateAsync(blocker.enrollment_id);
+              showToast(`Refunded ${inr((response as any)?.refund_amount_paise)}`, 'success');
               refetch();
-            } catch (e: any) {
-              Alert.alert('Error', e.message || 'Failed to refund');
+            } catch (error: any) {
+              Alert.alert('Error', error.message || 'Failed to refund');
             }
           },
         },
@@ -68,8 +68,8 @@ export default function DiscontinueBatchScreen() {
               await discontinue.mutateAsync();
               showToast('Batch discontinuation started', 'success');
               refetch();
-            } catch (e: any) {
-              Alert.alert('Error', e.message || 'Failed to discontinue batch');
+            } catch (error: any) {
+              Alert.alert('Error', error.message || 'Failed to discontinue batch');
             }
           },
         },
@@ -82,8 +82,8 @@ export default function DiscontinueBatchScreen() {
       await finish.mutateAsync();
       showToast('Batch discontinued', 'success');
       router.back();
-    } catch (e: any) {
-      Alert.alert('Cannot finish yet', e.message || 'Some obligations are still open');
+    } catch (error: any) {
+      Alert.alert('Cannot finish yet', error.message || 'Some obligations are still open');
     }
   };
 
@@ -149,19 +149,19 @@ export default function DiscontinueBatchScreen() {
               </View>
             ) : (
               <View style={{ gap: 10 }}>
-                {data.blockers.map((b) => (
-                  <View key={b.enrollment_id} style={[styles.rowCard, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
+                {data.blockers.map((blocker) => (
+                  <View key={blocker.enrollment_id} style={[styles.rowCard, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
                     <View style={{ flex: 1, minWidth: 0 }}>
                       <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }} numberOfLines={1}>
-                        {b.student_name ?? 'Student'}
+                        {blocker.student_name ?? 'Student'}
                       </Text>
                       <Text style={{ fontFamily: sansFor(500), fontSize: 12.5, color: theme.color.mist, marginTop: 3 }}>
-                        Serving out until {fmtDate(b.paid_through)} · {b.package_type}
+                        Serving out until {fmtDate(blocker.paid_through)} · {blocker.package_type}
                       </Text>
                     </View>
                     {/* Refund accelerator — pro-rated to the unused term. */}
                     <Pressable
-                      onPress={() => onRefund(b)}
+                      onPress={() => onRefund(blocker)}
                       disabled={refundBlocker.isPending}
                       style={[styles.pill, { backgroundColor: theme.color.roseSoft, borderColor: theme.color.roseSoft, opacity: refundBlocker.isPending ? 0.5 : 1 }]}
                     >

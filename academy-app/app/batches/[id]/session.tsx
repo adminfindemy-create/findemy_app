@@ -31,8 +31,8 @@ export default function SessionRecordScreen() {
 
   const dateLabel = (() => {
     if (!date) return '';
-    const d = new Date(`${date}T00:00:00`);
-    return isNaN(d.getTime()) ? date : d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
+    const parsedDate = new Date(`${date}T00:00:00`);
+    return isNaN(parsedDate.getTime()) ? date : parsedDate.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
   })();
 
   const rows = data?.roster ?? [];

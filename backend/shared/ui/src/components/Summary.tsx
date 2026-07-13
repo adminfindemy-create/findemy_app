@@ -47,14 +47,14 @@ export function SummaryRow({
       ]}
     >
       {icon ? (
-        <View style={[styles.ic, { backgroundColor: theme.color.persimmonSoft }]}>{icon}</View>
+        <View style={[styles.iconWrap, { backgroundColor: theme.color.persimmonSoft }]}>{icon}</View>
       ) : null}
       <View style={{ flex: 1, minWidth: 0 }}>
-        <Text style={[styles.l, { color: theme.color.whisper, fontFamily: theme.font.sansBold }]}>
+        <Text style={[styles.label, { color: theme.color.whisper, fontFamily: theme.font.sansBold }]}>
           {label.toUpperCase()}
         </Text>
         {typeof value === 'string' ? (
-          <Text style={[styles.v, { color: theme.color.ink, fontFamily: theme.font.sansBold }]}>
+          <Text style={[styles.value, { color: theme.color.ink, fontFamily: theme.font.sansBold }]}>
             {value}
           </Text>
         ) : (
@@ -77,19 +77,19 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 10,
   },
-  ic: {
+  iconWrap: {
     width: 38,
     height: 38,
     borderRadius: 11,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  l: {
+  label: {
     fontSize: 11,
     letterSpacing: 1.1,
     fontWeight: '700',
   },
-  v: {
+  value: {
     fontSize: 14.5,
     fontWeight: '700',
     marginTop: 1,

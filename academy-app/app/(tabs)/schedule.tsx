@@ -81,23 +81,23 @@ export default function ScheduleScreen() {
   // Count classes per IST date so the strip dot lands on the right day.
   const batchCountByDate: Record<string, number> = {};
   days.forEach((day: any) => {
-    (day.items ?? []).forEach((it: any) => {
-      const key = it.start_time ? istDateKey(it.start_time) : day.date;
+    (day.items ?? []).forEach((item: any) => {
+      const key = item.start_time ? istDateKey(item.start_time) : day.date;
       batchCountByDate[key] = (batchCountByDate[key] ?? 0) + 1;
     });
   });
 
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(week, i));
   const focusedStr = format(focused, 'yyyy-MM-dd');
-  const focusedDay = days.find((d: any) => d.date === focusedStr);
+  const focusedDay = days.find((day: any) => day.date === focusedStr);
   const dayItems: any[] = focusedDay?.items ?? [];
   const focusedIsToday = isToday(focused);
 
   // Trials scheduled on the focused day (sourced from the inbox — schedule API
   // returns classes only). Sorted by time.
   const trialsToday: any[] = ((trialsData as any)?.items ?? [])
-    .filter((t: any) => t.scheduled_at && istDateKey(t.scheduled_at) === focusedStr)
-    .sort((a: any, b: any) => String(a.scheduled_at).localeCompare(String(b.scheduled_at)));
+    .filter((trial: any) => trial.scheduled_at && istDateKey(trial.scheduled_at) === focusedStr)
+    .sort((trialA: any, trialB: any) => String(trialA.scheduled_at).localeCompare(String(trialB.scheduled_at)));
 
   // Classes that can still be cancelled on the focused day.
   const cancellable = dayItems.filter((i) => i.status !== 'cancelled' && i.status !== 'done');
@@ -143,7 +143,7 @@ export default function ScheduleScreen() {
         {/* Week navigator */}
         <View style={styles.weekNav}>
           <Pressable
-            onPress={() => setFocused((d) => addDays(d, -7))}
+            onPress={() => setFocused((prev) => addDays(prev, -7))}
             hitSlop={8}
             style={[styles.navBtn, { borderColor: theme.color.hairline, backgroundColor: theme.color.ivory }]}
             accessibilityLabel="Previous week"
@@ -164,7 +164,7 @@ export default function ScheduleScreen() {
             ) : null}
           </View>
           <Pressable
-            onPress={() => setFocused((d) => addDays(d, 7))}
+            onPress={() => setFocused((prev) => addDays(prev, 7))}
             hitSlop={8}
             style={[styles.navBtn, { borderColor: theme.color.hairline, backgroundColor: theme.color.ivory }]}
             accessibilityLabel="Next week"
@@ -309,14 +309,14 @@ export default function ScheduleScreen() {
                     </Text>
                   </View>
                   <View style={{ gap: 10 }}>
-                    {trialsToday.map((t) => {
-                      const start = t.scheduled_at ? new Date(t.scheduled_at) : null;
+                    {trialsToday.map((trial) => {
+                      const start = trial.scheduled_at ? new Date(trial.scheduled_at) : null;
                       const startValid = start && !isNaN(start.getTime());
                       return (
                         <Pressable
-                          key={t.id}
+                          key={trial.id}
                           style={[styles.sch, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}
-                          onPress={() => router.push(`/trial/${t.id}` as any)}
+                          onPress={() => router.push(`/trial/${trial.id}` as any)}
                         >
                           <View style={styles.rail}>
                             <Text style={{ fontFamily: theme.font.serif, fontSize: 15, color: theme.color.ink }}>
@@ -329,7 +329,7 @@ export default function ScheduleScreen() {
                           <View style={[styles.cdot, { backgroundColor: theme.color.persimmon }]} />
                           <View style={{ flex: 1, minWidth: 0 }}>
                             <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }} numberOfLines={1}>
-                              {item_title(t)}
+                              {getTrialTitle(trial)}
                             </Text>
                             <Text style={{ fontFamily: sansFor(500), fontSize: 12, color: theme.color.mist, marginTop: 3 }}>
                               Trial · verify OTP at class
@@ -426,9 +426,9 @@ export default function ScheduleScreen() {
 }
 
 // Trial row title: "{batch} — Trial · {student}" when both known.
-function item_title(t: any): string {
-  const base = t.batch_title ?? 'Trial';
-  return t.student_name ? `${base} · ${t.student_name}` : base;
+function getTrialTitle(trial: any): string {
+  const base = trial.batch_title ?? 'Trial';
+  return trial.student_name ? `${base} · ${trial.student_name}` : base;
 }
 
 const styles = StyleSheet.create({

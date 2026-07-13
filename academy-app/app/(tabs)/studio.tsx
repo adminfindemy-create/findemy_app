@@ -130,17 +130,17 @@ export default function StudioScreen() {
             { v: String(studentsCount), t: 'Students', to: '/(tabs)/students' },
             { v: String(programsCount), t: 'Programs', to: '/programs' },
             { v: monthEarnings, t: 'Earned', to: '/earnings' },
-          ].map((s) => (
+          ].map((stat) => (
             <Pressable
-              key={s.t}
-              onPress={() => router.push(s.to as never)}
+              key={stat.t}
+              onPress={() => router.push(stat.to as never)}
               accessibilityRole="button"
-              accessibilityLabel={s.t}
+              accessibilityLabel={stat.t}
               style={[styles.pstat, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}
             >
-              <Text style={{ fontFamily: theme.font.serif, fontSize: 22, lineHeight: 24, color: theme.color.ink }}>{s.v}</Text>
+              <Text style={{ fontFamily: theme.font.serif, fontSize: 22, lineHeight: 24, color: theme.color.ink }}>{stat.v}</Text>
               <Text style={{ fontFamily: sansFor(700), fontSize: 10.5, letterSpacing: 0.6, textTransform: 'uppercase', color: theme.color.whisper, marginTop: 5 }}>
-                {s.t}
+                {stat.t}
               </Text>
             </Pressable>
           ))}

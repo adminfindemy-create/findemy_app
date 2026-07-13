@@ -41,7 +41,7 @@ export default function BatchHubScreen() {
   useEffect(() => {
     if (!batch) return;
     const timings = batch.timings ?? [];
-    setDays([...new Set(timings.map((t) => t.day_of_week))].sort());
+    setDays([...new Set(timings.map((timing) => timing.day_of_week))].sort());
     if (timings[0]) {
       setStartTime(timings[0].start_time || '18:00');
       setDurationMin(String(timings[0].duration_min || 60));
@@ -87,7 +87,7 @@ export default function BatchHubScreen() {
 
   const online = batch.mode === 'online';
   const timings = batch.timings ?? [];
-  const daysLabel = [...new Set(timings.map((t) => t.day_of_week))].sort().map((d) => DOW[d]).join(' · ');
+  const daysLabel = [...new Set(timings.map((timing) => timing.day_of_week))].sort().map((dayNum) => DOW[dayNum]).join(' · ');
   const timeLabel = timings[0]?.start_time ?? '';
   const metaBits = [batch.coach_name, daysLabel || null, timeLabel || null, online ? 'Online · Findemy room' : 'In-studio']
     .filter(Boolean)
@@ -95,19 +95,19 @@ export default function BatchHubScreen() {
   const enrolled = roster.length;
   const capacity = batch.capacity ?? null;
 
-  const toggleDay = (d: number) =>
-    setDays((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d].sort()));
+  const toggleDay = (dayNum: number) =>
+    setDays((prev) => (prev.includes(dayNum) ? prev.filter((day) => day !== dayNum) : [...prev, dayNum].sort()));
 
   const saveSchedule = async () => {
     const dur = Number(durationMin) || 60;
     try {
       await updateBatch.mutateAsync({
         mode,
-        timings: days.map((d) => ({ day_of_week: d, start_time: startTime, duration_min: dur })),
+        timings: days.map((dayNum) => ({ day_of_week: dayNum, start_time: startTime, duration_min: dur })),
       });
       Alert.alert('Saved', 'Schedule updated.');
-    } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to save');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to save');
     }
   };
 
@@ -124,8 +124,8 @@ export default function BatchHubScreen() {
             setStatus(next);
             try {
               await updateBatch.mutateAsync({ status: next });
-            } catch (e: any) {
-              Alert.alert('Error', e.message || 'Failed');
+            } catch (error: any) {
+              Alert.alert('Error', error.message || 'Failed');
             }
           },
         },
@@ -238,36 +238,36 @@ export default function BatchHubScreen() {
               </Text>
             ) : (
               <View style={{ gap: 8 }}>
-                {roster.map((s) => (
+                {roster.map((student) => (
                   <Pressable
-                    key={s.id}
+                    key={student.id}
                     style={[styles.rosterRow, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}
-                    onPress={() => router.push(`/students/${s.id}` as never)}
+                    onPress={() => router.push(`/students/${student.id}` as never)}
                   >
                     <View style={[styles.av, { backgroundColor: theme.color.persimmon }]}>
                       <Text style={{ fontFamily: theme.font.serifItalic, fontSize: 13, color: theme.color.ivory }}>
-                        {s.name?.[0]?.toUpperCase() ?? '?'}
+                        {student.name?.[0]?.toUpperCase() ?? '?'}
                       </Text>
                     </View>
                     <View style={{ flex: 1, minWidth: 0 }}>
                       <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }} numberOfLines={1}>
-                        {s.name}
+                        {student.name}
                       </Text>
                       <Text style={{ fontFamily: sansFor(500), fontSize: 12, color: theme.color.mist, marginTop: 2 }} numberOfLines={1}>
-                        {s.attendance_pct != null ? `${s.attendance_pct}% attendance` : 'New'}
-                        {s.last_seen ? ` · last seen ${s.last_seen}` : ''}
+                        {student.attendance_pct != null ? `${student.attendance_pct}% attendance` : 'New'}
+                        {student.last_seen ? ` · last seen ${student.last_seen}` : ''}
                       </Text>
                     </View>
-                    {s.phone ? (
+                    {student.phone ? (
                       <Pressable
-                        onPress={() => Linking.openURL(`https://wa.me/${s.phone.replace(/\D/g, '')}`)}
+                        onPress={() => Linking.openURL(`https://wa.me/${student.phone.replace(/\D/g, '')}`)}
                         hitSlop={8}
                         style={{ marginRight: 4 }}
                       >
                         <Text style={{ fontSize: 16 }}>💬</Text>
                       </Pressable>
                     ) : null}
-                    <TierBadge tier={s.tier} />
+                    <TierBadge tier={student.tier} />
                   </Pressable>
                 ))}
               </View>
@@ -289,10 +289,10 @@ export default function BatchHubScreen() {
                 <>
                   <Text style={[styles.fgh, { marginTop: 12 }]}>Things to know</Text>
                   <View style={{ gap: 6 }}>
-                    {batch.things_to_know.map((t, i) => (
-                      <View key={i} style={{ flexDirection: 'row', gap: 8 }}>
+                    {batch.things_to_know.map((note, index) => (
+                      <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
                         <Text style={{ color: theme.color.persimmon, fontFamily: sansFor(800), fontSize: 13 }}>•</Text>
-                        <Text style={{ flex: 1, fontFamily: theme.font.sans, fontSize: 13.5, lineHeight: 20, color: theme.color.inkSoft }}>{t}</Text>
+                        <Text style={{ flex: 1, fontFamily: theme.font.sans, fontSize: 13.5, lineHeight: 20, color: theme.color.inkSoft }}>{note}</Text>
                       </View>
                     ))}
                   </View>
@@ -300,18 +300,18 @@ export default function BatchHubScreen() {
               ) : null}
               <Text style={[styles.fgh, batch.description || (batch.things_to_know && batch.things_to_know.length) ? { marginTop: 12 } : undefined]}>Days</Text>
               <View style={styles.dayRow}>
-                {DAY_LABELS.map((d, i) => {
-                  const on = days.includes(i);
+                {DAY_LABELS.map((label, index) => {
+                  const on = days.includes(index);
                   return (
                     <Pressable
-                      key={i}
-                      onPress={() => toggleDay(i)}
+                      key={index}
+                      onPress={() => toggleDay(index)}
                       style={[
                         styles.dayToggle,
                         { backgroundColor: on ? theme.color.ink : theme.color.ivory, borderColor: on ? theme.color.ink : theme.color.hairline },
                       ]}
                     >
-                      <Text style={{ fontFamily: sansFor(700), fontSize: 13, color: on ? theme.color.ivory : theme.color.mist }}>{d}</Text>
+                      <Text style={{ fontFamily: sansFor(700), fontSize: 13, color: on ? theme.color.ivory : theme.color.mist }}>{label}</Text>
                     </Pressable>
                   );
                 })}

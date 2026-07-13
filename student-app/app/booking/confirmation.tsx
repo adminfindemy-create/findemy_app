@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.35,
     shadowRadius: 30,
     elevation: 10,
-  },
+},
   trialRow: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 10 },
   thumb: { width: 46, height: 46, borderRadius: 12 },
   l: { fontSize: 11, letterSpacing: 1.1 },

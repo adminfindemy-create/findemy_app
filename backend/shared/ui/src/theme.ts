@@ -153,10 +153,10 @@ export type Theme = typeof tokens;
  * `sans` family, which RN won't render bolder for a named custom font.
  */
 export function sansFor(weight?: string | number): string {
-  const w = typeof weight === 'string' ? parseInt(weight, 10) : weight ?? 400;
-  if (w >= 700) return tokens.font.sansBold;
-  if (w >= 600) return tokens.font.sansSemibold;
-  if (w >= 500) return tokens.font.sansMedium;
+  const numericWeight = typeof weight === 'string' ? parseInt(weight, 10) : weight ?? 400;
+  if (numericWeight >= 700) return tokens.font.sansBold;
+  if (numericWeight >= 600) return tokens.font.sansSemibold;
+  if (numericWeight >= 500) return tokens.font.sansMedium;
   return tokens.font.sans;
 }
 

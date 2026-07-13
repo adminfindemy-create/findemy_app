@@ -42,13 +42,13 @@ export default function EditProgramScreen() {
       await updateProgram.mutateAsync({
         title: title.trim(),
         description: description.trim(),
-        things_to_know: things.split('\n').map((s) => s.trim()).filter(Boolean),
+        things_to_know: things.split('\n').map((line) => line.trim()).filter(Boolean),
         media,
       });
       showToast('Program updated', 'success');
       router.back();
-    } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to update program');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to update program');
     }
   };
 

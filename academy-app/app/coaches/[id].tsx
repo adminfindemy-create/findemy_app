@@ -33,7 +33,7 @@ export default function CoachDetailScreen() {
   const id = Array.isArray(idParam) ? idParam[0] : idParam;
   const theme = useTheme();
   const { data: coachesData } = useStudioCoaches();
-  const coach = coachesData?.items.find((c: any) => c.id === id);
+  const coach = coachesData?.items.find((coachItem: any) => coachItem.id === id);
   const updateCoach = useUpdateCoach(id);
   const deleteCoach = useDeleteCoach();
 
@@ -53,15 +53,15 @@ export default function CoachDetailScreen() {
   const [editAvatar, setEditAvatar] = useState<string | null>(null);
 
   const assignedBatches = (detail?.batches ?? []) as { id: string; title: string }[];
-  const assignedIds = new Set(assignedBatches.map((b) => b.id));
-  const assignableBatches = ((batchesData?.items ?? []) as any[]).filter((b) => !assignedIds.has(b.id));
+  const assignedIds = new Set(assignedBatches.map((batch) => batch.id));
+  const assignableBatches = ((batchesData?.items ?? []) as any[]).filter((batch) => !assignedIds.has(batch.id));
 
   const doAssign = async (batchId: string) => {
     setAssignOpen(false);
     try {
       await assign.mutateAsync({ batchId, coachId: id });
-    } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to assign');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to assign');
     }
   };
 
@@ -87,8 +87,8 @@ export default function CoachDetailScreen() {
         avatar_url: editAvatar,
       });
       setEditOpen(false);
-    } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to update coach');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to update coach');
     }
   };
 
@@ -102,8 +102,8 @@ export default function CoachDetailScreen() {
           try {
             await deleteCoach.mutateAsync(id);
             router.back();
-          } catch (e: any) {
-            Alert.alert('Error', e.message || 'Failed to delete coach');
+          } catch (error: any) {
+            Alert.alert('Error', error.message || 'Failed to delete coach');
           }
         },
       },
@@ -174,13 +174,13 @@ export default function CoachDetailScreen() {
         {assignedBatches.length > 0 ? (
           <View style={{ gap: 8 }}>
             <Text style={styles.fgh}>Batches</Text>
-            {assignedBatches.map((b) => (
+            {assignedBatches.map((batch) => (
               <Pressable
-                key={b.id}
-                onPress={() => router.push(`/batches/${b.id}` as never)}
+                key={batch.id}
+                onPress={() => router.push(`/batches/${batch.id}` as never)}
                 style={[styles.batchRow, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}
               >
-                <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }}>{b.title}</Text>
+                <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }}>{batch.title}</Text>
                 <IconChevR size={16} color={theme.color.whisper} />
               </Pressable>
             ))}
@@ -217,16 +217,16 @@ export default function CoachDetailScreen() {
             Add {name} to another batch.
           </Text>
           <ScrollView style={{ maxHeight: 360 }}>
-            {assignableBatches.map((b: any) => (
+            {assignableBatches.map((batch: any) => (
               <Pressable
-                key={b.id}
-                onPress={() => doAssign(b.id)}
+                key={batch.id}
+                onPress={() => doAssign(batch.id)}
                 style={[styles.batchRow, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline, marginBottom: 8 }]}
               >
                 <View>
-                  <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }}>{b.title}</Text>
+                  <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }}>{batch.title}</Text>
                   <Text style={{ fontFamily: sansFor(500), fontSize: 12, color: theme.color.mist, marginTop: 2 }}>
-                    {b.coach_name ? `Currently: ${b.coach_name}` : 'No coach'}
+                    {batch.coach_name ? `Currently: ${batch.coach_name}` : 'No coach'}
                   </Text>
                 </View>
                 <IconChevR size={16} color={theme.color.whisper} />

@@ -111,15 +111,15 @@ export default function EarningsScreen() {
       <View style={styles.container}>
         {/* Period seg */}
         <View style={[styles.seg, { backgroundColor: theme.color.paperWarm }]}>
-          {PRESETS.map((t) => {
-            const on = mode === 'preset' && period === t.key;
+          {PRESETS.map((preset) => {
+            const on = mode === 'preset' && period === preset.key;
             return (
               <Pressable
-                key={t.key}
-                onPress={() => { setMode('preset'); setPeriod(t.key); setOffset(0); }}
+                key={preset.key}
+                onPress={() => { setMode('preset'); setPeriod(preset.key); setOffset(0); }}
                 style={[styles.segBtn, on && [{ backgroundColor: theme.color.ivory }, theme.shadow.sm]]}
               >
-                <Text style={{ fontFamily: sansFor(700), fontSize: 13, color: on ? theme.color.ink : theme.color.inkSoft }}>{t.label}</Text>
+                <Text style={{ fontFamily: sansFor(700), fontSize: 13, color: on ? theme.color.ink : theme.color.inkSoft }}>{preset.label}</Text>
               </Pressable>
             );
           })}
@@ -134,12 +134,12 @@ export default function EarningsScreen() {
         {/* Stepper (preset) or date-range inputs (custom) */}
         {mode === 'preset' ? (
           <View style={styles.stepper}>
-            <Pressable onPress={() => setOffset((o) => o - 1)} hitSlop={8} style={[styles.stepBtn, { borderColor: theme.color.hairline }]}>
+            <Pressable onPress={() => setOffset((prev) => prev - 1)} hitSlop={8} style={[styles.stepBtn, { borderColor: theme.color.hairline }]}>
               <IconChevL size={18} color={theme.color.ink} />
             </Pressable>
             <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }}>{win.label}</Text>
             <Pressable
-              onPress={() => setOffset((o) => Math.min(0, o + 1))}
+              onPress={() => setOffset((prev) => Math.min(0, prev + 1))}
               disabled={offset === 0}
               hitSlop={8}
               style={[styles.stepBtn, { borderColor: theme.color.hairline, opacity: offset === 0 ? 0.35 : 1 }]}
@@ -174,15 +174,15 @@ export default function EarningsScreen() {
 
         {/* Category filter chips */}
         <View style={styles.chips}>
-          {CATS.map((c) => {
-            const on = cat === c.key;
+          {CATS.map((catOption) => {
+            const on = cat === catOption.key;
             return (
               <Pressable
-                key={c.key || 'all'}
-                onPress={() => setCat(c.key)}
+                key={catOption.key || 'all'}
+                onPress={() => setCat(catOption.key)}
                 style={[styles.chip, { backgroundColor: on ? theme.color.ink : theme.color.ivory, borderColor: on ? theme.color.ink : theme.color.hairline }]}
               >
-                <Text style={{ fontFamily: sansFor(600), fontSize: 12.5, color: on ? theme.color.ivory : theme.color.inkSoft }}>{c.label}</Text>
+                <Text style={{ fontFamily: sansFor(600), fontSize: 12.5, color: on ? theme.color.ivory : theme.color.inkSoft }}>{catOption.label}</Text>
               </Pressable>
             );
           })}
@@ -203,10 +203,10 @@ export default function EarningsScreen() {
 
           {data?.by_category && data.by_category.length > 0 ? (
             <View style={styles.drow}>
-              {data.by_category.slice(0, 3).map((c) => (
-                <View key={c.category} style={{ flex: 1 }}>
-                  <Text style={{ fontFamily: theme.font.serif, fontSize: 19, color: theme.color.ivory }}>₹{fmtBig(c.captured_paise)}</Text>
-                  <Text style={styles.dt}>{CATEGORY_LABEL[c.category] ?? c.category}</Text>
+              {data.by_category.slice(0, 3).map((categoryEntry) => (
+                <View key={categoryEntry.category} style={{ flex: 1 }}>
+                  <Text style={{ fontFamily: theme.font.serif, fontSize: 19, color: theme.color.ivory }}>₹{fmtBig(categoryEntry.captured_paise)}</Text>
+                  <Text style={styles.dt}>{CATEGORY_LABEL[categoryEntry.category] ?? categoryEntry.category}</Text>
                 </View>
               ))}
             </View>
@@ -228,10 +228,10 @@ export default function EarningsScreen() {
           <>
             {/* S7: rolling reserve + any recovery owed to Findemy */}
             {(() => {
-              const s = (data as any)?.settlement;
-              if (!s) return null;
-              const held = s.reserve_held_paise ?? 0;
-              const owed = s.outstanding_recovery_paise ?? 0;
+              const settlement = (data as any)?.settlement;
+              if (!settlement) return null;
+              const held = settlement.reserve_held_paise ?? 0;
+              const owed = settlement.outstanding_recovery_paise ?? 0;
               if (held <= 0 && owed <= 0) return null;
               return (
                 <View style={{ gap: 8 }}>
@@ -266,24 +266,24 @@ export default function EarningsScreen() {
               <View style={{ gap: 8 }}>
                 <Text style={styles.h2}>Recent transactions</Text>
                 <View style={[styles.card, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}>
-                  {data.transactions.map((t, idx) => {
-                    const out = t.dir === 'out';
-                    const isCommission = /commission|fee/i.test(t.kind) || out;
+                  {data.transactions.map((transaction, index) => {
+                    const out = transaction.dir === 'out';
+                    const isCommission = /commission|fee/i.test(transaction.kind) || out;
                     return (
-                      <View key={t.id} style={[styles.tx, idx > 0 && { borderTopWidth: 1, borderTopColor: theme.color.hairline }]}>
+                      <View key={transaction.id} style={[styles.tx, index > 0 && { borderTopWidth: 1, borderTopColor: theme.color.hairline }]}>
                         <View style={[styles.txAv, { backgroundColor: isCommission ? theme.color.paperWarm : theme.color.persimmonSoft }]}>
                           <Text style={{ fontFamily: sansFor(800), fontSize: 13, color: isCommission ? theme.color.whisper : theme.color.persimmonDeep }}>
                             {isCommission ? '%' : '₹'}
                           </Text>
                         </View>
                         <View style={{ flex: 1, minWidth: 0 }}>
-                          <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }} numberOfLines={1}>{t.label}</Text>
+                          <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }} numberOfLines={1}>{transaction.label}</Text>
                           <Text style={{ fontFamily: sansFor(600), fontSize: 11.5, color: theme.color.mist, marginTop: 1 }}>
-                            {new Date(t.at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                            {new Date(transaction.at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                           </Text>
                         </View>
                         <Text style={{ fontFamily: sansFor(800), fontSize: 15, color: out ? theme.color.rose : theme.color.jade }}>
-                          {out ? '−' : '+'}₹{fmt(t.amount_paise)}
+                          {out ? '−' : '+'}₹{fmt(transaction.amount_paise)}
                         </Text>
                       </View>
                     );
@@ -292,7 +292,7 @@ export default function EarningsScreen() {
               </View>
             ) : (
               <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.mist, paddingVertical: 12 }}>
-                No earnings in this period{cat ? ` for ${CATS.find((c) => c.key === cat)?.label.toLowerCase()}` : ''}.
+                No earnings in this period{cat ? ` for ${CATS.find((catOption) => catOption.key === cat)?.label.toLowerCase()}` : ''}.
               </Text>
             )}
 
@@ -318,16 +318,16 @@ export default function EarningsScreen() {
             {data?.by_batch && data.by_batch.length > 0 ? (
               <View style={{ gap: 8 }}>
                 <Text style={styles.h2}>By batch</Text>
-                {data.by_batch.map((b) => (
-                  <View key={b.batch_id} style={[styles.row, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
+                {data.by_batch.map((batchEarning) => (
+                  <View key={batchEarning.batch_id} style={[styles.row, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
                     <View style={[styles.rowIcon, { backgroundColor: theme.color.jadeSoft }]}>
                       <Text style={{ fontFamily: sansFor(800), fontSize: 14, color: theme.color.jade }}>₹</Text>
                     </View>
                     <View style={{ flex: 1, minWidth: 0 }}>
-                      <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }} numberOfLines={1}>{b.batch_title}</Text>
-                      <Text style={{ fontFamily: sansFor(600), fontSize: 11.5, color: theme.color.mist, marginTop: 1 }}>{b.count} bookings</Text>
+                      <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }} numberOfLines={1}>{batchEarning.batch_title}</Text>
+                      <Text style={{ fontFamily: sansFor(600), fontSize: 11.5, color: theme.color.mist, marginTop: 1 }}>{batchEarning.count} bookings</Text>
                     </View>
-                    <Text style={{ fontFamily: theme.font.serif, fontSize: 18, color: theme.color.ink }}>₹{fmt(b.net_paise)}</Text>
+                    <Text style={{ fontFamily: theme.font.serif, fontSize: 18, color: theme.color.ink }}>₹{fmt(batchEarning.net_paise)}</Text>
                   </View>
                 ))}
               </View>
@@ -337,15 +337,15 @@ export default function EarningsScreen() {
               <View style={{ gap: 8 }}>
                 <Text style={styles.h2}>Payouts</Text>
                 <View style={[styles.card, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}>
-                  {data.payouts.map((p, idx) => (
-                    <View key={p.id} style={[styles.tx, idx > 0 && { borderTopWidth: 1, borderTopColor: theme.color.hairline }]}>
+                  {data.payouts.map((payout, index) => (
+                    <View key={payout.id} style={[styles.tx, index > 0 && { borderTopWidth: 1, borderTopColor: theme.color.hairline }]}>
                       <View style={{ flex: 1 }}>
-                        <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }}>Payout #{p.id.slice(0, 6)}</Text>
+                        <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }}>Payout #{payout.id.slice(0, 6)}</Text>
                         <View style={{ marginTop: 3, alignSelf: 'flex-start' }}>
-                          <Spill state={p.status} />
+                          <Spill state={payout.status} />
                         </View>
                       </View>
-                      <Text style={{ fontFamily: theme.font.serif, fontSize: 16, color: theme.color.jade }}>₹{fmt(p.amount_paise)}</Text>
+                      <Text style={{ fontFamily: theme.font.serif, fontSize: 16, color: theme.color.jade }}>₹{fmt(payout.amount_paise)}</Text>
                     </View>
                   ))}
                 </View>

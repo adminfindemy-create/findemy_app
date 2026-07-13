@@ -42,9 +42,9 @@ export default function NewProgramScreen() {
     try {
       const things = (data.things_to_know ?? '')
         .split('\n')
-        .map((s) => s.trim())
+        .map((line) => line.trim())
         .filter(Boolean);
-      const res = await createProgram.mutateAsync({
+      const response = await createProgram.mutateAsync({
         title: data.title,
         category,
         description: data.description,
@@ -52,12 +52,12 @@ export default function NewProgramScreen() {
         media,
       });
       showToast('Program created', 'success');
-      const id = (res as any)?.program?.id;
+      const id = (response as any)?.program?.id;
       // Land on the new (empty) program so the academy can add its first batch.
       if (id) router.replace(`/programs/${id}` as never);
       else router.back();
-    } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to create program');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to create program');
     }
   };
 
@@ -82,8 +82,8 @@ export default function NewProgramScreen() {
 
         <Text style={[fgh, { marginBottom: 10 }]}>Category</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-          {CATEGORIES.map((c) => (
-            <Chip key={c} label={c} selected={category === c} onPress={() => setCategory(c)} />
+          {CATEGORIES.map((categoryOption) => (
+            <Chip key={categoryOption} label={categoryOption} selected={category === categoryOption} onPress={() => setCategory(categoryOption)} />
           ))}
         </View>
 

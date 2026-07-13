@@ -42,8 +42,8 @@ export type ClientConfig = {
 
 function stripUndefined(obj: Record<string, unknown>): Record<string, string> {
   const out: Record<string, string> = {};
-  for (const [k, v] of Object.entries(obj)) {
-    if (v !== undefined && v !== null) out[k] = String(v);
+  for (const [key, value] of Object.entries(obj)) {
+    if (value !== undefined && value !== null) out[key] = String(value);
   }
   return out;
 }
@@ -61,21 +61,21 @@ export function createClient(config: ClientConfig) {
     if (token) headers["Authorization"] = `Bearer ${token}`;
     if (body !== undefined) headers["Content-Type"] = "application/json";
 
-    const res = await fetch(url, {
+    const response = await fetch(url, {
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined,
     });
 
-    if (res.status === 401 && retry) {
+    if (response.status === 401 && retry) {
       const newToken = await config.onUnauthorized();
       if (newToken) {
         return request<T>(method, path, body, false);
       }
     }
 
-    const data: any = await res.json().catch(() => ({}));
-    if (!res.ok) {
+    const data: any = await response.json().catch(() => ({}));
+    if (!response.ok) {
       const err = data?.error;
       throw new ApiError(err?.code ?? "INTERNAL", err?.message ?? "Request failed", err?.fields);
     }

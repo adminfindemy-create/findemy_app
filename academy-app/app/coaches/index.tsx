@@ -29,11 +29,11 @@ export default function CoachesScreen() {
         ) : (
           <>
             <View style={[styles.card, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}>
-              {coaches.map((coach: any, i: number) => (
+              {coaches.map((coach: any, index: number) => (
                 <Pressable
                   key={coach.id}
                   onPress={() => router.push(`/coaches/${coach.id}`)}
-                  style={[styles.row, i > 0 && { borderTopWidth: 1, borderTopColor: theme.color.hairline }]}
+                  style={[styles.row, index > 0 && { borderTopWidth: 1, borderTopColor: theme.color.hairline }]}
                 >
                   <View style={[styles.pic, { backgroundColor: theme.color.persimmon }]}>
                     {coach.avatar_url ? (

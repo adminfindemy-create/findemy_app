@@ -34,11 +34,11 @@ export function ActionBar({
       {priceValue ? (
         <View style={styles.priceLead}>
           {priceLabel ? (
-            <Text style={[styles.l, { color: theme.color.whisper, fontFamily: theme.font.sansBold }]}>
+            <Text style={[styles.priceLabelText, { color: theme.color.whisper, fontFamily: theme.font.sansBold }]}>
               {priceLabel.toUpperCase()}
             </Text>
           ) : null}
-          <Text style={[styles.v, { color: theme.color.ink, fontFamily: theme.font.sansBold }]}>
+          <Text style={[styles.priceValueText, { color: theme.color.ink, fontFamily: theme.font.sansBold }]}>
             {priceValue}
           </Text>
         </View>
@@ -58,12 +58,12 @@ const styles = StyleSheet.create({
     paddingTop: 14,
   },
   priceLead: { flexShrink: 0 },
-  l: {
+  priceLabelText: {
     fontSize: 9.5,
     letterSpacing: 1.2,
     fontWeight: '700',
   },
-  v: {
+  priceValueText: {
     fontSize: 19,
     fontWeight: '800',
   },

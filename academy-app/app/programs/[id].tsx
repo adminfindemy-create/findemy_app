@@ -28,11 +28,11 @@ function inr(paise?: number | null): string {
 
 function fmtSchedule(timings: any[]): { days: string; time: string } {
   if (!timings?.length) return { days: '', time: '' };
-  const days = [...new Set(timings.map((t) => t.day_of_week))].sort().map((d) => DAY_LETTER[d]).join(' · ');
-  const t = timings[0];
+  const days = [...new Set(timings.map((timing) => timing.day_of_week))].sort().map((dayNum) => DAY_LETTER[dayNum]).join(' · ');
+  const firstTiming = timings[0];
   let time = '';
-  if (t?.start_time) {
-    const [h, m] = String(t.start_time).split(':').map(Number);
+  if (firstTiming?.start_time) {
+    const [h, m] = String(firstTiming.start_time).split(':').map(Number);
     const ampm = h >= 12 ? 'PM' : 'AM';
     const hour = h % 12 || 12;
     time = `${hour}:${String(m).padStart(2, '0')} ${ampm}`;
@@ -51,7 +51,7 @@ function MediaCarousel({ media, width, cat }: { media: any[]; width: number; cat
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         keyExtractor={(_, i) => String(i)}
-        onMomentumScrollEnd={(e) => setIdx(Math.round(e.nativeEvent.contentOffset.x / width))}
+        onMomentumScrollEnd={(event) => setIdx(Math.round(event.nativeEvent.contentOffset.x / width))}
         renderItem={({ item }) =>
           item.type === 'photo' ? (
             <Image source={{ uri: item.url }} style={{ width, height: COVER_H }} contentFit="cover" />
@@ -97,10 +97,10 @@ export default function ProgramDetailScreen() {
   const pal = theme.category[cat];
 
   const totalEnrolled = batches.reduce(
-    (s, b) => s + (b.capacity != null && b.trial_spots != null ? Math.max(0, b.capacity - b.trial_spots) : 0),
+    (sum, batch) => sum + (batch.capacity != null && batch.trial_spots != null ? Math.max(0, batch.capacity - batch.trial_spots) : 0),
     0,
   );
-  const totalSpots = batches.reduce((s, b) => s + (b.trial_spots ?? 0), 0);
+  const totalSpots = batches.reduce((sum, batch) => sum + (batch.trial_spots ?? 0), 0);
 
   const onDelete = () => {
     Alert.alert(
@@ -116,8 +116,8 @@ export default function ProgramDetailScreen() {
               await deleteProgram.mutateAsync(id);
               showToast('Program deleted', 'success');
               router.back();
-            } catch (e: any) {
-              Alert.alert('Error', e.message || 'Failed to delete program');
+            } catch (error: any) {
+              Alert.alert('Error', error.message || 'Failed to delete program');
             }
           },
         },
@@ -195,10 +195,10 @@ export default function ProgramDetailScreen() {
               { v: String(batches.length), t: 'Batches' },
               { v: String(totalEnrolled), t: 'Students' },
               { v: String(totalSpots), t: 'Open spots' },
-            ].map((s) => (
-              <View key={s.t} style={[styles.stat, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}>
-                <Text style={{ fontFamily: theme.font.serif, fontSize: 22, lineHeight: 24, color: theme.color.ink }}>{s.v}</Text>
-                <Text style={[kicker, { fontSize: 9.5, color: theme.color.whisper, marginTop: 3 }]}>{s.t}</Text>
+            ].map((stat) => (
+              <View key={stat.t} style={[styles.stat, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}>
+                <Text style={{ fontFamily: theme.font.serif, fontSize: 22, lineHeight: 24, color: theme.color.ink }}>{stat.v}</Text>
+                <Text style={[kicker, { fontSize: 9.5, color: theme.color.whisper, marginTop: 3 }]}>{stat.t}</Text>
               </View>
             ))}
           </View>
@@ -218,10 +218,10 @@ export default function ProgramDetailScreen() {
             <View style={{ marginTop: 22 }}>
               <Text style={[kicker, { color: theme.color.whisper, marginBottom: 10 }]}>Things to know</Text>
               <View style={[styles.knowCard, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}>
-                {program.things_to_know.map((t: string, i: number) => (
-                  <View key={i} style={{ flexDirection: 'row', gap: 10, alignItems: 'flex-start', marginTop: i === 0 ? 0 : 10 }}>
+                {program.things_to_know.map((note: string, index: number) => (
+                  <View key={index} style={{ flexDirection: 'row', gap: 10, alignItems: 'flex-start', marginTop: index === 0 ? 0 : 10 }}>
                     <View style={[styles.bullet, { backgroundColor: pal.accent }]} />
-                    <Text style={{ flex: 1, fontFamily: theme.font.sans, fontSize: 13.5, lineHeight: 20, color: theme.color.inkSoft }}>{t}</Text>
+                    <Text style={{ flex: 1, fontFamily: theme.font.sans, fontSize: 13.5, lineHeight: 20, color: theme.color.inkSoft }}>{note}</Text>
                   </View>
                 ))}
               </View>

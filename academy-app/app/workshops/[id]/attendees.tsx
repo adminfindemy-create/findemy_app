@@ -24,30 +24,30 @@ function StatusPill({ status }: { status: Registrant['status'] }) {
     pending: { label: 'Pending', bg: theme.color.marigoldSoft, fg: theme.color.marigold },
     cancelled: { label: 'Cancelled', bg: theme.color.roseSoft, fg: theme.color.rose },
   } as const;
-  const m = map[status] ?? map.pending;
+  const statusStyle = map[status] ?? map.pending;
   return (
-    <View style={{ backgroundColor: m.bg, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3 }}>
-      <Text style={{ fontFamily: sansFor(800), fontSize: 10, letterSpacing: 0.3, textTransform: 'uppercase', color: m.fg }}>{m.label}</Text>
+    <View style={{ backgroundColor: statusStyle.bg, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3 }}>
+      <Text style={{ fontFamily: sansFor(800), fontSize: 10, letterSpacing: 0.3, textTransform: 'uppercase', color: statusStyle.fg }}>{statusStyle.label}</Text>
     </View>
   );
 }
 
-function Row({ r }: { r: Registrant }) {
+function Row({ registrant }: { registrant: Registrant }) {
   const theme = useTheme();
-  const phone = r.user.phone;
+  const phone = registrant.user.phone;
 
   const pay =
-    r.amount_paise > 0
-      ? r.payment_status === 'captured'
-        ? `Paid ${formatRupees(r.amount_paise)}`
-        : `Payment ${r.payment_status ?? 'pending'}`
+    registrant.amount_paise > 0
+      ? registrant.payment_status === 'captured'
+        ? `Paid ${formatRupees(registrant.amount_paise)}`
+        : `Payment ${registrant.payment_status ?? 'pending'}`
       : 'Free';
-  const date = new Date(r.registered_at);
+  const date = new Date(registrant.registered_at);
   const dateLabel = isNaN(date.getTime()) ? '' : date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 
   const openWhatsApp = () => {
     if (!phone) return Alert.alert('No phone number', 'This attendee has no phone number on file.');
-    const msg = encodeURIComponent(`Hi ${r.user.name}, this is about your workshop booking.`);
+    const msg = encodeURIComponent(`Hi ${registrant.user.name}, this is about your workshop booking.`);
     Linking.openURL(`https://wa.me/${phone.replace(/\D/g, '')}?text=${msg}`);
   };
   const call = () => {
@@ -59,16 +59,16 @@ function Row({ r }: { r: Registrant }) {
     <View style={[styles.row, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
       <View style={[styles.avatar, { backgroundColor: theme.color.persimmon }]}>
         <Text style={{ fontFamily: theme.font.serifItalic, fontSize: 15, color: theme.color.ivory }}>
-          {r.user.name?.[0]?.toUpperCase() ?? '?'}
+          {registrant.user.name?.[0]?.toUpperCase() ?? '?'}
         </Text>
       </View>
 
       <View style={{ flex: 1, minWidth: 0 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }} numberOfLines={1}>
-            {r.user.name}
+            {registrant.user.name}
           </Text>
-          <StatusPill status={r.status} />
+          <StatusPill status={registrant.status} />
         </View>
         <Text style={{ fontFamily: sansFor(600), fontSize: 12, color: theme.color.mist, marginTop: 2 }} numberOfLines={1}>
           {[pay, dateLabel].filter(Boolean).join(' · ')}
@@ -108,7 +108,7 @@ export default function WorkshopAttendeesScreen() {
         <FlatList
           data={isLoading ? [] : rows}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <Row r={item} />}
+          renderItem={({ item }) => <Row registrant={item} />}
           contentContainerStyle={{ paddingVertical: 14, paddingBottom: 40 }}
           ListHeaderComponent={
             data?.workshop && rows.length > 0 ? (

@@ -60,14 +60,14 @@ export default function BatchEditScreen() {
     setAnnualDiscount(String(Math.round((existing.annual_discount_bps ?? 0) / 100)));
     const timings = existing.timings ?? [];
     if (timings.length) {
-      setDays([...new Set(timings.map((t) => t.day_of_week))].sort());
+      setDays([...new Set(timings.map((timing) => timing.day_of_week))].sort());
       setStartTime(timings[0].start_time || '18:00');
       setDurationMin(String(timings[0].duration_min || 60));
     }
   }, [existing]);
 
-  const toggleDay = (d: number) =>
-    setDays((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d].sort()));
+  const toggleDay = (dayNum: number) =>
+    setDays((prev) => (prev.includes(dayNum) ? prev.filter((day) => day !== dayNum) : [...prev, dayNum].sort()));
 
   const onSubmit = async () => {
     if (!title.trim()) {
@@ -81,9 +81,9 @@ export default function BatchEditScreen() {
       return;
     }
     const dur = Number(durationMin) || 60;
-    const timings = days.map((d) => ({ day_of_week: d, start_time: startTime, duration_min: dur }));
+    const timings = days.map((dayNum) => ({ day_of_week: dayNum, start_time: startTime, duration_min: dur }));
     try {
-      const things = thingsToKnow.split('\n').map((s) => s.trim()).filter(Boolean);
+      const things = thingsToKnow.split('\n').map((line) => line.trim()).filter(Boolean);
       await updateBatch.mutateAsync({
         title: title.trim(),
         category,
@@ -102,8 +102,8 @@ export default function BatchEditScreen() {
         timings,
       });
       router.back();
-    } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to save batch');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to save batch');
     }
   };
 
@@ -122,8 +122,8 @@ export default function BatchEditScreen() {
             setStatus(next);
             try {
               await updateBatch.mutateAsync({ status: next });
-            } catch (e: any) {
-              Alert.alert('Error', e.message || 'Failed');
+            } catch (error: any) {
+              Alert.alert('Error', error.message || 'Failed');
             }
           },
         },
@@ -142,8 +142,8 @@ export default function BatchEditScreen() {
             await deleteBatch.mutateAsync(id);
             router.dismissAll?.();
             router.replace('/(tabs)/schedule' as never);
-          } catch (e: any) {
-            Alert.alert('Error', e.message || 'Failed to delete batch');
+          } catch (error: any) {
+            Alert.alert('Error', error.message || 'Failed to delete batch');
           }
         },
       },
@@ -164,8 +164,8 @@ export default function BatchEditScreen() {
 
         {label('CATEGORY')}
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {CATEGORIES.map((c) => (
-            <Chip key={c} label={c} selected={category === c} onPress={() => setCategory(c)} />
+          {CATEGORIES.map((categoryOption) => (
+            <Chip key={categoryOption} label={categoryOption} selected={category === categoryOption} onPress={() => setCategory(categoryOption)} />
           ))}
         </View>
 
@@ -194,19 +194,19 @@ export default function BatchEditScreen() {
 
         {label('DAYS')}
         <View style={styles.dayRow}>
-          {DAY_LABELS.map((d, i) => {
-            const on = days.includes(i);
+          {DAY_LABELS.map((label, index) => {
+            const on = days.includes(index);
             return (
               <Pressable
-                key={i}
-                onPress={() => toggleDay(i)}
+                key={index}
+                onPress={() => toggleDay(index)}
                 style={[
                   styles.dayToggle,
                   { backgroundColor: on ? theme.color.ink : theme.color.ivory, borderColor: on ? theme.color.ink : theme.color.hairline },
                 ]}
               >
                 <Text style={{ fontFamily: theme.font.sans, fontSize: 12, fontWeight: '600', color: on ? theme.color.ivory : theme.color.inkSoft }}>
-                  {d}
+                  {label}
                 </Text>
               </Pressable>
             );
@@ -227,22 +227,22 @@ export default function BatchEditScreen() {
 
         {label('MODE')}
         <View style={styles.twoCol}>
-          {(['in-studio', 'online'] as const).map((m) => {
-            const on = mode === m;
+          {(['in-studio', 'online'] as const).map((modeOption) => {
+            const on = mode === modeOption;
             return (
               <Pressable
-                key={m}
-                onPress={() => setMode(m)}
+                key={modeOption}
+                onPress={() => setMode(modeOption)}
                 style={[
                   styles.modeCard,
                   { backgroundColor: on ? theme.color.persimmonSoft : theme.color.ivory, borderColor: on ? theme.color.persimmon : theme.color.hairline },
                 ]}
               >
                 <Text style={{ fontFamily: theme.font.sans, fontSize: 13, fontWeight: '600', color: theme.color.ink }}>
-                  {m === 'in-studio' ? 'In studio' : 'Online'}
+                  {modeOption === 'in-studio' ? 'In studio' : 'Online'}
                 </Text>
                 <Text style={{ fontFamily: theme.font.sans, fontSize: 10, color: theme.color.mist, marginTop: 2 }}>
-                  {m === 'in-studio' ? 'At your address' : 'Join via video call'}
+                  {modeOption === 'in-studio' ? 'At your address' : 'Join via video call'}
                 </Text>
               </Pressable>
             );
@@ -292,8 +292,8 @@ export default function BatchEditScreen() {
           <>
             {label('INSTRUCTOR')}
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              {coaches.map((c: any) => (
-                <Chip key={c.id} label={c.name} selected={coachId === c.id} onPress={() => setCoachId(c.id)} />
+              {coaches.map((coach: any) => (
+                <Chip key={coach.id} label={coach.name} selected={coachId === coach.id} onPress={() => setCoachId(coach.id)} />
               ))}
             </View>
           </>

@@ -35,7 +35,7 @@ export default function EditWorkshopScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const theme = useTheme();
   const { data, isLoading, isError, refetch } = useStudioWorkshops();
-  const workshop = data?.items.find((w) => w.id === id);
+  const workshop = data?.items.find((workshopItem) => workshopItem.id === id);
   const updateWorkshop = useUpdateWorkshop(id);
   const deleteWorkshop = useDeleteWorkshop();
   const [type, setType] = useState<WorkshopType>('offline');
@@ -47,13 +47,13 @@ export default function EditWorkshopScreen() {
 
   useEffect(() => {
     if (!workshop) return;
-    const d = new Date(workshop.start_at);
+    const date = new Date(workshop.start_at);
     setType(workshop.type);
     reset({
       title: workshop.title,
       description: workshop.description,
-      start_date: d.toISOString().slice(0, 10),
-      start_time: d.toTimeString().slice(0, 5),
+      start_date: date.toISOString().slice(0, 10),
+      start_time: date.toTimeString().slice(0, 5),
       duration_min: String(workshop.duration_min),
       capacity: String(workshop.capacity),
       price: String(Math.round(workshop.price_paise / 100)),
@@ -76,8 +76,8 @@ export default function EditWorkshopScreen() {
         price_paise: Math.round(Number(data.price)) * 100,
       });
       router.back();
-    } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to update workshop');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to update workshop');
     }
   };
 
@@ -91,8 +91,8 @@ export default function EditWorkshopScreen() {
           try {
             await deleteWorkshop.mutateAsync(id);
             router.back();
-          } catch (e: any) {
-            Alert.alert('Error', e.message || 'Failed to delete');
+          } catch (error: any) {
+            Alert.alert('Error', error.message || 'Failed to delete');
           }
         },
       },
@@ -149,8 +149,8 @@ export default function EditWorkshopScreen() {
                   try {
                     await updateWorkshop.mutateAsync({ status: 'upcoming' } as any);
                     router.back();
-                  } catch (e: any) {
-                    Alert.alert('Error', e.message || 'Failed to publish');
+                  } catch (error: any) {
+                    Alert.alert('Error', error.message || 'Failed to publish');
                   }
                 }}
               >
