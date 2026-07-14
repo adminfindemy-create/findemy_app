@@ -4,7 +4,6 @@ import {
   Text,
   ScrollView,
   Pressable,
-  TextInput,
   RefreshControl,
   StyleSheet,
   Switch,
@@ -13,7 +12,7 @@ import {
 } from "react-native";
 import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import { useRouter } from "expo-router";
-import { useTheme, Button, IconSearch, IconSliders, IconMappin } from "@findemy/ui";
+import { useTheme, Button, IconSearch, IconSliders, IconMappin, IconChevR } from "@findemy/ui";
 import { useLocation } from "@/stores/location";
 import { useAuth } from "@/stores/auth";
 import { useDiscoverTopRated, useInfiniteDiscover } from "@/hooks/useDiscover";
@@ -71,11 +70,15 @@ function getGreetWord(): string {
   return "evening";
 }
 
-// Width (px) of one repeat of the rainbow pattern. The gradient tiles via
-// spreadMethod="repeat" in SVG's own pixel space (gradientUnits="userSpaceOnUse"),
-// so translating the strip left by exactly one cycle and looping is seamless
-// regardless of the container's actual width — no onLayout/measuring needed.
-const RAINBOW_CYCLE = 90;
+// One repeat of the rainbow pattern is RAINBOW_CYCLE px wide. Rather than
+// relying on SVG's spreadMethod="repeat" (not exposed in this react-native-svg
+// version's types), the cycle's stops are baked RAINBOW_CYCLES times across a
+// single wide Rect; translating left by exactly one cycle and looping reads
+// as an endless scroll, and the extra baked copies guarantee the visible clip
+// never runs out of content mid-translate on any phone width.
+const RAINBOW_CYCLE = 100;
+const RAINBOW_CYCLES = 6;
+const RAINBOW_WIDTH = RAINBOW_CYCLE * RAINBOW_CYCLES;
 
 // Continuously-scrolling rainbow strip for the hero card footer. Flat
 // rectangles + a repeating gradient only — no hand-drawn paths, so it can't
@@ -94,28 +97,27 @@ function RainbowBar() {
 
   const translateX = shift.interpolate({ inputRange: [0, 1], outputRange: [0, -RAINBOW_CYCLE] });
 
+  const hues = [theme.color.persimmon, theme.color.marigold, theme.color.jade, GREET_NAME_COLOR];
+  const stops: { offset: number; color: string }[] = [];
+  for (let cycle = 0; cycle < RAINBOW_CYCLES; cycle++) {
+    hues.forEach((color, i) => {
+      stops.push({ offset: (cycle + i / hues.length) / RAINBOW_CYCLES, color });
+    });
+  }
+  stops.push({ offset: 1, color: hues[0] });
+
   return (
     <View style={styles.rainbowClip} pointerEvents="none">
-      <Animated.View style={{ width: "200%", height: "100%", transform: [{ translateX }] }}>
-        <Svg width="100%" height="100%">
+      <Animated.View style={{ transform: [{ translateX }] }}>
+        <Svg width={RAINBOW_WIDTH} height={3}>
           <Defs>
-            <LinearGradient
-              id="rainbowGrad"
-              gradientUnits="userSpaceOnUse"
-              x1={0}
-              y1={0}
-              x2={RAINBOW_CYCLE}
-              y2={0}
-              spreadMethod="repeat"
-            >
-              <Stop offset={0} stopColor={theme.color.persimmon} />
-              <Stop offset={0.25} stopColor={theme.color.marigold} />
-              <Stop offset={0.5} stopColor={theme.color.jade} />
-              <Stop offset={0.75} stopColor={GREET_NAME_COLOR} />
-              <Stop offset={1} stopColor={theme.color.persimmon} />
+            <LinearGradient id="rainbowGrad" x1="0" y1="0" x2="1" y2="0">
+              {stops.map((s, i) => (
+                <Stop key={i} offset={s.offset} stopColor={s.color} />
+              ))}
             </LinearGradient>
           </Defs>
-          <Rect x={0} y={0} width="100%" height="100%" fill="url(#rainbowGrad)" />
+          <Rect x={0} y={0} width={RAINBOW_WIDTH} height={3} fill="url(#rainbowGrad)" />
         </Svg>
       </Animated.View>
     </View>
@@ -127,7 +129,6 @@ export default function DiscoverScreen() {
   const theme = useTheme();
   const user = useAuth((state) => state.user);
   const location = useLocation();
-  const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState<Category | undefined>();
   const [refreshing, setRefreshing] = useState(false);
   const [showLocation, setShowLocation] = useState(false);
@@ -150,7 +151,6 @@ export default function DiscoverScreen() {
   const nearby = useInfiniteDiscover({
     ...location,
     category,
-    q: searchQuery,
     online: filterOnline || undefined,
     minRating: filterMinRating || undefined,
     radius: filterRadius || undefined,
@@ -226,23 +226,15 @@ export default function DiscoverScreen() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.color.persimmon} />
         }
-        contentContainerStyle={{ paddingHorizontal: 18, paddingTop: 10, paddingBottom: 130 }}
+        contentContainerStyle={{ paddingHorizontal: 18, paddingTop: 14, paddingBottom: 130 }}
         showsVerticalScrollIndicator={false}
-        stickyHeaderIndices={[3]}
+        stickyHeaderIndices={[2]}
       >
-        {/* top-bar: the slim app-identity strip most home screens have,
-            sitting above the personal greeting rather than folded into it. */}
-        <View style={styles.topBar}>
-          <Text style={[styles.topBarBrand, { fontFamily: theme.font.serifItalic, color: theme.color.persimmon }]}>
+        {/* brand-bar: plain text row, scrolls away with the rest of the
+            content — not a fixed app-bar, no colour band, no gradient. */}
+        <View style={styles.brandBar}>
+          <Text style={[styles.brandName, { fontFamily: theme.font.serifItalic, color: theme.color.persimmon }]}>
             findemy
-          </Text>
-        </View>
-
-        {/* greet-row: greeting on the left, profile avatar pinned top-right. */}
-        <View style={styles.greetRow}>
-          <Text style={[styles.greetName, { fontFamily: theme.font.serifItalic, color: theme.color.mist }]} numberOfLines={1}>
-            {"Good " + getGreetWord().toLowerCase() + ", "}
-            <Text style={{ fontFamily: theme.font.sansBold, color: GREET_NAME_COLOR }}>{firstName}</Text>
           </Text>
           <Pressable
             onPress={() => router.push("/(tabs)/profile")}
@@ -254,10 +246,45 @@ export default function DiscoverScreen() {
           </Pressable>
         </View>
 
-        {/* hero: compact panel — a line of text, a colour row, a rainbow
-            footer strip. Kept short on purpose so it no longer eats half the
-            visible screen. */}
+        {/* hero: greeting + tagline share one card, with the location picker
+            as a circular icon pinned top-right (was its own row below the
+            search bar — same onPress, no separate section needed for it).
+            Headline sizes now pull straight from the app's own type ramp
+            (theme.type.h1 / .hero) instead of one-off pixel values. */}
         <View style={[styles.heroCard, { backgroundColor: theme.color.paperWarm, borderColor: theme.color.hairline }]}>
+          <View style={styles.heroTopRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.heroKicker, { fontFamily: theme.font.sansBold, color: theme.color.whisper }]}>
+                {"GOOD " + getGreetWord().toUpperCase()}
+              </Text>
+              <Text
+                style={[styles.heroGreet, { fontFamily: theme.font.serifItalic, color: theme.color.inkSoft }]}
+                numberOfLines={1}
+              >
+                {"Hey "}
+                <Text style={{ color: GREET_NAME_COLOR }}>{firstName}</Text>
+              </Text>
+            </View>
+
+            <Pressable
+              onPress={() => setShowLocation(true)}
+              style={[styles.heroLocBtn, { backgroundColor: theme.color.persimmonSoft }]}
+              accessibilityLabel={`Change location — ${locLabel}`}
+              accessibilityRole="button"
+            >
+              <View style={[styles.heroLocPin, { backgroundColor: theme.color.persimmon }]}>
+                <IconMappin size={9} color="#fff" />
+              </View>
+              <Text
+                style={[styles.heroLocLabel, { fontFamily: theme.font.sansSemibold, color: theme.color.persimmonDeep }]}
+                numberOfLines={1}
+              >
+                {locLabel}
+              </Text>
+              <IconChevR size={9} color={theme.color.persimmonDeep} style={{ transform: [{ rotate: "90deg" }] }} />
+            </Pressable>
+          </View>
+
           <View style={styles.heroTextRow}>
             <Text style={[styles.heroLine, { fontFamily: theme.font.serif, color: theme.color.inkSoft }]}>
               Discover your{" "}
@@ -270,7 +297,7 @@ export default function DiscoverScreen() {
           <View style={styles.heroGlyphRow}>
             {HERO_CATEGORY_GLYPHS.map((g) => (
               <View key={g.key} style={[styles.heroGlyphChip, { backgroundColor: theme.category[g.key].base }]}>
-                <Text style={{ fontSize: 12, color: theme.category[g.key].accent }}>{g.icon}</Text>
+                <Text style={{ fontSize: 13, color: theme.category[g.key].accent }}>{g.icon}</Text>
               </View>
             ))}
           </View>
@@ -278,62 +305,64 @@ export default function DiscoverScreen() {
           <RainbowBar />
         </View>
 
-        {/* search — sticky (index 3 in stickyHeaderIndices) so it stays reachable while scrolling */}
+        {/* search — sticky (index 1 in stickyHeaderIndices) so it stays
+            reachable while scrolling. This is now a static-looking trigger,
+            not a real input: tapping it pushes /search, which has its own
+            focused, auto-focused input and live debounced results — the
+            pattern most apps use rather than typing inline here. */}
         <View style={[styles.stickySearchWrap, { backgroundColor: theme.color.paper }]}>
-          <View style={[styles.search, { borderColor: theme.color.hairline, ...theme.shadow.md }]}>
-            <IconSearch size={20} color={theme.color.persimmon} />
-            <TextInput
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder="Find a mentor or studio…"
-              placeholderTextColor={theme.color.whisper}
-              style={{ flex: 1, fontFamily: theme.font.sans, fontSize: 15, color: theme.color.ink, paddingVertical: 0 }}
-            />
+          <Pressable
+            style={[styles.search, { backgroundColor: theme.color.paperWarm }, theme.shadow.sm]}
+            onPress={() => router.push("/search")}
+            accessibilityRole="button"
+            accessibilityLabel="Search academies"
+          >
+            <IconSearch size={17} color={theme.color.persimmon} />
+            <Text style={{ flex: 1, fontFamily: theme.font.sans, fontSize: 14, color: theme.color.whisper }}>
+              Find a mentor or studio…
+            </Text>
             <Pressable
-              style={[styles.filt, { backgroundColor: theme.color.paperWarm }]}
+              style={[styles.filt, { backgroundColor: "#fff" }]}
               accessibilityLabel="Filter academies"
               accessibilityRole="button"
               onPress={openFilters}
             >
-              <IconSliders size={16} color={theme.color.inkSoft} />
+              <IconSliders size={14} color={theme.color.inkSoft} />
               {isFiltered ? <View style={[styles.filtBadge, { backgroundColor: theme.color.persimmon }]} /> : null}
             </Pressable>
-          </View>
-        </View>
-
-        {/* loc-row */}
-        <View style={styles.locRow}>
-          <Pressable style={[styles.locChip, { backgroundColor: theme.color.paperWarm }]} onPress={() => setShowLocation(true)}>
-            <IconMappin size={14} color={theme.color.persimmon} />
-            <Text style={{ fontFamily: theme.font.sansSemibold, fontSize: 13, color: theme.color.inkSoft }}>{locLabel}</Text>
           </Pressable>
         </View>
 
-        {/* pills */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pills} style={{ marginHorizontal: -18 }}>
-          {CATEGORIES.map((chip) => {
-            const active = category === chip.key;
-            return (
-              <Pressable
-                key={chip.label}
-                onPress={() => setCategory(chip.key)}
-                accessibilityRole="button"
-                accessibilityLabel={`Filter by ${chip.label}`}
-                style={[
-                  styles.pill,
-                  {
-                    backgroundColor: active ? theme.color.ink : "#fff",
-                    borderColor: active ? theme.color.ink : theme.color.hairline,
-                  },
-                ]}
-              >
-                <Text style={{ fontFamily: theme.font.sansSemibold, fontSize: 13, color: active ? "#fff" : theme.color.inkSoft }}>
-                  {chip.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
+        {/* tabs: underline style (à la Linkit) instead of filled pills — a
+            bottom hairline turns the row into its own "section", the active
+            tab gets a coloured underline, and it's still horizontally
+            scrollable for the full category list. */}
+        <View style={[styles.tabSection, { borderBottomColor: theme.color.hairline }]}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabRow}>
+            {CATEGORIES.map((chip) => {
+              const active = category === chip.key;
+              return (
+                <Pressable
+                  key={chip.label}
+                  onPress={() => setCategory(chip.key)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Filter by ${chip.label}`}
+                  style={[styles.tab, active && { borderBottomColor: theme.color.persimmon }]}
+                >
+                  <Text
+                    style={{
+                      fontFamily: active ? theme.font.sansBold : theme.font.sansSemibold,
+                      fontSize: 14,
+                      color: active ? theme.color.persimmon : theme.color.mist,
+                    }}
+                  >
+                    {chip.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
 
         {/* Top rated */}
         <View style={styles.sectionHead}>
@@ -380,7 +409,7 @@ export default function DiscoverScreen() {
           <ErrorState code={(nearby.error as any)?.code} onRetry={nearby.refetch} />
         ) : nearbyItems.length === 0 ? (
           <EmptyState
-            message={isFiltered || searchQuery ? "No academies match your filters." : "No academies found near you yet."}
+            message={isFiltered ? "No academies match your filters." : "No academies found near you yet."}
             actionLabel={isFiltered ? "Clear filters" : undefined}
             onAction={isFiltered ? clearFilters : undefined}
           />
@@ -502,52 +531,71 @@ export default function DiscoverScreen() {
 }
 
 const styles = StyleSheet.create({
-  topBar: { marginTop: 2 },
-  topBarBrand: { fontSize: 15, letterSpacing: 0.2 },
-  greetRow: {
+  // brand-bar: plain scrolling row — "findemy" wordmark + profile avatar,
+  // aligned. No fixed positioning, no colour band.
+  brandBar: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 10,
-    marginTop: 10,
+    marginBottom: 14,
   },
-  greetName: {
-    flexShrink: 1,
-    fontSize: 17,
-    lineHeight: 24,
-    letterSpacing: 0.1,
-  },
-  // hero: its own flat-color section, set apart from the plain greeting row
-  // above by background + border alone — no gradients, no illustration. Kept
-  // deliberately short (small padding, single text row) so it reads as an
-  // accent strip rather than eating half the screen.
+  brandName: { fontSize: 24, letterSpacing: 0.2 },
+  // hero: greeting + tagline share one card. Headline kept modest (not the
+  // app's h1/hero scale) so it reads as one balanced element among the
+  // greeting, glyph row, and rainbow bar rather than dominating the card.
   heroCard: {
     borderRadius: HERO_CARD_RADIUS,
     borderWidth: 1,
-    padding: 14,
-    marginTop: 12,
+    padding: 18,
     overflow: "hidden",
   },
-  heroTextRow: { flexDirection: "row", flexWrap: "wrap", alignItems: "flex-end" },
-  heroLine: { fontSize: 19, lineHeight: 24 },
-  hero: { fontSize: 22, lineHeight: 24 },
+  heroTopRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: 12,
+    marginBottom: 14,
+  },
+  heroKicker: { fontSize: 10, letterSpacing: 1.6, marginBottom: 5 },
+  heroGreet: { fontSize: 19, lineHeight: 22 },
+  heroLocBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    borderRadius: 999,
+    paddingVertical: 4,
+    paddingLeft: 5,
+    paddingRight: 8,
+    maxWidth: 110,
+  },
+  heroLocPin: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  heroLocLabel: { fontSize: 10.5, flexShrink: 1 },
+  heroTextRow: { flexDirection: "row", flexWrap: "wrap", alignItems: "baseline" },
+  heroLine: { fontSize: 22, lineHeight: 26 },
+  hero: { fontSize: 26, lineHeight: 30 },
   heroGlyphRow: {
     flexDirection: "row",
-    gap: 6,
-    marginTop: 10,
+    gap: 8,
+    marginTop: 14,
   },
   heroGlyphChip: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
   },
   rainbowClip: {
-    height: 3,
-    borderRadius: 1.5,
+    height: 4,
+    borderRadius: 2,
     overflow: "hidden",
-    marginTop: 12,
+    marginTop: 14,
   },
   avatar: {
     width: 38,
@@ -557,22 +605,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  stickySearchWrap: {
+    paddingTop: 14,
+    paddingBottom: 10,
+  },
+  // search: flat fill + soft shadow instead of white+hairline+heavy-shadow —
+  // sleeker, closer to how most modern search bars are styled. Background is
+  // set at the call site (paperWarm) so it reads against the white page and
+  // the white filter button pops inside it.
   search: {
     flexDirection: "row",
     alignItems: "center",
     gap: 11,
-    backgroundColor: "#fff",
-    borderWidth: 1,
     borderRadius: 999,
-    paddingHorizontal: 16,
-    paddingVertical: 13,
-    marginTop: 14,
-    marginBottom: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
   },
   filt: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
@@ -587,25 +639,23 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#fff",
   },
-  locRow: { flexDirection: "row", marginBottom: 8 },
-  locChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 7,
-    borderRadius: 999,
-    paddingHorizontal: 15,
-    paddingVertical: 9,
+  // tabs: underline style — a full-bleed bottom hairline turns the row into
+  // its own section, the active tab gets a coloured underline, and it stays
+  // horizontally scrollable.
+  tabSection: {
+    marginHorizontal: -18,
+    marginTop: 6,
+    borderBottomWidth: 1,
+    marginBottom: 4,
   },
-  pills: {
-    gap: 10,
+  tabRow: {
+    gap: 22,
     paddingHorizontal: 18,
-    paddingVertical: 6,
   },
-  pill: {
-    borderWidth: 1,
-    borderRadius: 999,
-    paddingHorizontal: 15,
-    paddingVertical: 9,
+  tab: {
+    paddingBottom: 11,
+    borderBottomWidth: 2,
+    borderBottomColor: "transparent",
   },
   sectionHead: {
     flexDirection: "row",

@@ -22,6 +22,9 @@ export const useInfiniteDiscover = (params: {
   online?: boolean;
   minRating?: number;
   radius?: number;
+  /** Defaults to true. Pass false to skip fetching — e.g. the dedicated
+   * search screen shouldn't hit the API before the user has typed anything. */
+  enabled?: boolean;
 }) =>
   useInfiniteQuery({
     queryKey: ["discover", "nearby", params],
@@ -40,4 +43,5 @@ export const useInfiniteDiscover = (params: {
       }),
     getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
     initialPageParam: undefined as string | undefined,
+    enabled: params.enabled ?? true,
   });
