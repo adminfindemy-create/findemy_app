@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,10 @@ import {
   RefreshControl,
   StyleSheet,
   Switch,
+  Animated,
+  Easing,
 } from "react-native";
+import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import { useRouter } from "expo-router";
 import { useTheme, Button, IconSearch, IconSliders, IconMappin } from "@findemy/ui";
 import { useLocation } from "@/stores/location";
@@ -17,6 +20,7 @@ import { useDiscoverTopRated, useInfiniteDiscover } from "@/hooks/useDiscover";
 import { AcademyCard } from "@/components/academy/AcademyCard";
 import { useSavedAcademies, useToggleSavedAcademy } from "@/hooks/useSaved";
 import { ErrorState } from "@/components/common/ErrorState";
+import { EmptyState } from "@/components/common/EmptyState";
 import { BottomSheet } from "@/components/common/BottomSheet";
 import { LocationSheet, type Area } from "@/components/booking/LocationSheet";
 import { SkeletonLoader, SkeletonCard, SkeletonCompactCard } from "@/components/common/SkeletonLoader";
@@ -24,12 +28,28 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import type { Category } from "@findemy/types";
 
+// Theme has no purple token (warm persimmon/marigold/jade/rose family only) —
+// this is a one-off accent for the greeting name, not a shared design token.
+const GREET_NAME_COLOR = "#6D4C9F";
+
+const HERO_CARD_RADIUS = 26;
+
 const CATEGORIES: { key: Category | undefined; label: string; icon: string }[] = [
   { key: undefined, label: "All",   icon: "✦" },
   { key: "music",   label: "Music", icon: "♪" },
   { key: "dance",   label: "Dance", icon: "✦" },
   { key: "arts",    label: "Arts",  icon: "✎" },
   { key: "yoga",    label: "Yoga",  icon: "◐" },
+];
+
+// Same glyphs as the category pills below, reused as small coloured chips in
+// the hero card so the header pulls in the app's other category colours
+// (jade/marigold/blue) instead of reading as one solid orange block.
+const HERO_CATEGORY_GLYPHS: { key: "music" | "dance" | "arts" | "yoga"; icon: string }[] = [
+  { key: "music", icon: "♪" },
+  { key: "dance", icon: "✦" },
+  { key: "arts",  icon: "✎" },
+  { key: "yoga",  icon: "◐" },
 ];
 
 const RATING_OPTIONS = [
@@ -49,6 +69,57 @@ function getGreetWord(): string {
   if (h < 12) return "morning";
   if (h < 17) return "afternoon";
   return "evening";
+}
+
+// Width (px) of one repeat of the rainbow pattern. The gradient tiles via
+// spreadMethod="repeat" in SVG's own pixel space (gradientUnits="userSpaceOnUse"),
+// so translating the strip left by exactly one cycle and looping is seamless
+// regardless of the container's actual width — no onLayout/measuring needed.
+const RAINBOW_CYCLE = 90;
+
+// Continuously-scrolling rainbow strip for the hero card footer. Flat
+// rectangles + a repeating gradient only — no hand-drawn paths, so it can't
+// end up looking "broken" the way the earlier illustration attempts did.
+function RainbowBar() {
+  const theme = useTheme();
+  const shift = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.timing(shift, { toValue: 1, duration: 3200, easing: Easing.linear, useNativeDriver: true })
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [shift]);
+
+  const translateX = shift.interpolate({ inputRange: [0, 1], outputRange: [0, -RAINBOW_CYCLE] });
+
+  return (
+    <View style={styles.rainbowClip} pointerEvents="none">
+      <Animated.View style={{ width: "200%", height: "100%", transform: [{ translateX }] }}>
+        <Svg width="100%" height="100%">
+          <Defs>
+            <LinearGradient
+              id="rainbowGrad"
+              gradientUnits="userSpaceOnUse"
+              x1={0}
+              y1={0}
+              x2={RAINBOW_CYCLE}
+              y2={0}
+              spreadMethod="repeat"
+            >
+              <Stop offset={0} stopColor={theme.color.persimmon} />
+              <Stop offset={0.25} stopColor={theme.color.marigold} />
+              <Stop offset={0.5} stopColor={theme.color.jade} />
+              <Stop offset={0.75} stopColor={GREET_NAME_COLOR} />
+              <Stop offset={1} stopColor={theme.color.persimmon} />
+            </LinearGradient>
+          </Defs>
+          <Rect x={0} y={0} width="100%" height="100%" fill="url(#rainbowGrad)" />
+        </Svg>
+      </Animated.View>
+    </View>
+  );
 }
 
 export default function DiscoverScreen() {
@@ -87,6 +158,7 @@ export default function DiscoverScreen() {
   const { data: savedData } = useSavedAcademies();
   const toggleSave = useToggleSavedAcademy();
   const savedIds = new Set(((savedData as any)?.items ?? []).map((academy: any) => academy.id));
+  const nearbyItems = nearby.data?.pages.flatMap((page) => page.items) ?? [];
 
   const requestLocation = useCallback(async () => {
     try {
@@ -154,51 +226,79 @@ export default function DiscoverScreen() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.color.persimmon} />
         }
-        contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 130 }}
+        contentContainerStyle={{ paddingHorizontal: 18, paddingTop: 10, paddingBottom: 130 }}
         showsVerticalScrollIndicator={false}
+        stickyHeaderIndices={[3]}
       >
-        {/* head-row: greeting + hero + avatar */}
-        <View style={styles.headRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.kicker, { fontFamily: theme.font.sansBold, color: theme.color.mist }]}>
-              {"Good " + getGreetWord().toLowerCase() + ", " + firstName}
-            </Text>
-            <Text style={[styles.heroLine, { fontFamily: theme.font.serifItalic, color: theme.color.inkSoft }]}>
-              Discover your
-            </Text>
-            <View style={[styles.hlWrap, { backgroundColor: theme.color.persimmonSoft }]}>
-              <Text style={[styles.hero, { fontFamily: theme.font.serif, color: theme.color.ink }]}>Artistry.</Text>
-            </View>
-          </View>
+        {/* top-bar: the slim app-identity strip most home screens have,
+            sitting above the personal greeting rather than folded into it. */}
+        <View style={styles.topBar}>
+          <Text style={[styles.topBarBrand, { fontFamily: theme.font.serifItalic, color: theme.color.persimmon }]}>
+            findemy
+          </Text>
+        </View>
+
+        {/* greet-row: greeting on the left, profile avatar pinned top-right. */}
+        <View style={styles.greetRow}>
+          <Text style={[styles.greetName, { fontFamily: theme.font.serifItalic, color: theme.color.mist }]} numberOfLines={1}>
+            {"Good " + getGreetWord().toLowerCase() + ", "}
+            <Text style={{ fontFamily: theme.font.sansBold, color: GREET_NAME_COLOR }}>{firstName}</Text>
+          </Text>
           <Pressable
             onPress={() => router.push("/(tabs)/profile")}
             style={[styles.avatar, { backgroundColor: theme.color.persimmon, borderColor: theme.color.hairline }]}
             accessibilityLabel="Go to profile"
             accessibilityRole="button"
           >
-            <Text style={{ fontFamily: theme.font.serifItalic, fontSize: 20, color: "#fff" }}>{initial}</Text>
+            <Text style={{ fontFamily: theme.font.serifItalic, fontSize: 17, color: "#fff" }}>{initial}</Text>
           </Pressable>
         </View>
 
-        {/* search */}
-        <View style={[styles.search, { borderColor: theme.color.hairline, ...theme.shadow.md }]}>
-          <IconSearch size={20} color={theme.color.persimmon} />
-          <TextInput
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Find a mentor or studio…"
-            placeholderTextColor={theme.color.whisper}
-            style={{ flex: 1, fontFamily: theme.font.sans, fontSize: 15, color: theme.color.ink, paddingVertical: 0 }}
-          />
-          <Pressable
-            style={[styles.filt, { backgroundColor: theme.color.paperWarm }]}
-            accessibilityLabel="Filter academies"
-            accessibilityRole="button"
-            onPress={openFilters}
-          >
-            <IconSliders size={16} color={theme.color.inkSoft} />
-            {isFiltered ? <View style={[styles.filtBadge, { backgroundColor: theme.color.persimmon }]} /> : null}
-          </Pressable>
+        {/* hero: compact panel — a line of text, a colour row, a rainbow
+            footer strip. Kept short on purpose so it no longer eats half the
+            visible screen. */}
+        <View style={[styles.heroCard, { backgroundColor: theme.color.paperWarm, borderColor: theme.color.hairline }]}>
+          <View style={styles.heroTextRow}>
+            <Text style={[styles.heroLine, { fontFamily: theme.font.serif, color: theme.color.inkSoft }]}>
+              Discover your{" "}
+            </Text>
+            <Text style={[styles.hero, { fontFamily: theme.font.serif, color: theme.color.persimmon }]}>
+              Artistry.
+            </Text>
+          </View>
+
+          <View style={styles.heroGlyphRow}>
+            {HERO_CATEGORY_GLYPHS.map((g) => (
+              <View key={g.key} style={[styles.heroGlyphChip, { backgroundColor: theme.category[g.key].base }]}>
+                <Text style={{ fontSize: 12, color: theme.category[g.key].accent }}>{g.icon}</Text>
+              </View>
+            ))}
+          </View>
+
+          <RainbowBar />
+        </View>
+
+        {/* search — sticky (index 3 in stickyHeaderIndices) so it stays reachable while scrolling */}
+        <View style={[styles.stickySearchWrap, { backgroundColor: theme.color.paper }]}>
+          <View style={[styles.search, { borderColor: theme.color.hairline, ...theme.shadow.md }]}>
+            <IconSearch size={20} color={theme.color.persimmon} />
+            <TextInput
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="Find a mentor or studio…"
+              placeholderTextColor={theme.color.whisper}
+              style={{ flex: 1, fontFamily: theme.font.sans, fontSize: 15, color: theme.color.ink, paddingVertical: 0 }}
+            />
+            <Pressable
+              style={[styles.filt, { backgroundColor: theme.color.paperWarm }]}
+              accessibilityLabel="Filter academies"
+              accessibilityRole="button"
+              onPress={openFilters}
+            >
+              <IconSliders size={16} color={theme.color.inkSoft} />
+              {isFiltered ? <View style={[styles.filtBadge, { backgroundColor: theme.color.persimmon }]} /> : null}
+            </Pressable>
+          </View>
         </View>
 
         {/* loc-row */}
@@ -278,19 +378,23 @@ export default function DiscoverScreen() {
           </View>
         ) : nearby.error ? (
           <ErrorState code={(nearby.error as any)?.code} onRetry={nearby.refetch} />
+        ) : nearbyItems.length === 0 ? (
+          <EmptyState
+            message={isFiltered || searchQuery ? "No academies match your filters." : "No academies found near you yet."}
+            actionLabel={isFiltered ? "Clear filters" : undefined}
+            onAction={isFiltered ? clearFilters : undefined}
+          />
         ) : (
           <View>
-            {nearby.data?.pages.map((page) =>
-              page.items.map((item: any) => (
-                <AcademyCard
-                  key={item.id}
-                  academy={item}
-                  onPress={() => router.push(`/academy/${item.id}`)}
-                  isSaved={savedIds.has(item.id)}
-                  onToggleSave={(id) => toggleSave.mutate(id)}
-                />
-              ))
-            )}
+            {nearbyItems.map((item: any) => (
+              <AcademyCard
+                key={item.id}
+                academy={item}
+                onPress={() => router.push(`/academy/${item.id}`)}
+                isSaved={savedIds.has(item.id)}
+                onToggleSave={(id) => toggleSave.mutate(id)}
+              />
+            ))}
             {nearby.hasNextPage && (
               <Pressable
                 onPress={() => nearby.fetchNextPage()}
@@ -398,31 +502,57 @@ export default function DiscoverScreen() {
 }
 
 const styles = StyleSheet.create({
-  headRow: {
+  topBar: { marginTop: 2 },
+  topBarBrand: { fontSize: 15, letterSpacing: 0.2 },
+  greetRow: {
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     justifyContent: "space-between",
-    gap: 12,
-    marginTop: 6,
+    gap: 10,
+    marginTop: 10,
   },
-  kicker: {
-    fontSize: 11,
-    letterSpacing: 1.5,
-    textTransform: "uppercase",
-    marginBottom: 6,
+  greetName: {
+    flexShrink: 1,
+    fontSize: 17,
+    lineHeight: 24,
+    letterSpacing: 0.1,
   },
-  heroLine: { fontSize: 31, lineHeight: 32 },
-  hero: { fontSize: 31, lineHeight: 33 },
-  hlWrap: {
-    alignSelf: "flex-start",
-    borderRadius: 5,
-    paddingHorizontal: 4,
-    marginTop: 2,
+  // hero: its own flat-color section, set apart from the plain greeting row
+  // above by background + border alone — no gradients, no illustration. Kept
+  // deliberately short (small padding, single text row) so it reads as an
+  // accent strip rather than eating half the screen.
+  heroCard: {
+    borderRadius: HERO_CARD_RADIUS,
+    borderWidth: 1,
+    padding: 14,
+    marginTop: 12,
+    overflow: "hidden",
+  },
+  heroTextRow: { flexDirection: "row", flexWrap: "wrap", alignItems: "flex-end" },
+  heroLine: { fontSize: 19, lineHeight: 24 },
+  hero: { fontSize: 22, lineHeight: 24 },
+  heroGlyphRow: {
+    flexDirection: "row",
+    gap: 6,
+    marginTop: 10,
+  },
+  heroGlyphChip: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  rainbowClip: {
+    height: 3,
+    borderRadius: 1.5,
+    overflow: "hidden",
+    marginTop: 12,
   },
   avatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
@@ -436,8 +566,8 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: 16,
     paddingVertical: 13,
-    marginTop: 18,
-    marginBottom: 12,
+    marginTop: 14,
+    marginBottom: 10,
   },
   filt: {
     width: 30,
