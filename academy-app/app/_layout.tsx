@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider, PhoneStatusBar } from '@findemy/ui';
 import { Stack, useRouter, useSegments, useRootNavigationState } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { ToastProvider } from '@/components/common/Toast';
 import { useAuth } from '@/stores/auth';
 
@@ -67,8 +66,6 @@ function AuthGuard() {
 }
 
 export default function RootLayout() {
-  usePushNotifications();
-
   // Prototype-refresh typefaces. Family keys must match theme.font in
   // @findemy/ui (serif: 'LibreCaslonDisplay', sans: 'PlusJakartaSans'). Without
   // this the whole admin app silently renders in the system fallback.

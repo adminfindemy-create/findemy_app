@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTheme, Button, BlockPrintCover, Summary, SummaryRow, IconClock } from "@findemy/ui";
@@ -7,7 +7,6 @@ import { useBooking } from "@/hooks/useBookings";
 import { useAuth } from "@/stores/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { format } from "date-fns";
-import * as Notifications from "expo-notifications";
 
 export default function BookingConfirmationScreen() {
   const router = useRouter();
@@ -19,7 +18,6 @@ export default function BookingConfirmationScreen() {
 
   const booking = data?.booking as any;
   const isConfirmed = booking?.status === "confirmed";
-  const reminderScheduled = useRef(false);
 
   useEffect(() => {
     if (isConfirmed) return;
@@ -33,22 +31,6 @@ export default function BookingConfirmationScreen() {
       clearTimeout(timeout);
     };
   }, [isConfirmed, refetch]);
-
-  useEffect(() => {
-    if (!isConfirmed || reminderScheduled.current) return;
-    reminderScheduled.current = true;
-    const slotTimeRaw = booking?.slot?.slot_time ?? booking?.slot_time ?? booking?.trial_at;
-    if (!slotTimeRaw) return;
-    const slotTime = new Date(slotTimeRaw);
-    if (isNaN(slotTime.getTime())) return;
-    const triggerTime = new Date(slotTime.getTime() - 60 * 60 * 1000);
-    if (triggerTime <= new Date()) return;
-    const academyName = booking?.academy?.name ?? "your academy";
-    Notifications.scheduleNotificationAsync({
-      content: { title: "Class reminder 🎵", body: `Your trial at ${academyName} starts in 1 hour!`, data: { screen: "bookings" } },
-      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: triggerTime },
-    }).catch(() => {});
-  }, [isConfirmed, booking]);
 
   const centered = (node: React.ReactNode) => (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }}>

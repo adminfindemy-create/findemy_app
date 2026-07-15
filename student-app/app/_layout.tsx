@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { ThemeProvider, PhoneStatusBar } from "@findemy/ui";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { ToastProvider } from "@/components/common/Toast";
 import { useAuth } from "@/stores/auth";
 import { nextOnboardingStep } from "@/lib/onboarding";
@@ -65,8 +64,6 @@ function AuthGuard() {
 }
 
 export default function RootLayout() {
-  usePushNotifications();
-
   // Prototype-refresh typefaces. Family keys must match theme.font in
   // @findemy/ui (serif: 'LibreCaslonDisplay', sans: 'PlusJakartaSans'). The
   // weight-suffixed faces are registered so explicit fontFamily references can
