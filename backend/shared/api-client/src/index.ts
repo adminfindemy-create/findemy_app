@@ -157,6 +157,41 @@ export function createClient(config: ClientConfig) {
         request<{ items: Array<{ id: string; status: string; event_id: string; event_title: string; event_type: string; category: string; start_at: string; location: string; price_paise: number; organizer_name: string }> }>(
           "GET", "/me/event-registrations"
         ),
+      getPayments: () =>
+        request<{
+          items: Array<{
+            id: string;
+            enrollment_id: string;
+            batch_title: string;
+            academy_id: string;
+            academy_name: string;
+            package_type: string;
+            amount_paise: number;
+            currency: string;
+            status: string;
+            paid_at: string;
+            refund_status: string | null;
+            refund_amount_paise: number | null;
+          }>;
+        }>("GET", "/me/payments"),
+      getPaymentReceipt: (params: { id: string }) =>
+        request<{
+          receipt: {
+            payment_id: string;
+            receipt_number: string;
+            paid_at: string;
+            amount_paise: number;
+            currency: string;
+            package_type: string;
+            period_start: string;
+            period_end: string;
+            batch_title: string;
+            academy_name: string;
+            academy_address: string;
+            student_name: string | null;
+            razorpay_payment_id: string | null;
+          };
+        }>("GET", `/me/payments/${params.id}/receipt`),
       referral: {
         get: () =>
           request<{ code: string; points: number }>("GET", "/me/referral"),

@@ -84,7 +84,7 @@ Acceptance criteria
 
 ---
 
-#### M1.3 — Fees: payment history & downloadable receipts
+#### M1.3 — Fees: payment history, downloadable receipts & renewal-due nudge
 Deps: — · Effort: M · Sides: backend, student-app
 
 Tasks
@@ -92,10 +92,18 @@ Tasks
 - [ ] Backend: receipt generation/download (PDF or simple formatted view) per payment
 - [ ] Student app: payment history screen, reusing `Summary`/`SummaryRow` list patterns
 - [ ] Add `payments.history`/`payments.receipt` (or similar) to `@findemy/api-client`
+- [ ] Student app: on `(tabs)/classes.tsx`, show a dismissible "Renewal due" card for any active enrollment whose `current_period_end` (already returned by `useClasses()` — no new endpoint) is within 7 days, including already-past/grace (shown with "Grace period — renew to keep your spot" copy instead of a day count)
+- [ ] Card actions: "Pay now" → `router.push('/enrollment/:id?openRenew=1')`; "Not now" → dismiss for the current session only (no persistence, no new backend field)
+- [ ] `enrollment/[id].tsx`: read the `openRenew` param on mount and auto-open the existing `RenewSheet`, reused unchanged
+- [ ] Leave `renewal-reminder.ts` (the existing 7/3/1-day push worker) unmodified — it's an out-of-app nudge only, not wired to deep-link into this card (Razorpay checkout can't complete from inside a raw OS notification action)
 
 Acceptance criteria
 - [ ] A student with payments across 2+ enrollments sees all of them in one list, correctly dated
 - [ ] Receipt is downloadable/viewable per payment
+- [ ] A student with an enrollment period ending within 7 days (or already in grace) sees the renewal-due card on the Classes tab
+- [ ] "Pay now" opens the same renew flow already used from the class detail screen (package selection → Razorpay), producing a renewed period exactly as today's renewal already does
+- [ ] "Not now" dismisses the card without navigating away
+- [ ] A student with no periods ending soon sees no card
 
 ---
 

@@ -112,6 +112,7 @@ Requires: nothing (independent of the other features). Blocks: nothing, but is t
 | Renewal payment UI | — | **REUSE** `enrollment/[id].tsx`'s RenewSheet + `useRenewalOptions`/`useRenewEnrollment`, and `enrollment/pay.tsx` | — | — |
 | Cross-enrollment dues rollup | **BUILD** small aggregation endpoint over `EnrollmentPeriod` across all of a student's enrollments (today it's per-enrollment only) | **BUILD** "my dues" summary screen/section | — | — |
 | Payment history & receipts | **BUILD** endpoint listing `EnrollmentPayment` rows across enrollments + receipt generation | **BUILD** history screen | — | — |
+| Renewal-due nudge (in-app) | **REUSE** `current_period_end` already returned per item by `GET /me/classes` (`getMyClasses`) — no new endpoint | **BUILD** dismissible "Renewal due" card on `(tabs)/classes.tsx` (Pay now / Not now); **CHANGE** (small) `enrollment/[id].tsx` to read an `openRenew` query param and auto-open the existing `RenewSheet` unchanged | — | — |
 
 Requires: nothing. Blocks: Dashboard (needs the dues rollup).
 

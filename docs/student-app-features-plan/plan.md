@@ -91,11 +91,15 @@ Rescheduling a 1:1 session is not a distinct action: the student closes the exis
 
 ### 3.5 Fees Renewal
 
-**What it does**: A student sees fee due date, amount, and status per enrollment; can renew/pay via the existing Razorpay integration; can view payment history with downloadable receipts; gets reminders before the due date.
+**What it does**: A student sees fee due date, amount, and status per enrollment; can renew/pay via the existing Razorpay integration; can view payment history with downloadable receipts; gets reminders before the due date. When a period is close to expiring, an in-app "Renewal due" card also appears on the Classes tab (and the class detail screen) with a direct **Pay now** / **Not now** action — so a student doesn't have to go find the renewal flow through Payment History.
 
-**Scope decisions specific to this feature**: Almost all of this already exists in the backend (renewal endpoints, payment records, and a reminder worker that already fires push notifications at 7/3/1 days before due). The only real gaps are: a single view that rolls up dues across *all* of a student's enrollments (today it's per-enrollment), and a payment-history/receipts list.
+**Scope decisions specific to this feature**: Almost all of this already exists in the backend (renewal endpoints, payment records, and a reminder worker that already fires push notifications at 7/3/1 days before due). The only real gaps are: a single view that rolls up dues across *all* of a student's enrollments (today it's per-enrollment), a payment-history/receipts list, and the in-app renewal-due card.
 
-**Explicitly out of scope**: Changing the renewal pricing/discount logic, or the payment gateway itself — this feature is purely about surfacing what already exists plus the two small rollup gaps.
+The renewal-due card is **in-app only, not a native actionable push notification** — Razorpay checkout is a full in-app screen, so "Pay" can't complete from inside a raw OS notification action button. The existing background push (`renewal-reminder.ts`, 7/3/1 days before due) is reused unchanged as the out-of-app nudge; it is *not* deep-linked into the card.
+
+Not to be confused with the cross-enrollment **dues rollup endpoint** (a separate backend aggregation across *all* of a student's enrollments, feeding the future Dashboard rollup, §3.6) — the renewal-due card is a lightweight per-enrollment nudge built entirely from data the Classes tab already fetches, no new endpoint involved.
+
+**Explicitly out of scope**: Changing the renewal pricing/discount logic, or the payment gateway itself — this feature is purely about surfacing what already exists plus the two small rollup gaps and the renewal-due card.
 
 ---
 
