@@ -24,6 +24,8 @@
 
 > **Plan a phase before starting it.** Author the rest the same way P0 was done — don't run ahead of the plan.
 
+> **Related, separate initiative:** [`docs/student-app-features-plan/`](../../../docs/student-app-features-plan/) — a new batch of student-app features (Pending/Missed Classes, Class Notes, 1:1 tutor booking, Fees Renewal rollups, Dashboard, Attendance Tracker, Resources, Chat/Support). Uses its own `plan.md`/`feature-dependency.md`/`slice.md` shape rather than this folder's phase-per-slice convention, but cites this plan's file paths and precedents throughout (e.g. reuses the S3.1 classes-tab decision).
+
 ## Pre-requisite (Step 0, once)
 The folder reorg left `node_modules` stale (symlinks point at the old `apps/`+`packages/` paths). Before any build:
 ```bash
