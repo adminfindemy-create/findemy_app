@@ -281,7 +281,9 @@ export default function DiscoverScreen() {
               >
                 {locLabel}
               </Text>
-              <IconChevR size={9} color={theme.color.persimmonDeep} style={{ transform: [{ rotate: "90deg" }] }} />
+              <View style={{ transform: [{ rotate: "90deg" }] }}>
+                <IconChevR size={9} color={theme.color.persimmonDeep} />
+              </View>
             </Pressable>
           </View>
 

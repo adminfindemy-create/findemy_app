@@ -23,6 +23,7 @@ import {
   IconUser,
   IconMappin,
   IconQr,
+  IconWa,
   BlockPrintCover,
   Summary,
   SummaryRow,
@@ -38,6 +39,7 @@ import { SkeletonLoader } from "@/components/common/SkeletonLoader";
 import { EmptyState } from "@/components/common/EmptyState";
 import { useEnrollments } from "@/hooks/useEnrollments";
 import { useAcademy } from "@/hooks/useAcademy";
+import { openWhatsApp } from "@/lib/whatsapp";
 import { useRenewalOptions, useRenewEnrollment } from "@/hooks/useRenewal";
 import {
   useEnrollmentDetail,
@@ -675,6 +677,10 @@ export default function EnrollmentDetailScreen() {
     () => (enrollments.data?.items ?? []).find((item: any) => item.id === id),
     [enrollments.data, id]
   );
+  // Called unconditionally (before the loading/not-found early returns below)
+  // to satisfy the rules of hooks; enabled:!!id in useAcademy holds off the
+  // fetch until enrollment.academy_id is known.
+  const academy = useAcademy(enrollment?.academy_id ?? "");
   const detail = (detailQ.data as any)?.enrollment;
   const period = detail?.current_period;
 
@@ -745,6 +751,20 @@ export default function EnrollmentDetailScreen() {
     if (enrollment.status === "grace") return { label: "● Grace period", bg: theme.color.marigoldSoft, fg: theme.color.marigold };
     return { label: "● Inactive", bg: theme.color.bone, fg: theme.color.mist };
   })();
+
+  // The academy's own coach is this app's support contact — there's no
+  // separate central Findemy support line. Matched by name since the
+  // enrollment/classes list only carries coach_name, not a coach id.
+  const coach = ((academy.data as any)?.coaches ?? []).find((c: any) => c.name === enrollment.coach_name);
+  const coachPhone: string | undefined = coach?.phone ?? undefined;
+  const handleNeedHelp = () => {
+    if (!coachPhone) return;
+    openWhatsApp(coachPhone, `Hi, I need help with my ${enrollment.batch_title} class — billing, timings, or another issue.`);
+  };
+  const handleChatSupport = () => {
+    if (!coachPhone) return;
+    openWhatsApp(coachPhone, `Hi! I have a question about my ${enrollment.batch_title} class at ${enrollment.academy_name}.`);
+  };
 
   const handleCancelDiscontinue = async () => {
     try {
@@ -941,8 +961,22 @@ export default function EnrollmentDetailScreen() {
 
         {/* ── Support ── */}
         <SectionLabel>Support</SectionLabel>
-        <MenuRow title="Need help with this class" sub="Billing, timings & issues" onPress={() => Alert.alert("Help", "Opening help centre…")} />
-        <MenuRow title="Chat with support" sub="Typically replies in a few minutes" onPress={() => Alert.alert("Support", "Connecting you to support…")} />
+        <MenuRow
+          title="Need help with this class"
+          sub="Billing, timings & issues"
+          disabled={!coachPhone}
+          disabledReason="No contact number on file for this class"
+          right={coachPhone ? <IconWa size={18} color={theme.color.jade} /> : undefined}
+          onPress={handleNeedHelp}
+        />
+        <MenuRow
+          title="Chat with support"
+          sub="Typically replies in a few minutes"
+          disabled={!coachPhone}
+          disabledReason="No contact number on file for this class"
+          right={coachPhone ? <IconWa size={18} color={theme.color.jade} /> : undefined}
+          onPress={handleChatSupport}
+        />
         <MenuRow title="Terms & conditions" sub="Billing & cancellation policy" onPress={() => router.push("/profile/general-info" as any)} />
       </ScrollView>
 

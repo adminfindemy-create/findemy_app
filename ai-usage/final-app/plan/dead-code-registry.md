@@ -43,6 +43,12 @@
 - Repoint the **three** refs that pointed at the index → `/bookings`: `booking/slot.tsx:86` (reschedule), `booking/confirmation.tsx:51` (`screen:'trials'→'bookings'`), `usePushNotifications.ts:65` (`router.push('/trials')`).
 - **Resolved in P5/S5.1** (routing), confirmed deleted in **S5.4**.
 
+### A4b. Standalone `/enrollments` list screen (S3.1 superseded) — REMOVED
+**Why dead:** S3.1 already repurposed `enrollments.tsx`'s card UI into the new `(tabs)/classes.tsx` (active **and** past, adaptive states), and `profile.tsx`'s quick-grid/menu already pointed at `/(tabs)/classes`. The only remaining live reference was `app/program/[id]/review.tsx:165`'s post-enrollment `router.replace("/enrollments")`, now repointed to `/(tabs)/classes`. **Made dead by:** P3/S3.1 (this slice, M1.1, just finished the cleanup S3.1 left pending).
+- **Removed:** `student-app/app/enrollments.tsx` (deleted via `git rm`).
+- **Kept:** `student-app/src/hooks/useEnrollments.ts` — still live, read by `app/enrollment/[id].tsx` (the detail screen) to look up a single enrollment by id from the full list.
+- **Not addressed (flag for M5.1):** `backend/api` sends push-notification payloads with `data: { screen: 'enrollments' }` (`enrollment-lifecycle.ts`, `payments/service.ts`, `enrollments/service.ts`). Nothing in the client currently reads `data.screen` to deep-link (no push-tap router exists yet — that's M5.1's job), so this is inert today, not a broken reference. When M5.1 builds push-tap routing, map the `'enrollments'` screen key to `/(tabs)/classes`, not a resurrected `/enrollments` route.
+
 ### A4. Referral system (DEFERRED, not MVP)
 **Why dead:** referrals are out of MVP scope (gap-analysis §4); the routes are orphaned/archived.
 - `backend/api/src/modules/me/routes.ts:15` — the orphaned referral route block.

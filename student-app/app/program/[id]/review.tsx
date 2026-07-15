@@ -162,7 +162,7 @@ export default function EnrollSelectScreen() {
           `/enrollment/pay?enrollment_id=${result.enrollment_id}&enrollment_period_id=${result.enrollment_period_id}&razorpay_order_id=${result.razorpay_order_id}&razorpay_key=${result.razorpay_key}&amount_paise=${result.amount_paise}&batch_title=${encodeURIComponent(batch.title ?? "")}&package_type=${selectedPlan}&flow=enroll` as any
         );
       } else {
-        router.replace("/enrollments");
+        router.replace("/(tabs)/classes" as any);
       }
     } catch (error: any) {
       Alert.alert("Enrollment failed", error?.message ?? "Please try again.");
