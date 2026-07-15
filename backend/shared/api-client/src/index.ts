@@ -32,6 +32,9 @@ import type {
   Settings,
   ActivityItem,
   TrialDetail,
+  UpcomingSessionsResponse,
+  CoachBooking,
+  NotificationListResponse,
 } from "@findemy/types";
 
 export type ClientConfig = {
@@ -192,6 +195,21 @@ export function createClient(config: ClientConfig) {
             razorpay_payment_id: string | null;
           };
         }>("GET", `/me/payments/${params.id}/receipt`),
+      getDues: () =>
+        request<{
+          items: Array<{
+            id: string;
+            enrollment_id: string;
+            batch_title: string;
+            academy_id: string;
+            academy_name: string;
+            package_type: string;
+            amount_paise: number;
+            status: string;
+            due_date: string;
+            grace_period_end: string | null;
+          }>;
+        }>("GET", "/me/dues"),
       referral: {
         get: () =>
           request<{ code: string; points: number }>("GET", "/me/referral"),
@@ -285,6 +303,12 @@ export function createClient(config: ClientConfig) {
           accepting: boolean;
         }>("GET", `/batches/${batchId}/availability`),
     },
+    // M2.1: student "Pending Classes" feed — next concrete upcoming sessions per
+    // enrolled+active batch.
+    sessions: {
+      upcoming: () =>
+        request<UpcomingSessionsResponse>("GET", "/me/sessions/upcoming"),
+    },
     enrollments: {
       get: (id: string) =>
         request<{ enrollment: Record<string, unknown> }>("GET", `/enrollments/${id}`),
@@ -352,6 +376,29 @@ export function createClient(config: ClientConfig) {
       createEventOrder: (registration_id: string) =>
         request<{ razorpay_order_id: string; razorpay_key: string; amount_paise: number; currency: string }>(
           "POST", "/payments/event-order", { registration_id }
+        ),
+    },
+    // M4.1a: 1:1 tutor booking — request/accept/reject + payment-on-accept.
+    // Check-in/check-out/refunds are a later slice, added to this same namespace.
+    coaching: {
+      createRequest: (payload: { coach_id: string; mode: "online" | "offline"; proposed_at: string; duration_min: number }) =>
+        request<{ booking: CoachBooking }>("POST", "/coaching/requests", payload),
+      myRequests: () => request<{ items: CoachBooking[] }>("GET", "/coaching/requests/mine"),
+      get: (params: { id: string }) =>
+        request<{ booking: CoachBooking }>("GET", `/coaching/requests/${params.id}`),
+      accept: (params: { id: string; amount_paise: number }) =>
+        request<{
+          booking_id: string;
+          status: "accepted";
+          requires_payment: true;
+          razorpay_order_id: string;
+          razorpay_key: string;
+          amount_paise: number;
+          currency: string;
+        }>("POST", `/studio/coaching/requests/${params.id}/accept`, { amount_paise: params.amount_paise }),
+      reject: (params: { id: string; reason?: string }) =>
+        request<{ booking_id: string; status: "rejected" }>(
+          "POST", `/studio/coaching/requests/${params.id}/reject`, { reason: params.reason }
         ),
     },
     trials: {
@@ -426,11 +473,81 @@ export function createClient(config: ClientConfig) {
           }
         ),
     },
+    notes: {
+      // M2.2: class notes — batch/subject-scoped (see backend/api/src/modules/notes).
+      listByBatch: (batchId: string) =>
+        request<{
+          items: {
+            id: string;
+            batch_id: string;
+            title: string;
+            body?: string;
+            attachment_url?: string;
+            attachment_type?: "photo" | "video";
+            attachment_name?: string;
+            created_at: string;
+            updated_at: string;
+          }[];
+        }>("GET", `/notes?batch_id=${encodeURIComponent(batchId)}`),
+      create: (payload: {
+        batch_id: string;
+        title: string;
+        body?: string;
+        attachment_url?: string;
+        attachment_type?: "photo" | "video";
+        attachment_name?: string;
+      }) =>
+        request<{
+          note: {
+            id: string;
+            batch_id: string;
+            title: string;
+            body?: string;
+            attachment_url?: string;
+            attachment_type?: "photo" | "video";
+            attachment_name?: string;
+            created_at: string;
+            updated_at: string;
+          };
+        }>("POST", "/notes", payload),
+      update: (
+        id: string,
+        payload: Partial<{
+          title: string;
+          body: string | null;
+          attachment_url: string | null;
+          attachment_type: "photo" | "video" | null;
+          attachment_name: string | null;
+        }>
+      ) =>
+        request<{
+          note: {
+            id: string;
+            batch_id: string;
+            title: string;
+            body?: string;
+            attachment_url?: string;
+            attachment_type?: "photo" | "video";
+            attachment_name?: string;
+            created_at: string;
+            updated_at: string;
+          };
+        }>("PUT", `/notes/${id}`, payload),
+      remove: (id: string) =>
+        request<{ deleted: boolean }>("DELETE", `/notes/${id}`),
+    },
     push: {
       register: (payload: PushRegisterRequestType) =>
         request<{ ok: boolean }>("POST", "/push/register", payload),
       unregister: (token: string) =>
         request<{ ok: boolean }>("DELETE", `/push/register?token=${encodeURIComponent(token)}`),
+    },
+    notifications: {
+      list: () => request<NotificationListResponse>("GET", "/notifications"),
+      markRead: (id: string) =>
+        request<{ ok: boolean }>("POST", `/notifications/${id}/read`),
+      markAllRead: () =>
+        request<{ ok: boolean }>("POST", "/notifications/read-all"),
     },
     academy: {
       completeOnboarding: (payload: {

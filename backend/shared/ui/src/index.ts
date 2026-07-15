@@ -27,3 +27,4 @@ export * from "./components/ActionBar";
 export * from "./components/CategoryArt";
 export * from "./components/BlockPrint";
 export * from "./components/BlockPrintCover";
+export * from "./components/AttachmentPicker";

@@ -1,7 +1,8 @@
 import { ErrorState } from "@/components/common/ErrorState";
 import { SkeletonLoader } from "@/components/common/SkeletonLoader";
 import { useClasses } from "@/hooks/useClasses";
-import type { ClassItem } from "@findemy/types";
+import { useUpcomingSessions } from "@/hooks/useSessions";
+import type { ClassItem, UpcomingSession } from "@findemy/types";
 import { BlockPrintCover, Button, Icon, useTheme } from "@findemy/ui";
 import {
 	differenceInCalendarDays,
@@ -27,6 +28,11 @@ const DAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 // (backend/api/src/workers/renewal-reminder.ts), so the in-app card and the
 // background push agree on when a period first counts as "due soon."
 const RENEWAL_WINDOW_DAYS = 7;
+
+// M2.1: the "Pending Classes" preview shows only the nearest few upcoming sessions
+// (the endpoint itself returns up to 10 per batch) — this is a glanceable feed, not
+// a full schedule.
+const PENDING_SESSIONS_PREVIEW_COUNT = 5;
 
 function inr(paise?: number | null): string {
 	const n = Math.round((paise ?? 0) / 100);
@@ -234,10 +240,77 @@ function RenewalDueCard({
 	);
 }
 
+// M2.1: one row in the "Pending Classes" feed — a concrete upcoming session
+// projected from the batch's weekly timings (date/time/subject/instructor).
+function PendingSessionRow({ session }: { session: UpcomingSession }) {
+	const theme = useTheme();
+	const start = new Date(session.start_at);
+	const subText = [format(start, "EEE, d MMM · h:mm a"), session.coach_name]
+		.filter(Boolean)
+		.join(" · ");
+
+	return (
+		<View
+			style={[
+				styles.pendingRow,
+				{ backgroundColor: "#fff", borderColor: theme.color.hairline },
+			]}
+		>
+			<View
+				style={[styles.pendingDate, { backgroundColor: theme.color.paperWarm }]}
+			>
+				<Text
+					style={[
+						styles.pendingDateDay,
+						{ fontFamily: theme.font.sansBold, color: theme.color.ink },
+					]}
+				>
+					{format(start, "d")}
+				</Text>
+				<Text
+					style={[
+						styles.pendingDateMonth,
+						{ fontFamily: theme.font.sansMedium, color: theme.color.mist },
+					]}
+				>
+					{format(start, "MMM")}
+				</Text>
+			</View>
+			<View style={{ flex: 1, minWidth: 0 }}>
+				<Text
+					style={[
+						styles.pendingTitle,
+						{ fontFamily: theme.font.sansBold, color: theme.color.ink },
+					]}
+					numberOfLines={1}
+				>
+					{session.batch_title}
+				</Text>
+				<Text
+					style={[
+						styles.pendingSub,
+						{ fontFamily: theme.font.sansMedium, color: theme.color.mist },
+					]}
+					numberOfLines={1}
+				>
+					{subText}
+				</Text>
+			</View>
+		</View>
+	);
+}
+
 export default function ClassesScreen() {
 	const theme = useTheme();
 	const router = useRouter();
 	const classesQ = useClasses();
+	// M2.1: "Pending Classes" — best-effort, additive feed; never blocks the
+	// main Classes loading/error states below.
+	const sessionsQ = useUpcomingSessions();
+	const pendingSessions = (sessionsQ.data?.items ?? []).slice(
+		0,
+		PENDING_SESSIONS_PREVIEW_COUNT,
+	);
 	// Session-local only — resets on next screen mount, no backend field.
 	// Matches the "Not now" acceptance criterion: dismiss, don't persist.
 	const [dismissedRenewals, setDismissedRenewals] = useState<Set<string>>(
@@ -390,6 +463,17 @@ export default function ClassesScreen() {
 						</View>
 					) : null}
 
+					{pendingSessions.length > 0 ? (
+						<>
+							<SectionLabel>Pending Classes</SectionLabel>
+							<View style={{ gap: 10, marginBottom: 6 }}>
+								{pendingSessions.map((session) => (
+									<PendingSessionRow key={session.id} session={session} />
+								))}
+							</View>
+						</>
+					) : null}
+
 					{active.length > 0 ? (
 						<>
 							<SectionLabel>Enrolled</SectionLabel>
@@ -510,6 +594,29 @@ const styles = StyleSheet.create({
 	},
 	renewalTitle: { fontSize: 14, letterSpacing: -0.1 },
 	renewalSub: { fontSize: 12, marginTop: 2 },
+	pendingRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 13,
+		borderWidth: 1,
+		borderRadius: 16,
+		padding: 12,
+	},
+	pendingDate: {
+		width: 48,
+		height: 48,
+		borderRadius: 12,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	pendingDateDay: { fontSize: 17, lineHeight: 19 },
+	pendingDateMonth: {
+		fontSize: 10.5,
+		letterSpacing: 0.6,
+		textTransform: "uppercase",
+	},
+	pendingTitle: { fontSize: 14.5, letterSpacing: -0.1 },
+	pendingSub: { fontSize: 12.5, marginTop: 2 },
 	card: {
 		flexDirection: "row",
 		alignItems: "center",

@@ -518,3 +518,89 @@ export type TrialDetail = Trial & {
   slot_time?: string;
   trial_fee_paise?: number;
 };
+
+// M2.1: a concrete projected class occurrence on the student "Pending Classes" feed.
+// `id` is deterministic — `${batch_id}:${session_date}` — so it's stable across calls
+// (no DB row backs it; it's a pure projection from the batch's weekly timings).
+export type UpcomingSession = {
+  id: string;
+  batch_id: string;
+  batch_title: string;
+  category: Category;
+  coach_name?: string;
+  academy_name: string;
+  mode: Mode;
+  session_date: string; // 'yyyy-MM-dd' (IST)
+  start_at: string; // ISO instant
+  end_at: string; // ISO instant
+};
+
+export type UpcomingSessionsResponse = { items: UpcomingSession[] };
+
+// M4.1a: 1:1 tutor booking request. `amount_paise`/`payment` are null until an
+// academy accepts (they quote the price at accept time — coaches have no
+// standing rate today). Check-in/check-out fields are added by M4.1b.
+export type CoachBooking = {
+  id: string;
+  coach_id: string;
+  coach_name?: string;
+  academy_name?: string;
+  mode: 'online' | 'offline';
+  proposed_at: string;
+  duration_min: number;
+  status: 'requested' | 'accepted' | 'rejected';
+  amount_paise: number | null;
+  accepted_at: string | null;
+  rejected_at: string | null;
+  rejected_reason: string | null;
+  created_at: string;
+  payment: { status: string; razorpay_order_id: string; amount_paise: number } | null;
+};
+
+// M5.1: notification inbox. Persisted from sendPushNotifications() at send time —
+// no backfill, so the inbox starts empty and only accumulates from launch onward.
+export type Notification = {
+  id: string;
+  title: string;
+  body: string;
+  data: Record<string, unknown>;
+  read: boolean;
+  created_at: string;
+};
+
+export type NotificationListResponse = {
+  items: Notification[];
+  unread_count: number;
+};
+
+// M2.2: class notes — batch/subject-scoped (see backend/api/prisma/schema.prisma
+// `model Note`), independent of the dated session-occurrence work another slice
+// owns. `attachment_type` mirrors lib/media-storage.ts's `MediaType`.
+export type NoteAttachmentType = 'photo' | 'video';
+
+export type Note = {
+  id: string;
+  batch_id: string;
+  title: string;
+  body?: string;
+  attachment_url?: string;
+  attachment_type?: NoteAttachmentType;
+  attachment_name?: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type NotesListResponse = {
+  items: Note[];
+};
+
+export type CreateNoteRequestType = {
+  batch_id: string;
+  title: string;
+  body?: string;
+  attachment_url?: string;
+  attachment_type?: NoteAttachmentType;
+  attachment_name?: string;
+};
+
+export type UpdateNoteRequestType = Partial<Omit<CreateNoteRequestType, 'batch_id'>>;
