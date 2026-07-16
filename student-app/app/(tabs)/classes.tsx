@@ -387,6 +387,7 @@ export default function ClassesScreen() {
 						My Classes.
 					</Text>
 				</View>
+				<Pressable onPress={() => router.push("/missed-classes" as any)} accessibilityRole="button" accessibilityLabel="View missed classes" style={{ marginTop: 10 }}><Text style={{ fontFamily: theme.font.sansBold, fontSize: 12.5, color: theme.color.mist }}>Missed classes →</Text></Pressable>
 			</View>
 
 			{isLoading ? (

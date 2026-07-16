@@ -12,6 +12,7 @@ import {
 	IconHelp,
 	IconShield,
 	IconUser,
+	IconUsers,
 	useTheme,
 } from "@findemy/ui";
 import { useRouter } from "expo-router";
@@ -111,6 +112,11 @@ export default function ProfileScreen() {
 			label: "Payment history",
 			icon: <IconShield size={20} color={theme.color.persimmon} />,
 			onPress: () => router.push("/payments" as any),
+		},
+		{
+			label: "1:1 Sessions",
+			icon: <IconUsers size={20} color={theme.color.persimmon} />,
+			onPress: () => router.push("/coaching/history" as any),
 		},
 		{
 			label: "Wishlist",

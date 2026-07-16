@@ -537,6 +537,24 @@ export type UpcomingSession = {
 
 export type UpcomingSessionsResponse = { items: UpcomingSession[] };
 
+// M3.1: a session the student was enrolled for but never checked into — the explicit
+// absence-write path (`BatchAttendance.present: false`). The academy may attach a reason
+// and/or a recording link (opens externally in the student app; no in-app player, no
+// reschedule action anywhere on this data — by design).
+export type MissedSession = {
+  id: string;
+  batch_id: string;
+  batch_title: string;
+  academy_id: string;
+  academy_name: string;
+  coach_name?: string;
+  session_date: string; // 'yyyy-MM-dd' (IST)
+  reason?: string | null;
+  recording_url?: string | null;
+};
+
+export type MissedSessionsResponse = { items: MissedSession[] };
+
 // M4.1a: 1:1 tutor booking request. `amount_paise`/`payment` are null until an
 // academy accepts (they quote the price at accept time — coaches have no
 // standing rate today). Check-in/check-out fields are added by M4.1b.
@@ -554,7 +572,19 @@ export type CoachBooking = {
   rejected_at: string | null;
   rejected_reason: string | null;
   created_at: string;
-  payment: { status: string; razorpay_order_id: string; amount_paise: number } | null;
+  // M4.1b: check-in/check-out + refund settlement.
+  checked_in_at: string | null;
+  checked_out_at: string | null;
+  end_reason: 'completed' | 'student_left' | 'coach_left' | 'no_show' | 'academy_no_fulfill' | null;
+  payment: {
+    status: string;
+    razorpay_order_id: string;
+    razorpay_key: string;
+    amount_paise: number;
+    refund_status?: string | null;
+    refund_amount_paise?: number | null;
+    refunded_at?: string | null;
+  } | null;
 };
 
 // M5.1: notification inbox. Persisted from sendPushNotifications() at send time —
@@ -571,6 +601,31 @@ export type Notification = {
 export type NotificationListResponse = {
   items: Notification[];
   unread_count: number;
+};
+
+// M5.2: teacher-uploaded study material — batch-scoped (see
+// backend/api/prisma/schema.prisma `model Resource`), distinct from
+// ProgramMedia (academy marketing media, not teacher study material).
+export type ResourceFileType = 'photo' | 'video' | 'document';
+
+export type Resource = {
+  id: string;
+  batch_id: string;
+  title: string;
+  url: string;
+  file_type: ResourceFileType;
+  uploaded_by_account_id: string;
+  created_at: string;
+};
+
+export type ResourcesListResponse = {
+  items: Resource[];
+};
+
+export type CreateResourceRequestType = {
+  title: string;
+  url: string;
+  file_type: ResourceFileType;
 };
 
 // M2.2: class notes — batch/subject-scoped (see backend/api/prisma/schema.prisma

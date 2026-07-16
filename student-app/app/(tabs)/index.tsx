@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import { useRouter } from "expo-router";
-import { useTheme, Button, IconSearch, IconSliders, IconMappin, IconChevR } from "@findemy/ui";
+import { useTheme, Button, IconSearch, IconSliders, IconMappin, IconChevR, IconCal, IconBell } from "@findemy/ui";
 import { useLocation } from "@/stores/location";
 import { useAuth } from "@/stores/auth";
 import { useDiscoverTopRated, useInfiniteDiscover } from "@/hooks/useDiscover";
@@ -26,6 +26,9 @@ import { SkeletonLoader, SkeletonCard, SkeletonCompactCard } from "@/components/
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import type { Category } from "@findemy/types";
+import { useMeStats } from "@/hooks/useMeStats";
+import { formatRupees } from "@/lib/format";
+import { format } from "date-fns";
 
 // Theme has no purple token (warm persimmon/marigold/jade/rose family only) —
 // this is a one-off accent for the greeting name, not a shared design token.
@@ -123,6 +126,164 @@ function RainbowBar() {
     </View>
   );
 }
+
+// M6.2: dashboard rollup — next class / pending fees / unread notices, sourced
+// from GET /me/stats (extended in this slice). Purely additive to the
+// discovery-first home tab: best-effort, so a loading/errored stats fetch
+// renders nothing rather than disturbing the hero/search/category sections
+// above and below it (same "never blocks" posture as the Classes tab's
+// pending-sessions feed).
+function DashboardTile({
+  icon,
+  iconBg,
+  iconColor,
+  label,
+  value,
+  badge,
+  onPress,
+}: {
+  icon: React.ReactNode;
+  iconBg: string;
+  iconColor: string;
+  label: string;
+  value: string;
+  badge?: number;
+  onPress: () => void;
+}) {
+  const theme = useTheme();
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        dashStyles.tile,
+        { backgroundColor: theme.color.paperWarm, borderColor: theme.color.hairline },
+        pressed && { transform: [{ scale: 0.98 }] },
+      ]}
+      accessibilityRole="button"
+      accessibilityLabel={`${label}: ${value}`}
+    >
+      <View style={[dashStyles.tileIconWrap, { backgroundColor: iconBg }]}>
+        {icon}
+        {badge ? (
+          <View style={[dashStyles.tileBadge, { backgroundColor: theme.color.persimmon, borderColor: theme.color.paperWarm }]}>
+            <Text style={{ fontSize: 9, fontFamily: theme.font.sansBold, color: "#fff" }}>
+              {badge > 9 ? "9+" : badge}
+            </Text>
+          </View>
+        ) : null}
+      </View>
+      <Text
+        style={[dashStyles.tileLabel, { fontFamily: theme.font.sansBold, color: theme.color.whisper }]}
+        numberOfLines={1}
+      >
+        {label}
+      </Text>
+      <Text
+        style={[dashStyles.tileValue, { fontFamily: theme.font.sansSemibold, color: theme.color.ink }]}
+        numberOfLines={2}
+      >
+        {value}
+      </Text>
+    </Pressable>
+  );
+}
+
+function DashboardSummary() {
+  const theme = useTheme();
+  const router = useRouter();
+  const { data } = useMeStats();
+
+  // Best-effort: while loading or on error, render nothing rather than a
+  // skeleton — this row is a bonus at-a-glance summary, not core discovery.
+  if (!data) return null;
+
+  const nextClassValue = data.next_class
+    ? `${data.next_class.batch_title} · ${format(new Date(data.next_class.start_at), "EEE, d MMM · h:mm a")}`
+    : "No classes scheduled";
+
+  const feesValue =
+    data.pending_fees_count > 0
+      ? `${data.pending_fees_count} due · ${formatRupees(data.pending_fees_amount_paise)}`
+      : "All caught up";
+
+  const noticesValue =
+    data.unread_notice_count > 0
+      ? `${data.unread_notice_count} unread`
+      : "No new notices";
+
+  return (
+    <View style={dashStyles.row}>
+      <DashboardTile
+        icon={<IconCal size={16} color={theme.color.jade} />}
+        iconBg={theme.color.jadeSoft}
+        iconColor={theme.color.jade}
+        label="NEXT CLASS"
+        value={nextClassValue}
+        onPress={() => router.push("/(tabs)/classes")}
+      />
+      <DashboardTile
+        icon={<Text style={{ fontSize: 14, color: data.pending_fees_count > 0 ? theme.color.rose : theme.color.jade }}>₹</Text>}
+        iconBg={data.pending_fees_count > 0 ? theme.color.roseSoft : theme.color.jadeSoft}
+        iconColor={data.pending_fees_count > 0 ? theme.color.rose : theme.color.jade}
+        label="PENDING FEES"
+        value={feesValue}
+        onPress={() => router.push("/(tabs)/classes")}
+      />
+      <DashboardTile
+        icon={<IconBell size={16} color={theme.color.marigold} />}
+        iconBg={theme.color.marigoldSoft}
+        iconColor={theme.color.marigold}
+        label="NOTICES"
+        value={noticesValue}
+        badge={data.unread_notice_count}
+        onPress={() => router.push("/notifications")}
+      />
+    </View>
+  );
+}
+
+const dashStyles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 14,
+  },
+  tile: {
+    flex: 1,
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 12,
+  },
+  tileIconWrap: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 8,
+  },
+  tileBadge: {
+    position: "absolute",
+    top: -4,
+    right: -6,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 3,
+  },
+  tileLabel: {
+    fontSize: 9,
+    letterSpacing: 1,
+    marginBottom: 3,
+  },
+  tileValue: {
+    fontSize: 12.5,
+    lineHeight: 16,
+  },
+});
 
 export default function DiscoverScreen() {
   const router = useRouter();
@@ -306,6 +467,12 @@ export default function DiscoverScreen() {
 
           <RainbowBar />
         </View>
+
+        {/* M6.2: dashboard rollup — next class / pending fees / unread
+            notices, purely additive below the hero card. Never renders
+            anything while loading/erroring, so it can't disturb the
+            discovery flow beneath it. */}
+        <DashboardSummary />
 
         {/* search — sticky (index 1 in stickyHeaderIndices) so it stays
             reachable while scrolling. This is now a static-looking trigger,

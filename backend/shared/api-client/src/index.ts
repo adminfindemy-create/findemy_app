@@ -35,6 +35,9 @@ import type {
   UpcomingSessionsResponse,
   CoachBooking,
   NotificationListResponse,
+  Resource,
+  ResourcesListResponse,
+  CreateResourceRequestType,
 } from "@findemy/types";
 
 export type ClientConfig = {
@@ -111,7 +114,16 @@ export function createClient(config: ClientConfig) {
     },
     me: {
       get: () => request<{ user: Record<string, unknown>; attendance_otp: string }>("GET", "/me"),
-      getStats: () => request<{ trials_count: number; enrolled_count: number; reviews_count: number }>("GET", "/me/stats"),
+      getStats: () =>
+        request<{
+          trials_count: number;
+          enrolled_count: number;
+          reviews_count: number;
+          next_class: { batch_title: string; start_at: string; mode: Mode } | null;
+          pending_fees_count: number;
+          pending_fees_amount_paise: number;
+          unread_notice_count: number;
+        }>("GET", "/me/stats"),
       // S3.1: Classes tab — enrolled batches only (active + past), no trials.
       getClasses: () => request<{ active: ClassItem[]; past: ClassItem[] }>("GET", "/me/classes"),
       updateOnboarding: (payload: OnboardingRequestType) =>
@@ -218,6 +230,22 @@ export function createClient(config: ClientConfig) {
         history: () =>
           request<{ points: number; history: Record<string, unknown>[] }>("GET", "/me/referral/history"),
       },
+      // M3.1: missed classes — sessions with an explicit `present: false` write, with
+      // whatever reason/recording link the academy attached.
+      getMissedSessions: () =>
+        request<{
+          items: Array<{
+            id: string;
+            batch_id: string;
+            batch_title: string;
+            academy_id: string;
+            academy_name: string;
+            coach_name?: string;
+            session_date: string;
+            reason?: string | null;
+            recording_url?: string | null;
+          }>;
+        }>("GET", "/me/missed-sessions"),
     },
     academies: {
       list: (query?: Record<string, unknown>) => {
@@ -400,6 +428,15 @@ export function createClient(config: ClientConfig) {
         request<{ booking_id: string; status: "rejected" }>(
           "POST", `/studio/coaching/requests/${params.id}/reject`, { reason: params.reason }
         ),
+      // M4.1b: check-in/check-out + refund settlement.
+      checkIn: (params: { id: string; otp_code: string }) =>
+        request<{ booking: CoachBooking }>(
+          "POST", `/studio/coaching/requests/${params.id}/checkin`, { otp_code: params.otp_code }
+        ),
+      checkOut: (params: { id: string; reason: "completed" | "student_left" | "coach_left" | "no_show" | "academy_no_fulfill" }) =>
+        request<{ booking: CoachBooking }>(
+          "POST", `/studio/coaching/requests/${params.id}/checkout`, { reason: params.reason }
+        ),
     },
     trials: {
       my: (query?: { status?: "upcoming" | "past" }) => {
@@ -564,6 +601,26 @@ export function createClient(config: ClientConfig) {
           academy: Record<string, unknown>;
         }>("POST", "/academy/onboarding", payload),
     },
+    // M5.2: teacher-uploaded study material — batch-scoped (see
+    // backend/api/src/modules/resources). The academy manages its own
+    // uploads via `listForBatchAcademy`/`create`/`remove`; the student reads
+    // them read-only via `listForBatch`.
+    //
+    // NOTE: like `notes.upload` (see student-app/src/hooks/useNotes.ts's
+    // comment), the actual multipart upload isn't exposed here — `request()`
+    // always JSON.stringifies its body, so it can't carry a FormData payload.
+    // Callers do a bare `fetch` to `/resources/upload` from their own hook
+    // (student-app/src/hooks/useResources.ts, academy-app's uploadMultipart).
+    resources: {
+      listForBatch: (batchId: string) =>
+        request<ResourcesListResponse>("GET", `/resources/${encodeURIComponent(batchId)}`),
+      listForBatchAcademy: (batchId: string) =>
+        request<ResourcesListResponse>("GET", `/studio/batches/${encodeURIComponent(batchId)}/resources`),
+      create: (batchId: string, payload: CreateResourceRequestType) =>
+        request<{ resource: Resource }>("POST", `/studio/batches/${encodeURIComponent(batchId)}/resources`, payload),
+      remove: (id: string) =>
+        request<{ deleted: boolean }>("DELETE", `/studio/resources/${id}`),
+    },
     studio: {
       dashboard: () =>
         request<DashboardData>("GET", "/studio/dashboard"),
@@ -594,6 +651,9 @@ export function createClient(config: ClientConfig) {
       sessions: {
         cancel: (body: { batch_id: string; session_date: string }) =>
           request<{ cancelled: boolean; affected_count: number; already_cancelled?: boolean }>("POST", "/studio/sessions/cancel", body),
+        // M3.1: mark a session's not-checked-in enrolees absent (+ optional reason/recording link).
+        markAbsent: (batchId: string, date: string, body: { reason?: string; recording_url?: string }) =>
+          request<{ marked_absent: number }>("POST", `/studio/batches/${batchId}/sessions/${date}/absent`, body),
       },
       slots: {
         publish: (body: Record<string, unknown>) =>

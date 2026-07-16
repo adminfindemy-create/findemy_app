@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { View, Text, ScrollView, FlatList, Pressable, StyleSheet, Share, RefreshControl } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { useTheme, BlockPrintCover, IconChevL, IconMappin } from "@findemy/ui";
+import { useTheme, BlockPrintCover, IconChevL, IconMappin, IconArrowR } from "@findemy/ui";
 import { Image } from "expo-image";
 import { useAcademy, useAcademyReviews, useAcademyWorkshops } from "@/hooks/useAcademy";
 import type { Workshop } from "@findemy/types";
@@ -318,6 +318,20 @@ export default function AcademyDetailScreen() {
                       </Text>
                     ) : null}
                   </View>
+                  {/* M4.2: entry point into the 1:1 booking request flow. */}
+                  <Pressable
+                    onPress={() =>
+                      router.push(
+                        `/coaching/request?coachId=${coach.id}&coachName=${encodeURIComponent(coach.name ?? "")}&academyName=${encodeURIComponent(academy?.name ?? "")}${coach.phone ? `&coachPhone=${encodeURIComponent(coach.phone)}` : ""}` as any,
+                      )
+                    }
+                    style={[styles.book1on1, { borderColor: theme.color.hairline }]}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Book a 1:1 session with ${coach.name}`}
+                  >
+                    <Text style={{ fontFamily: theme.font.sansBold, fontSize: 11.5, color: theme.color.persimmon }}>Book 1:1</Text>
+                    <IconArrowR size={12} color={theme.color.persimmon} />
+                  </Pressable>
                 </View>
               ))}
             </View>
@@ -381,4 +395,5 @@ const styles = StyleSheet.create({
   reviewPic: { width: 32, height: 32, borderRadius: 16, alignItems: "center", justifyContent: "center" },
   coach: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 11, borderBottomWidth: 1 },
   coachPic: { width: 42, height: 42, borderRadius: 21, alignItems: "center", justifyContent: "center" },
+  book1on1: { flexDirection: "row", alignItems: "center", gap: 4, borderWidth: 1, borderRadius: 999, paddingVertical: 7, paddingHorizontal: 11 },
 });

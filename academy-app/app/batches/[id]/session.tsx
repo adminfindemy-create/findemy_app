@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useTheme, sansFor, IconChevL, IconCheck } from '@findemy/ui';
+import { useMutation } from '@tanstack/react-query';
+import { useTheme, sansFor, IconChevL, IconCheck, Input, Button } from '@findemy/ui';
 import { SessionRoster } from '@/components/schedule/SessionRoster';
 import { useSessionAttendance } from '@/hooks/useStudioQueries';
+import { api } from '@/lib/api';
 
 // Read-only record of a PAST class session (reached from the Schedule tab). No QR /
 // live-class launcher — a finished class can't take attendance; it shows the record.
@@ -27,7 +29,24 @@ export default function SessionRecordScreen() {
   const online = mode === 'online';
   const cancelled = status === 'cancelled';
 
-  const { data, isLoading } = useSessionAttendance({ batchId: id, date, enabled: !cancelled });
+  const { data, isLoading, refetch } = useSessionAttendance({ batchId: id, date, enabled: !cancelled });
+
+  // M3.1: academy attaches a reason and/or a recording link to this session's absentees
+  // (anyone still not-checked-in). Idempotent server-side — resubmitting just updates the note.
+  const [reason, setReason] = useState('');
+  const [recordingUrl, setRecordingUrl] = useState('');
+  const [saved, setSaved] = useState(false);
+  const markAbsent = useMutation({
+    mutationFn: () =>
+      api.studio.sessions.markAbsent(id!, date!, {
+        reason: reason.trim() || undefined,
+        recording_url: recordingUrl.trim() || undefined,
+      }),
+    onSuccess: () => {
+      setSaved(true);
+      refetch();
+    },
+  });
 
   const dateLabel = (() => {
     if (!date) return '';
@@ -135,6 +154,38 @@ export default function SessionRecordScreen() {
                   </Text>
                 </View>
               )}
+
+              {/* M3.1: note an absence — reason and/or a recording link, shown to affected
+                  students on their Missed Classes screen. Applies to whoever's still not
+                  checked in for this session; re-saving just updates the note. */}
+              {absent > 0 && date ? (
+                <View style={{ marginTop: 18, gap: 10 }}>
+                  <Text style={styles.secLabel}>Absence note</Text>
+                  <Input
+                    label="Reason (optional)"
+                    placeholder="e.g. Power outage, coach unavailable…"
+                    value={reason}
+                    onChangeText={(text) => { setReason(text); setSaved(false); }}
+                    multiline
+                    numberOfLines={3}
+                  />
+                  <Input
+                    label="Recording link (optional)"
+                    placeholder="https://…"
+                    value={recordingUrl}
+                    onChangeText={(text) => { setRecordingUrl(text); setSaved(false); }}
+                    keyboardType="default"
+                    error={markAbsent.isError ? (markAbsent.error as any)?.message ?? 'Could not save' : undefined}
+                  />
+                  <Button
+                    onPress={() => markAbsent.mutate()}
+                    loading={markAbsent.isPending}
+                    disabled={!reason.trim() && !recordingUrl.trim()}
+                  >
+                    {saved ? 'Saved' : 'Save absence note'}
+                  </Button>
+                </View>
+              ) : null}
             </>
           )}
         </View>

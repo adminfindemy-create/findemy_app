@@ -373,6 +373,14 @@ export default function BatchHubScreen() {
                 </Text>
               </Pressable>
 
+              {/* M5.2: teacher-uploaded study material for this batch. */}
+              <Pressable style={styles.linkRow} onPress={() => router.push(`/batches/${id}/resources` as never)}>
+                <Text style={{ fontFamily: sansFor(600), fontSize: 13, color: theme.color.persimmon }}>
+                  Manage study material & resources
+                </Text>
+                <IconChevR size={16} color={theme.color.persimmon} />
+              </Pressable>
+
               <Pressable style={styles.linkRow} onPress={() => router.push(`/batches/${id}/edit` as never)}>
                 <Text style={{ fontFamily: sansFor(600), fontSize: 13, color: theme.color.persimmon }}>
                   Edit pricing, fees & delete

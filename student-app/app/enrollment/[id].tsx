@@ -1321,6 +1321,16 @@ export default function EnrollmentDetailScreen() {
 					) : null}
 				</Summary>
 
+				{/* ── Study material (M5.2) ── */}
+				<SectionLabel>Study material</SectionLabel>
+				<MenuRow
+					title="Resources"
+					sub="Notes & files shared by your teacher"
+					onPress={() =>
+						router.push(`/resources/${enrollment.batch_id}` as any)
+					}
+				/>
+
 				{/* ── Manage class ── */}
 				<SectionLabel>Manage class</SectionLabel>
 				<MenuRow
