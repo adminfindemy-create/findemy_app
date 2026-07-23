@@ -159,7 +159,7 @@ export function BatchDetailSheet({ visible, onClose, batch, coachName, onEnrolle
             <Text style={[styles.sectionLabel, { color: theme.color.mist }]}>FEES</Text>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
               <View>
-                <Text style={{ fontFamily: theme.font.serif, fontSize: 22, color: theme.color.persimmon, fontStyle: "italic" }}>
+                <Text style={{ fontFamily: theme.font.serifItalic, fontSize: 22, color: theme.color.persimmon }}>
                   {trialFee}
                 </Text>
                 <Text style={{ fontFamily: tokens.font.sans, fontSize: 11, color: theme.color.mist, marginTop: 3, letterSpacing: 0.4 }}>

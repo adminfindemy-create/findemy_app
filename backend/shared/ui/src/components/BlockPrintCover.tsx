@@ -125,8 +125,7 @@ export function BlockPrintCover({
         <View pointerEvents="none" style={styles.letterWrap}>
           <Text
             style={{
-              fontFamily: theme.font.serif,
-              fontStyle: 'italic',
+              fontFamily: theme.font.serifItalic,
               fontSize: Math.round(height * 0.5),
               lineHeight: Math.round(height * 0.55),
               color: accent,

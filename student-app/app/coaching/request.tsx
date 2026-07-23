@@ -125,5 +125,5 @@ export default function CoachingRequestScreen() {
 const styles = StyleSheet.create({
 	coachRow: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 14, marginBottom: 24 },
 	coachPic: { width: 46, height: 46, borderRadius: 23, alignItems: "center", justifyContent: "center" },
-	sectionLabel: { fontSize: 11, letterSpacing: 1.1, fontWeight: "700", marginBottom: 10 },
+	sectionLabel: { fontSize: 11, letterSpacing: 1.1, marginBottom: 10 },
 });

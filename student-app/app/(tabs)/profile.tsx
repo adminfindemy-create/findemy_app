@@ -440,7 +440,6 @@ const styles = StyleSheet.create({
 	blockLabel: {
 		fontSize: 11,
 		letterSpacing: 1.1,
-		fontWeight: "700",
 		marginTop: 8,
 		marginBottom: 10,
 	},

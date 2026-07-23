@@ -315,7 +315,6 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 11,
     letterSpacing: 1.1,
-    fontWeight: "700",
   },
   policy: { borderRadius: 16, padding: 14, marginTop: 18 },
 });

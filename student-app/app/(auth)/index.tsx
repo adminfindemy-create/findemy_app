@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import * as AppleAuthentication from "expo-apple-authentication";
 import * as Crypto from "expo-crypto";
-import { useTheme, BlockPrintCover, Button } from "@findemy/ui";
+import { useTheme, BlockPrintCover, Button, IconPhone } from "@findemy/ui";
 import { Em } from "@/components/auth/AuthScaffold";
 import { api } from "@/lib/api";
 import { useAuth } from "@/stores/auth";
@@ -213,8 +213,7 @@ export default function WelcomeScreen() {
                 <View style={{ position: "absolute", bottom: 11, left: 13 }}>
                   <Text
                     style={{
-                      fontFamily: theme.font.sans,
-                      fontWeight: "800",
+                      fontFamily: theme.font.sansBold,
                       fontSize: 16,
                       color: "#fff",
                       textShadowColor: "rgba(0,0,0,0.5)",
@@ -250,7 +249,7 @@ export default function WelcomeScreen() {
               variant="ghost"
               disabled={appleLoading}
               onPress={handleApple}
-              icon={<Text style={{ fontSize: 16, color: theme.color.ink }}></Text>}
+              icon={<Text style={{ fontSize: 18, color: theme.color.ink, marginTop: -2 }}></Text>}
             >
               {appleLoading ? "Signing in…" : "Continue with Apple"}
             </Button>
@@ -260,7 +259,7 @@ export default function WelcomeScreen() {
             block
             variant="primary"
             onPress={() => router.push("/(auth)/login")}
-            icon={<Text style={{ fontSize: 14, color: "#fff" }}>☎</Text>}
+            icon={<IconPhone size={14} color="#fff" />}
           >
             Continue with phone
           </Button>

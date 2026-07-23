@@ -53,7 +53,7 @@ export function OfferingsSheet({ visible, onClose, academyId, academyName, progr
             }}
           >
             {"What's at "}
-            <Text style={{ fontStyle: "italic", color: theme.color.persimmon }}>{shortName}</Text>
+            <Text style={{ fontFamily: theme.font.serifItalic, color: theme.color.persimmon }}>{shortName}</Text>
           </Text>
           <Pressable onPress={onClose} hitSlop={10}>
             <Text style={{ fontSize: 18, color: theme.color.mist }}>✕</Text>

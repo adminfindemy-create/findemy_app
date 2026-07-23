@@ -211,10 +211,9 @@ export function TrialBookingSheet({
           </Text>
           <Text
             style={{
-              fontFamily: tokens.font.sans,
+              fontFamily: tokens.font.sansMedium,
               fontSize: 12,
               color: theme.color.persimmon,
-              fontStyle: "italic",
             }}
           >
             Trial · {trialFee}

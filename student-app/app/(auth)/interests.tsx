@@ -109,9 +109,8 @@ export default function InterestsScreen() {
             </Text>
             <Text
               style={{
-                fontFamily: theme.font.serif,
+                fontFamily: theme.font.serifItalic,
                 fontSize: 40,
-                fontStyle: "italic",
                 color: theme.color.persimmon,
                 letterSpacing: 6,
                 marginBottom: 28,
