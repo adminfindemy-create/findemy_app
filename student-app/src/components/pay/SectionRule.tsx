@@ -1,6 +1,5 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { useTheme } from "@findemy/ui";
+import { useTheme } from '@findemy/ui';
+import { StyleSheet, Text, View } from 'react-native';
 
 // Centered section label with a hairline rule on each side ("— PAYMENT SUMMARY —").
 export function SectionRule({ label }: { label: string }) {
@@ -15,7 +14,7 @@ export function SectionRule({ label }: { label: string }) {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 24, marginBottom: 12 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 24, marginBottom: 12 },
   rule: { flex: 1, height: 1 },
-  label: { fontSize: 11, letterSpacing: 1.6, textTransform: "uppercase", fontWeight: "700" },
+  label: { fontSize: 11, letterSpacing: 1.6, textTransform: 'uppercase', fontWeight: '700' },
 });

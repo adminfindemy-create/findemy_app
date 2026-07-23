@@ -1,4 +1,4 @@
-import { ScrollView, Pressable, Text, StyleSheet } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 export function Tabs({
@@ -14,7 +14,11 @@ export function Tabs({
 }) {
   const theme = useTheme();
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.row}
+    >
       {items.map((item) => {
         const active = item.key === value;
         return (
@@ -38,7 +42,14 @@ export function Tabs({
           >
             <Text
               style={{
-                color: variant === 'pill' ? (active ? '#fff' : theme.color.inkSoft) : active ? theme.color.persimmon : theme.color.inkSoft,
+                color:
+                  variant === 'pill'
+                    ? active
+                      ? '#fff'
+                      : theme.color.inkSoft
+                    : active
+                      ? theme.color.persimmon
+                      : theme.color.inkSoft,
                 fontFamily: theme.font.sans,
                 fontSize: 13,
                 fontWeight: '600',

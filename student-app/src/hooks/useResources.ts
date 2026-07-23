@@ -1,5 +1,5 @@
-import { api } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
+import { api } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
 
 // M5.2: study material / resources — batch-scoped, read-only for students.
 // Mirrors useNotes.ts's `useNotesForBatch` pattern (see that file for why the
@@ -8,9 +8,9 @@ import { useQuery } from "@tanstack/react-query";
 // side for this slice since students have no create/upload path here).
 
 export function useResourcesForBatch(batchId: string) {
-	return useQuery({
-		queryKey: ["resources", batchId],
-		queryFn: () => api.resources.listForBatch(batchId),
-		enabled: !!batchId,
-	});
+  return useQuery({
+    queryKey: ['resources', batchId],
+    queryFn: () => api.resources.listForBatch(batchId),
+    enabled: !!batchId,
+  });
 }

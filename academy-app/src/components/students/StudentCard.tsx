@@ -1,8 +1,7 @@
-import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { useTheme, Avatar, Spill } from '@findemy/ui';
 import type { StudentListItem } from '@findemy/types';
+import { Avatar, Spill, useTheme } from '@findemy/ui';
 import { useRouter } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export function StudentCard({ student }: { student: StudentListItem }) {
   const theme = useTheme();
@@ -15,7 +14,14 @@ export function StudentCard({ student }: { student: StudentListItem }) {
     >
       <Avatar initial={student.name} tone="jade" size="md" />
       <View style={styles.info}>
-        <Text style={{ fontFamily: theme.font.sans, fontSize: 15, fontWeight: '600', color: theme.color.ink }}>
+        <Text
+          style={{
+            fontFamily: theme.font.sans,
+            fontSize: 15,
+            fontWeight: '600',
+            color: theme.color.ink,
+          }}
+        >
           {student.name}
         </Text>
         <Text style={{ fontFamily: theme.font.sans, fontSize: 12, color: theme.color.mist }}>

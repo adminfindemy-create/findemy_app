@@ -1,1 +1,1 @@
-export { AcademyMap } from "./AcademyMap.web";
+export { AcademyMap } from './AcademyMap.web';

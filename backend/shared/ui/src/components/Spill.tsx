@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 export function Spill({
@@ -47,8 +47,15 @@ export function Spill({
   const matched = map[state] || { label: state, tone: theme.color.mist };
 
   return (
-    <View style={[styles.spill, { backgroundColor: matched.tone + '20' }]}>
-      <Text style={{ color: matched.tone, fontFamily: theme.font.sans, fontSize: 11, fontWeight: '600' }}>
+    <View style={[styles.spill, { backgroundColor: `${matched.tone}20` }]}>
+      <Text
+        style={{
+          color: matched.tone,
+          fontFamily: theme.font.sans,
+          fontSize: 11,
+          fontWeight: '600',
+        }}
+      >
         {matched.label}
       </Text>
     </View>

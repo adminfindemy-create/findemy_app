@@ -1,5 +1,5 @@
-import React from 'react';
-import { TextInput, View, Text, StyleSheet } from 'react-native';
+import type React from 'react';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 // Prototype `.field` (label) + `.input` / `.input-group` (with a `.pre` prefix).
@@ -40,7 +40,9 @@ export function Input({
   return (
     <View style={styles.wrapper}>
       {label ? (
-        <Text style={[styles.label, { color: theme.color.inkSoft, fontFamily: theme.font.sansBold }]}>
+        <Text
+          style={[styles.label, { color: theme.color.inkSoft, fontFamily: theme.font.sansBold }]}
+        >
           {label}
           {required ? <Text style={{ color: theme.color.persimmon }}> *</Text> : null}
         </Text>
@@ -55,7 +57,12 @@ export function Input({
         ]}
       >
         {prefix ? (
-          <View style={[styles.prefix, { borderRightColor: theme.color.hairline, backgroundColor: theme.color.paperWarm }]}>
+          <View
+            style={[
+              styles.prefix,
+              { borderRightColor: theme.color.hairline, backgroundColor: theme.color.paperWarm },
+            ]}
+          >
             {prefix}
           </View>
         ) : null}

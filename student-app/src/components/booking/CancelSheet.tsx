@@ -1,17 +1,17 @@
-import React, { useMemo, useState } from "react";
+import { Button, useTheme } from '@findemy/ui';
+import React, { useMemo, useState } from 'react';
 import {
-  Modal,
-  View,
-  Text,
-  Pressable,
-  TextInput,
-  StyleSheet,
   KeyboardAvoidingView,
+  Modal,
   Platform,
-} from "react-native";
-import { useTheme, Button } from "@findemy/ui";
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
-export type CancelSheetKind = "trial" | "workshop";
+export type CancelSheetKind = 'trial' | 'workshop';
 
 export type CancelSheetTarget = {
   title: string;
@@ -42,25 +42,25 @@ export function CancelSheet({
   submitting?: boolean;
 }) {
   const theme = useTheme();
-  const [reason, setReason] = useState("");
+  const [reason, setReason] = useState('');
   const [ackChecked, setAckChecked] = useState(false);
 
-  const cutoffHours = kind === "trial" ? 4 : 24;
-  const cutoffLabel = kind === "trial" ? "4 hours" : "24 hours";
+  const cutoffHours = kind === 'trial' ? 4 : 24;
+  const cutoffLabel = kind === 'trial' ? '4 hours' : '24 hours';
 
   const variant = useMemo(() => {
-    if (!target) return "free" as const;
-    if (kind === "trial" && target.rescheduled) return "rescheduled" as const;
-    if (target.amountPaise <= 0) return "free" as const;
+    if (!target) return 'free' as const;
+    if (kind === 'trial' && target.rescheduled) return 'rescheduled' as const;
+    if (target.amountPaise <= 0) return 'free' as const;
     const hoursUntil = (target.scheduledAt.getTime() - Date.now()) / 3_600_000;
-    const eligible = kind === "trial" ? hoursUntil >= cutoffHours : hoursUntil > cutoffHours;
-    return eligible ? ("refund" as const) : ("noRefund" as const);
+    const eligible = kind === 'trial' ? hoursUntil >= cutoffHours : hoursUntil > cutoffHours;
+    return eligible ? ('refund' as const) : ('noRefund' as const);
   }, [kind, target, cutoffHours]);
 
   // Reset local state whenever the sheet opens for a new target
   React.useEffect(() => {
     if (visible) {
-      setReason("");
+      setReason('');
       setAckChecked(false);
     }
   }, [visible, target?.title]);
@@ -73,29 +73,12 @@ export function CancelSheet({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={dismiss}
-    >
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={dismiss}>
       <View style={styles.backdrop}>
         <Pressable style={styles.scrim} onPress={dismiss} />
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-        >
-          <View
-            style={[
-              styles.sheet,
-              { backgroundColor: theme.color.paper },
-            ]}
-          >
-            <View
-              style={[
-                styles.handle,
-                { backgroundColor: theme.color.hairline },
-              ]}
-            />
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <View style={[styles.sheet, { backgroundColor: theme.color.paper }]}>
+            <View style={[styles.handle, { backgroundColor: theme.color.hairline }]} />
 
             <Text
               style={{
@@ -105,16 +88,14 @@ export function CancelSheet({
                 marginBottom: 4,
               }}
             >
-              {variant === "rescheduled"
-                ? `Can't cancel this ${kind}`
-                : `Cancel this ${kind}?`}
+              {variant === 'rescheduled' ? `Can't cancel this ${kind}` : `Cancel this ${kind}?`}
             </Text>
 
             <Text
               style={{
                 fontFamily: theme.font.sans,
                 fontSize: 15,
-                fontWeight: "600",
+                fontWeight: '600',
                 color: theme.color.ink,
                 marginTop: 6,
               }}
@@ -146,13 +127,13 @@ export function CancelSheet({
 
             {/* Variant body */}
             <View style={{ marginTop: 16 }}>
-              {variant === "rescheduled" && (
+              {variant === 'rescheduled' && (
                 <View
                   style={[
                     styles.infoCard,
                     {
                       backgroundColor: theme.color.roseSoft,
-                      borderColor: theme.color.rose + "33",
+                      borderColor: `${theme.color.rose}33`,
                     },
                   ]}
                 >
@@ -160,7 +141,7 @@ export function CancelSheet({
                     style={{
                       fontFamily: theme.font.sans,
                       fontSize: 14,
-                      fontWeight: "600",
+                      fontWeight: '600',
                       color: theme.color.rose,
                       marginBottom: 6,
                     }}
@@ -175,19 +156,18 @@ export function CancelSheet({
                       color: theme.color.inkSoft,
                     }}
                   >
-                    Reach out to the academy if you can't attend — they may
-                    accommodate you.
+                    Reach out to the academy if you can't attend — they may accommodate you.
                   </Text>
                 </View>
               )}
 
-              {variant === "refund" && (
+              {variant === 'refund' && (
                 <View
                   style={[
                     styles.infoCard,
                     {
                       backgroundColor: theme.color.jadeSoft,
-                      borderColor: theme.color.jade + "33",
+                      borderColor: `${theme.color.jade}33`,
                     },
                   ]}
                 >
@@ -195,32 +175,27 @@ export function CancelSheet({
                     style={{
                       fontFamily: theme.font.sans,
                       fontSize: 14,
-                      fontWeight: "600",
+                      fontWeight: '600',
                       color: theme.color.jade,
                       marginBottom: 10,
                     }}
                   >
                     Eligible for full refund
                   </Text>
-                  <RefundRow
-                    label="Refund amount"
-                    value={formatRupees(target.amountPaise)}
-                  />
-                  {target.payoutHint && (
-                    <RefundRow label="Refund to" value={target.payoutHint} />
-                  )}
+                  <RefundRow label="Refund amount" value={formatRupees(target.amountPaise)} />
+                  {target.payoutHint && <RefundRow label="Refund to" value={target.payoutHint} />}
                   <RefundRow label="Arrives in" value="5–7 business days" />
                 </View>
               )}
 
-              {variant === "noRefund" && (
+              {variant === 'noRefund' && (
                 <>
                   <View
                     style={[
                       styles.infoCard,
                       {
                         backgroundColor: theme.color.roseSoft,
-                        borderColor: theme.color.rose + "33",
+                        borderColor: `${theme.color.rose}33`,
                       },
                     ]}
                   >
@@ -228,7 +203,7 @@ export function CancelSheet({
                       style={{
                         fontFamily: theme.font.sans,
                         fontSize: 14,
-                        fontWeight: "600",
+                        fontWeight: '600',
                         color: theme.color.rose,
                         marginBottom: 6,
                       }}
@@ -243,18 +218,16 @@ export function CancelSheet({
                         color: theme.color.inkSoft,
                       }}
                     >
-                      Cancellations within {cutoffLabel} of the {kind} are
-                      non-refundable. You paid{" "}
-                      {formatRupees(target.amountPaise)} — this won't be
-                      returned.
+                      Cancellations within {cutoffLabel} of the {kind} are non-refundable. You paid{' '}
+                      {formatRupees(target.amountPaise)} — this won't be returned.
                     </Text>
                   </View>
 
                   <Pressable
                     onPress={() => setAckChecked((prevChecked) => !prevChecked)}
                     style={{
-                      flexDirection: "row",
-                      alignItems: "center",
+                      flexDirection: 'row',
+                      alignItems: 'center',
                       marginTop: 14,
                     }}
                   >
@@ -262,19 +235,13 @@ export function CancelSheet({
                       style={[
                         styles.checkbox,
                         {
-                          borderColor: ackChecked
-                            ? theme.color.rose
-                            : theme.color.hairline,
-                          backgroundColor: ackChecked
-                            ? theme.color.rose
-                            : "transparent",
+                          borderColor: ackChecked ? theme.color.rose : theme.color.hairline,
+                          backgroundColor: ackChecked ? theme.color.rose : 'transparent',
                         },
                       ]}
                     >
                       {ackChecked && (
-                        <Text style={{ color: "#fff", fontSize: 12, fontWeight: "700" }}>
-                          ✓
-                        </Text>
+                        <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700' }}>✓</Text>
                       )}
                     </View>
                     <Text
@@ -291,7 +258,7 @@ export function CancelSheet({
                 </>
               )}
 
-              {variant === "free" && (
+              {variant === 'free' && (
                 <Text
                   style={{
                     fontFamily: theme.font.sans,
@@ -305,7 +272,7 @@ export function CancelSheet({
             </View>
 
             {/* Reason input (skip on rescheduled) */}
-            {variant !== "rescheduled" && (
+            {variant !== 'rescheduled' && (
               <View style={{ marginTop: 16 }}>
                 <Text
                   style={{
@@ -335,7 +302,7 @@ export function CancelSheet({
                     paddingHorizontal: 12,
                     paddingVertical: 10,
                     minHeight: 56,
-                    textAlignVertical: "top",
+                    textAlignVertical: 'top',
                   }}
                 />
               </View>
@@ -343,7 +310,7 @@ export function CancelSheet({
 
             {/* CTAs */}
             <View style={{ marginTop: 18, gap: 10 }}>
-              {variant === "rescheduled" ? (
+              {variant === 'rescheduled' ? (
                 <Button variant="ghost" onPress={dismiss} block>
                   Close
                 </Button>
@@ -353,15 +320,15 @@ export function CancelSheet({
                     variant="rose"
                     block
                     loading={submitting}
-                    disabled={variant === "noRefund" && !ackChecked}
+                    disabled={variant === 'noRefund' && !ackChecked}
                     onPress={() =>
                       onConfirm({
-                        acknowledgeNoRefund: variant === "noRefund",
+                        acknowledgeNoRefund: variant === 'noRefund',
                         reason: reason.trim() || undefined,
                       })
                     }
                   >
-                    {variant === "noRefund" ? "Cancel anyway" : "Confirm cancel"}
+                    {variant === 'noRefund' ? 'Cancel anyway' : 'Confirm cancel'}
                   </Button>
                   <Button variant="ghost" onPress={dismiss} block>
                     Keep {kind}
@@ -379,7 +346,7 @@ export function CancelSheet({
 function RefundRow({ label, value }: { label: string; value: string }) {
   const theme = useTheme();
   return (
-    <View style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 4 }}>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 }}>
       <Text
         style={{
           fontFamily: theme.font.sans,
@@ -393,7 +360,7 @@ function RefundRow({ label, value }: { label: string; value: string }) {
         style={{
           fontFamily: theme.font.sans,
           fontSize: 13,
-          fontWeight: "600",
+          fontWeight: '600',
           color: theme.color.ink,
         }}
       >
@@ -411,11 +378,11 @@ function formatRupees(paise: number): string {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
   },
   scrim: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(20,17,15,0.4)",
+    backgroundColor: 'rgba(20,17,15,0.4)',
   },
   sheet: {
     borderTopLeftRadius: 24,
@@ -425,7 +392,7 @@ const styles = StyleSheet.create({
     paddingBottom: 28,
   },
   handle: {
-    alignSelf: "center",
+    alignSelf: 'center',
     width: 44,
     height: 4,
     borderRadius: 2,
@@ -442,7 +409,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderWidth: 1.5,
     marginRight: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

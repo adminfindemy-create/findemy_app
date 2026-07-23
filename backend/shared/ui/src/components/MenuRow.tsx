@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import type React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 import { IconChevR } from '../icons';
 
@@ -30,8 +30,7 @@ export function MenuRow({
   const theme = useTheme();
   const accent =
     tone === 'rose' ? theme.color.rose : tone === 'jade' ? theme.color.jade : theme.color.ink;
-  const border =
-    tone === 'rose' ? theme.color.roseSoft : theme.color.hairline;
+  const border = tone === 'rose' ? theme.color.roseSoft : theme.color.hairline;
 
   return (
     <Pressable
@@ -43,9 +42,13 @@ export function MenuRow({
       ]}
     >
       <View style={{ flex: 1, minWidth: 0 }}>
-        <Text style={[styles.title, { color: accent, fontFamily: theme.font.sansBold }]}>{title}</Text>
+        <Text style={[styles.title, { color: accent, fontFamily: theme.font.sansBold }]}>
+          {title}
+        </Text>
         {sub || (disabled && disabledReason) ? (
-          <Text style={[styles.sub, { color: theme.color.mist, fontFamily: theme.font.sansMedium }]}>
+          <Text
+            style={[styles.sub, { color: theme.color.mist, fontFamily: theme.font.sansMedium }]}
+          >
             {disabled && disabledReason ? disabledReason : sub}
           </Text>
         ) : null}

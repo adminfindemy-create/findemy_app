@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Input, Button, useTheme, sansFor } from '@findemy/ui';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { Screen } from '@/components/common/Screen';
 import { ScreenHeader } from '@/components/common/ScreenHeader';
-import { useCreateCoach } from '@/hooks/useStudioQueries';
 import { AvatarPicker } from '@/components/media/AvatarPicker';
+import { useCreateCoach } from '@/hooks/useStudioQueries';
+import { Button, Input, sansFor, useTheme } from '@findemy/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Alert, StyleSheet, Text, View } from 'react-native';
+import { z } from 'zod';
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -61,7 +61,12 @@ export default function NewCoachScreen() {
           control={control}
           name="name"
           render={({ field, fieldState: { error } }) => (
-            <Input placeholder="Full name" value={field.value} onChangeText={field.onChange} error={error?.message} />
+            <Input
+              placeholder="Full name"
+              value={field.value}
+              onChangeText={field.onChange}
+              error={error?.message}
+            />
           )}
         />
 
@@ -70,7 +75,12 @@ export default function NewCoachScreen() {
           control={control}
           name="specialty"
           render={({ field, fieldState: { error } }) => (
-            <Input placeholder="e.g. Guitar · Ukulele" value={field.value} onChangeText={field.onChange} error={error?.message} />
+            <Input
+              placeholder="e.g. Guitar · Ukulele"
+              value={field.value}
+              onChangeText={field.onChange}
+              error={error?.message}
+            />
           )}
         />
 
@@ -79,7 +89,12 @@ export default function NewCoachScreen() {
           control={control}
           name="phone"
           render={({ field }) => (
-            <Input placeholder="98765 43210" value={field.value} onChangeText={field.onChange} keyboardType="phone-pad" />
+            <Input
+              placeholder="98765 43210"
+              value={field.value}
+              onChangeText={field.onChange}
+              keyboardType="phone-pad"
+            />
           )}
         />
 
@@ -88,12 +103,23 @@ export default function NewCoachScreen() {
           control={control}
           name="bio"
           render={({ field }) => (
-            <Input placeholder="A short intro" value={field.value} onChangeText={field.onChange} multiline numberOfLines={3} />
+            <Input
+              placeholder="A short intro"
+              value={field.value}
+              onChangeText={field.onChange}
+              multiline
+              numberOfLines={3}
+            />
           )}
         />
 
         <View style={{ height: 24 }} />
-        <Button variant="dark" block loading={createCoach.isPending} onPress={handleSubmit(onSubmit)}>
+        <Button
+          variant="dark"
+          block
+          loading={createCoach.isPending}
+          onPress={handleSubmit(onSubmit)}
+        >
           Register coach
         </Button>
       </View>

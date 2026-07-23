@@ -1,11 +1,11 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 type LocationState = {
   lat: number | null;
   lng: number | null;
-  permission: "granted" | "denied" | "prompt" | null;
+  permission: 'granted' | 'denied' | 'prompt' | null;
   setLocation: (lat: number, lng: number) => void;
-  setPermission: (permission: "granted" | "denied" | "prompt") => void;
+  setPermission: (permission: 'granted' | 'denied' | 'prompt') => void;
   clear: () => void;
 };
 

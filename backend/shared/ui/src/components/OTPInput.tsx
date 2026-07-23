@@ -1,5 +1,5 @@
-import { useRef, useEffect } from 'react';
-import { View, TextInput, StyleSheet } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 export function OTPInput({
@@ -51,7 +51,9 @@ export function OTPInput({
       {Array.from({ length }).map((_, index) => (
         <TextInput
           key={index}
-          ref={(el) => { inputs.current[index] = el; }}
+          ref={(el) => {
+            inputs.current[index] = el;
+          }}
           value={value[index] || ''}
           onChangeText={(text) => handleChange(text, index)}
           onKeyPress={(event) => handleKeyPress(event, index)}

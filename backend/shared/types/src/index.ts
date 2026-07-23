@@ -39,10 +39,26 @@ export type AttendanceMode = z.infer<typeof AttendanceModeEnum>;
 
 /** Canonical API error codes. Envelope: `{ error: { code, message, fields? } }`. */
 export const ApiErrorCodeEnum = z.enum([
-  'VALIDATION', 'UNAUTHORIZED', 'FORBIDDEN', 'NOT_FOUND', 'CONFLICT', 'RATE_LIMITED', 'INTERNAL', 'CONFIG',
-  'OTP_EXPIRED', 'OTP_INVALID', 'OTP_MISMATCH',
-  'SLOT_UNAVAILABLE', 'RESCHEDULE_LIMIT', 'CANCELLATION_WINDOW_CLOSED', 'ALREADY_CANCELLED',
-  'NOT_ENROLLED', 'NOT_REGISTERED', 'REGISTRATION_CLOSED', 'NOT_IN_SESSION', 'NOT_ONLINE',
+  'VALIDATION',
+  'UNAUTHORIZED',
+  'FORBIDDEN',
+  'NOT_FOUND',
+  'CONFLICT',
+  'RATE_LIMITED',
+  'INTERNAL',
+  'CONFIG',
+  'OTP_EXPIRED',
+  'OTP_INVALID',
+  'OTP_MISMATCH',
+  'SLOT_UNAVAILABLE',
+  'RESCHEDULE_LIMIT',
+  'CANCELLATION_WINDOW_CLOSED',
+  'ALREADY_CANCELLED',
+  'NOT_ENROLLED',
+  'NOT_REGISTERED',
+  'REGISTRATION_CLOSED',
+  'NOT_IN_SESSION',
+  'NOT_ONLINE',
 ]);
 export type ApiErrorCode = z.infer<typeof ApiErrorCodeEnum>;
 
@@ -423,7 +439,13 @@ export type WorkshopRegistrant = {
 };
 
 export type WorkshopRegistrationsResponse = {
-  workshop: { id: string; title: string; capacity: number; registered_count: number; price_paise: number };
+  workshop: {
+    id: string;
+    title: string;
+    capacity: number;
+    registered_count: number;
+    price_paise: number;
+  };
   registrations: WorkshopRegistrant[];
 };
 
@@ -486,8 +508,21 @@ export type EarningsData = {
   net_paise: number;
   /** total this period minus total previous period of same length */
   delta_paise: number;
-  by_category: { category: string; captured_paise: number; commission_paise: number; net_paise: number; count: number }[];
-  by_batch: { batch_id: string; batch_title: string; gross_paise: number; commission_paise: number; net_paise: number; count: number }[];
+  by_category: {
+    category: string;
+    captured_paise: number;
+    commission_paise: number;
+    net_paise: number;
+    count: number;
+  }[];
+  by_batch: {
+    batch_id: string;
+    batch_title: string;
+    gross_paise: number;
+    commission_paise: number;
+    net_paise: number;
+    count: number;
+  }[];
   transactions: EarningsTxn[];
   payouts: {
     id: string;

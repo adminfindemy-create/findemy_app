@@ -1,23 +1,23 @@
-import React, { useState } from "react";
-import { View, Text } from "react-native";
-import { useRouter } from "expo-router";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useTheme, Input, Button } from "@findemy/ui";
-import { AuthScaffold, AuthHeading, AuthSub, Em } from "@/components/auth/AuthScaffold";
-import { api } from "@/lib/api";
-import { useOnboarding } from "@/stores/onboarding";
-import { useAuth } from "@/stores/auth";
+import { AuthHeading, AuthScaffold, AuthSub, Em } from '@/components/auth/AuthScaffold';
+import { api } from '@/lib/api';
+import { useAuth } from '@/stores/auth';
+import { useOnboarding } from '@/stores/onboarding';
+import { Button, Input, useTheme } from '@findemy/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Text, View } from 'react-native';
+import { z } from 'zod';
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, 'Name is required'),
   age: z
     .string()
-    .min(1, "Age is required")
-    .regex(/^\d+$/, "Enter a whole number")
-    .refine((v) => Number(v) >= 5 && Number(v) <= 120, "Enter a valid age"),
-  location: z.string().min(1, "Location is required"),
+    .min(1, 'Age is required')
+    .regex(/^\d+$/, 'Enter a whole number')
+    .refine((v) => Number(v) >= 5 && Number(v) <= 120, 'Enter a valid age'),
+  location: z.string().min(1, 'Location is required'),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -29,7 +29,7 @@ export default function OnboardingScreen() {
   const setUser = useAuth((state) => state.setUser);
   const userPhone = useAuth((state) => state.user?.phone);
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState('');
 
   const { control, handleSubmit } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -42,7 +42,7 @@ export default function OnboardingScreen() {
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
-    setErrorMsg("");
+    setErrorMsg('');
     try {
       await api.me.updateOnboarding({
         name: data.name,
@@ -52,13 +52,17 @@ export default function OnboardingScreen() {
         lng: store.lng ?? 0,
         interests: store.interests,
       });
-      setUser({ name: data.name, location: data.location, age: data.age ? Number(data.age) : undefined });
-      store.setField("name", data.name);
-      store.setField("age", data.age ?? "");
-      store.setField("location", data.location);
-      router.replace("/(auth)/interests");
+      setUser({
+        name: data.name,
+        location: data.location,
+        age: data.age ? Number(data.age) : undefined,
+      });
+      store.setField('name', data.name);
+      store.setField('age', data.age ?? '');
+      store.setField('location', data.location);
+      router.replace('/(auth)/interests');
     } catch {
-      setErrorMsg("Failed to save profile. Please try again.");
+      setErrorMsg('Failed to save profile. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -90,7 +94,7 @@ export default function OnboardingScreen() {
         />
 
         {/* Read-only — the number they just verified. */}
-        <Input label="Phone" editable={false} value={userPhone ? `+91 ${userPhone}` : ""} />
+        <Input label="Phone" editable={false} value={userPhone ? `+91 ${userPhone}` : ''} />
 
         <Controller
           control={control}
@@ -125,7 +129,14 @@ export default function OnboardingScreen() {
       </View>
 
       {errorMsg ? (
-        <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.rose, marginTop: 12 }}>
+        <Text
+          style={{
+            fontFamily: theme.font.sans,
+            fontSize: 13,
+            color: theme.color.rose,
+            marginTop: 12,
+          }}
+        >
           {errorMsg}
         </Text>
       ) : null}

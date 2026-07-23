@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Alert, Pressable, Image, ActivityIndicator } from 'react-native';
-import { useTheme, sansFor, Button, Input, Chip, BlockPrintCover, IconShield } from '@findemy/ui';
-import { useRouter } from 'expo-router';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import * as ImagePicker from 'expo-image-picker';
 import { Screen } from '@/components/common/Screen';
 import { ScreenHeader } from '@/components/common/ScreenHeader';
-import { useStudioAcademy } from '@/hooks/useStudioAcademy';
-import { api, uploadMultipart, deleteJson } from '@/lib/api';
 import { useToast } from '@/components/common/Toast';
+import { useStudioAcademy } from '@/hooks/useStudioAcademy';
+import { api, deleteJson, uploadMultipart } from '@/lib/api';
+import { BlockPrintCover, Button, Chip, IconShield, Input, sansFor, useTheme } from '@findemy/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { z } from 'zod';
 
 const schema = z.object({
   name: z.string().min(1, 'Academy name is required'),
@@ -18,7 +18,11 @@ const schema = z.object({
   bio: z.string().optional(),
   address: z.string().optional(),
   account_number: z.string().optional(),
-  ifsc: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Invalid IFSC code').or(z.literal('')).optional(),
+  ifsc: z
+    .string()
+    .regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Invalid IFSC code')
+    .or(z.literal(''))
+    .optional(),
   holder_name: z.string().optional(),
 });
 
@@ -39,9 +43,22 @@ export default function ProfileEditScreen() {
   const [newSpec, setNewSpec] = useState('');
   const verified = academy?.verified ?? false;
 
-  const { control, handleSubmit, reset, formState: { isSubmitting } } = useForm<FormData>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { name: '', tagline: '', bio: '', address: '', account_number: '', ifsc: '', holder_name: '' },
+    defaultValues: {
+      name: '',
+      tagline: '',
+      bio: '',
+      address: '',
+      account_number: '',
+      ifsc: '',
+      holder_name: '',
+    },
   });
 
   useEffect(() => {
@@ -66,7 +83,8 @@ export default function ProfileEditScreen() {
     setSpecialities((prev) => [...prev, trimmed]);
     setNewSpec('');
   };
-  const removeSpec = (spec: string) => setSpecialities((prev) => prev.filter((existingSpec) => existingSpec !== spec));
+  const removeSpec = (spec: string) =>
+    setSpecialities((prev) => prev.filter((existingSpec) => existingSpec !== spec));
 
   const onSubmit = async (values: FormData) => {
     try {
@@ -140,10 +158,9 @@ export default function ProfileEditScreen() {
         style: 'destructive',
         onPress: async () => {
           try {
-            const updated = await deleteJson<{ images: string[] }>(
-              '/studio/academy/image',
-              { url }
-            );
+            const updated = await deleteJson<{ images: string[] }>('/studio/academy/image', {
+              url,
+            });
             setImages(updated.images);
             refetch();
           } catch {
@@ -165,21 +182,36 @@ export default function ProfileEditScreen() {
         {/* Cover preview */}
         <View style={styles.cover}>
           {cover ? (
-            <Image source={{ uri: cover }} style={StyleSheet.absoluteFill as any} resizeMode="cover" />
+            <Image
+              source={{ uri: cover }}
+              style={StyleSheet.absoluteFill as any}
+              resizeMode="cover"
+            />
           ) : (
-            <BlockPrintCover category={category} variant={2} height={140} hideLetter style={StyleSheet.absoluteFill as any} />
+            <BlockPrintCover
+              category={category}
+              variant={2}
+              height={140}
+              hideLetter
+              style={StyleSheet.absoluteFill as any}
+            />
           )}
           {verified ? (
             <View style={[styles.coverBadge, { backgroundColor: theme.color.jade }]}>
               <IconShield size={12} color="#fff" />
-              <Text style={{ fontFamily: sansFor(700), fontSize: 10, letterSpacing: 0.4, color: '#fff' }}>Verified</Text>
+              <Text
+                style={{
+                  fontFamily: sansFor(700),
+                  fontSize: 10,
+                  letterSpacing: 0.4,
+                  color: '#fff',
+                }}
+              >
+                Verified
+              </Text>
             </View>
           ) : null}
-          <Pressable
-            style={styles.changeCover}
-            onPress={pickAndUpload}
-            disabled={uploading}
-          >
+          <Pressable style={styles.changeCover} onPress={pickAndUpload} disabled={uploading}>
             <Text style={{ fontFamily: sansFor(700), fontSize: 12, color: '#fff' }}>
               {uploading ? 'Uploading…' : 'Change cover'}
             </Text>
@@ -190,7 +222,13 @@ export default function ProfileEditScreen() {
           control={control}
           name="name"
           render={({ field, fieldState: { error } }) => (
-            <Input label="Academy name" value={field.value} onChangeText={field.onChange} placeholder="e.g. The Rhythm House" error={error?.message} />
+            <Input
+              label="Academy name"
+              value={field.value}
+              onChangeText={field.onChange}
+              placeholder="e.g. The Rhythm House"
+              error={error?.message}
+            />
           )}
         />
         <View style={{ height: 14 }} />
@@ -198,7 +236,12 @@ export default function ProfileEditScreen() {
           control={control}
           name="tagline"
           render={({ field }) => (
-            <Input label="Tagline" value={field.value ?? ''} onChangeText={field.onChange} placeholder="A warm, gear-rich space for guitar, keys & vocals." />
+            <Input
+              label="Tagline"
+              value={field.value ?? ''}
+              onChangeText={field.onChange}
+              placeholder="A warm, gear-rich space for guitar, keys & vocals."
+            />
           )}
         />
         <View style={{ height: 14 }} />
@@ -206,7 +249,13 @@ export default function ProfileEditScreen() {
           control={control}
           name="bio"
           render={({ field }) => (
-            <Input label="About" value={field.value} onChangeText={field.onChange} placeholder="Group and 1-on-1 batches for all ages. Beginners welcome." multiline />
+            <Input
+              label="About"
+              value={field.value}
+              onChangeText={field.onChange}
+              placeholder="Group and 1-on-1 batches for all ages. Beginners welcome."
+              multiline
+            />
           )}
         />
         <View style={{ height: 14 }} />
@@ -214,7 +263,12 @@ export default function ProfileEditScreen() {
           control={control}
           name="address"
           render={({ field }) => (
-            <Input label="Address" value={field.value ?? ''} onChangeText={field.onChange} placeholder="Hauz Khas, New Delhi" />
+            <Input
+              label="Address"
+              value={field.value ?? ''}
+              onChangeText={field.onChange}
+              placeholder="Hauz Khas, New Delhi"
+            />
           )}
         />
 
@@ -229,7 +283,9 @@ export default function ProfileEditScreen() {
           <View style={{ flex: 1 }}>
             <Input value={newSpec} onChangeText={setNewSpec} placeholder="Add a speciality" />
           </View>
-          <Button size="sm" variant="soft" onPress={addSpec}>Add</Button>
+          <Button size="sm" variant="soft" onPress={addSpec}>
+            Add
+          </Button>
         </View>
 
         {/* Offered modes (read-only; set during onboarding — S0.3/S1.1) */}
@@ -238,9 +294,27 @@ export default function ProfileEditScreen() {
             <Text style={[styles.sectionLabel, { color: theme.color.whisper }]}>MODES OFFERED</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
               {academy.modes_offered.map((mode: string) => (
-                <View key={mode} style={{ backgroundColor: theme.color.paperWarm, borderWidth: 1, borderColor: theme.color.hairline, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999 }}>
-                  <Text style={{ fontFamily: theme.font.sans, fontSize: 12, color: theme.color.ink }}>
-                    {({ in_studio: 'In-studio', online: 'Online', home_visit: 'Home visit' } as Record<string, string>)[mode] ?? mode}
+                <View
+                  key={mode}
+                  style={{
+                    backgroundColor: theme.color.paperWarm,
+                    borderWidth: 1,
+                    borderColor: theme.color.hairline,
+                    paddingHorizontal: 12,
+                    paddingVertical: 7,
+                    borderRadius: 999,
+                  }}
+                >
+                  <Text
+                    style={{ fontFamily: theme.font.sans, fontSize: 12, color: theme.color.ink }}
+                  >
+                    {(
+                      {
+                        in_studio: 'In-studio',
+                        online: 'Online',
+                        home_visit: 'Home visit',
+                      } as Record<string, string>
+                    )[mode] ?? mode}
                   </Text>
                 </View>
               ))}
@@ -249,10 +323,20 @@ export default function ProfileEditScreen() {
         ) : null}
 
         {/* Media grid */}
-        <Text style={[styles.sectionLabel, { color: theme.color.whisper, marginBottom: 4 }]}>PHOTOS &amp; VIDEOS</Text>
+        <Text style={[styles.sectionLabel, { color: theme.color.whisper, marginBottom: 4 }]}>
+          PHOTOS &amp; VIDEOS
+        </Text>
         {remaining > 0 && (
-          <Text style={{ fontFamily: theme.font.sans, fontSize: 12, color: theme.color.rose, marginBottom: 10 }}>
-            Add at least {remaining} more photo{remaining !== 1 ? 's' : ''} (minimum {MIN_IMAGES} required)
+          <Text
+            style={{
+              fontFamily: theme.font.sans,
+              fontSize: 12,
+              color: theme.color.rose,
+              marginBottom: 10,
+            }}
+          >
+            Add at least {remaining} more photo{remaining !== 1 ? 's' : ''} (minimum {MIN_IMAGES}{' '}
+            required)
           </Text>
         )}
         <View style={styles.imageGrid}>
@@ -276,7 +360,10 @@ export default function ProfileEditScreen() {
           ))}
           {images.length < MAX_IMAGES && (
             <Pressable
-              style={[styles.addTile, { borderColor: theme.color.hairline, backgroundColor: theme.color.ivory }]}
+              style={[
+                styles.addTile,
+                { borderColor: theme.color.hairline, backgroundColor: theme.color.ivory },
+              ]}
               onPress={pickAndUpload}
               disabled={uploading}
             >
@@ -288,7 +375,14 @@ export default function ProfileEditScreen() {
             </Pressable>
           )}
         </View>
-        <Text style={{ fontFamily: theme.font.sans, fontSize: 11, color: theme.color.mist, marginTop: 4 }}>
+        <Text
+          style={{
+            fontFamily: theme.font.sans,
+            fontSize: 11,
+            color: theme.color.mist,
+            marginTop: 4,
+          }}
+        >
           {images.length}/{MAX_IMAGES} photos · Long-press a photo to remove
         </Text>
 
@@ -297,7 +391,13 @@ export default function ProfileEditScreen() {
           control={control}
           name="account_number"
           render={({ field }) => (
-            <Input label="Account number" value={field.value} onChangeText={field.onChange} placeholder="Account number" keyboardType="number-pad" />
+            <Input
+              label="Account number"
+              value={field.value}
+              onChangeText={field.onChange}
+              placeholder="Account number"
+              keyboardType="number-pad"
+            />
           )}
         />
         <View style={{ height: 14 }} />
@@ -319,7 +419,12 @@ export default function ProfileEditScreen() {
           control={control}
           name="holder_name"
           render={({ field }) => (
-            <Input label="Account holder name" value={field.value} onChangeText={field.onChange} placeholder="Account holder name" />
+            <Input
+              label="Account holder name"
+              value={field.value}
+              onChangeText={field.onChange}
+              placeholder="Account holder name"
+            />
           )}
         />
 

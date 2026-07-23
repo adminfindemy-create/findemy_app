@@ -1,14 +1,13 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { useTheme, Button } from "@findemy/ui";
+import { Button, useTheme } from '@findemy/ui';
+import { StyleSheet, Text, View } from 'react-native';
 
 const MESSAGES: Record<string, string> = {
-  OTP_INVALID: "Invalid code. Please try again.",
-  OTP_EXPIRED: "Code expired. Please request a new one.",
-  RATE_LIMITED: "Too many attempts. Try again later.",
-  UNAUTHORIZED: "Session expired. Please log in again.",
-  NOT_FOUND: "Not found.",
-  INTERNAL: "Something went wrong. Please try again.",
+  OTP_INVALID: 'Invalid code. Please try again.',
+  OTP_EXPIRED: 'Code expired. Please request a new one.',
+  RATE_LIMITED: 'Too many attempts. Try again later.',
+  UNAUTHORIZED: 'Session expired. Please log in again.',
+  NOT_FOUND: 'Not found.',
+  INTERNAL: 'Something went wrong. Please try again.',
 };
 
 export function ErrorState({
@@ -27,7 +26,7 @@ export function ErrorState({
           fontFamily: theme.font.sans,
           fontSize: theme.type.body.size,
           color: theme.color.mist,
-          textAlign: "center",
+          textAlign: 'center',
           marginBottom: 16,
         }}
       >
@@ -41,8 +40,8 @@ export function ErrorState({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 24,
   },
 });

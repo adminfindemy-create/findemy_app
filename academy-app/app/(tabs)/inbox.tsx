@@ -1,13 +1,13 @@
-import React from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
-import { useTheme, sansFor, IconCal, IconUser, IconChevR } from '@findemy/ui';
-import { useAuth } from '@/stores/auth';
-import { useStudioDashboard, useStudioSchedule, useStudioActivity } from '@/hooks/useStudioQueries';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useInbox } from '@/stores/inbox';
-import { format, startOfWeek } from 'date-fns';
 import { ActivityRow } from '@/components/inbox/ActivityRow';
+import { useStudioActivity, useStudioDashboard, useStudioSchedule } from '@/hooks/useStudioQueries';
+import { useAuth } from '@/stores/auth';
+import { useInbox } from '@/stores/inbox';
+import { IconCal, IconChevR, IconUser, sansFor, useTheme } from '@findemy/ui';
+import { format, startOfWeek } from 'date-fns';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function fmtAmount(paise: number): string {
   const amount = Math.round(paise / 100);
@@ -19,7 +19,7 @@ function fmtAmount(paise: number): string {
 export default function InboxScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const academy = useAuth((s) => s.academy);
+  const _academy = useAuth((s) => s.academy);
   const resetNew = useInbox((s) => s.resetNew);
   const setLastSeen = useInbox((s) => s.setLastSeen);
 
@@ -64,19 +64,41 @@ export default function InboxScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={['top']}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 120 }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
         <View style={styles.head}>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontFamily: sansFor(700), fontSize: 11, letterSpacing: 1.8, color: theme.color.persimmon }}>
+            <Text
+              style={{
+                fontFamily: sansFor(700),
+                fontSize: 11,
+                letterSpacing: 1.8,
+                color: theme.color.persimmon,
+              }}
+            >
               MANAGEMENT
             </Text>
-            <Text style={{ fontFamily: theme.font.serif, fontSize: 34, lineHeight: 38, letterSpacing: -0.6, color: theme.color.ink, marginTop: 4 }}>
+            <Text
+              style={{
+                fontFamily: theme.font.serif,
+                fontSize: 34,
+                lineHeight: 38,
+                letterSpacing: -0.6,
+                color: theme.color.ink,
+                marginTop: 4,
+              }}
+            >
               Studio Dashboard
             </Text>
           </View>
           <Pressable
-            style={[styles.bell, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}
+            style={[
+              styles.bell,
+              { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+            ]}
             onPress={() => router.push('/(tabs)/studio' as never)}
             accessibilityRole="button"
             accessibilityLabel="My profile"
@@ -93,7 +115,9 @@ export default function InboxScreen() {
           </View>
           <Text style={styles.dk}>{`Today · ${dateLabel}`}</Text>
           <Text style={[styles.dn, { fontFamily: theme.font.serif }]}>{classesToday}</Text>
-          <Text style={styles.dl}>{classesToday === 1 ? 'class active today' : 'classes active today'}</Text>
+          <Text style={styles.dl}>
+            {classesToday === 1 ? 'class active today' : 'classes active today'}
+          </Text>
 
           <View style={styles.drow}>
             <Pressable
@@ -123,7 +147,13 @@ export default function InboxScreen() {
               <Text style={[styles.dv, { fontFamily: theme.font.serif }]}>
                 {thisMonth ? fmtAmount(thisMonth) : '₹0'}
                 {earnDelta !== 0 ? (
-                  <Text style={{ fontFamily: sansFor(700), fontSize: 12, color: earnDelta > 0 ? '#7BD0A0' : theme.color.roseSoft }}>
+                  <Text
+                    style={{
+                      fontFamily: sansFor(700),
+                      fontSize: 12,
+                      color: earnDelta > 0 ? '#7BD0A0' : theme.color.roseSoft,
+                    }}
+                  >
                     {earnDelta > 0 ? ' ▲' : ' ▼'}
                   </Text>
                 ) : null}
@@ -135,18 +165,39 @@ export default function InboxScreen() {
 
         {/* Recent activity */}
         <View style={[styles.secRow, { marginTop: 4 }]}>
-          <Text style={{ fontFamily: sansFor(800), fontSize: 20, letterSpacing: -0.4, color: theme.color.ink }}>
+          <Text
+            style={{
+              fontFamily: sansFor(800),
+              fontSize: 20,
+              letterSpacing: -0.4,
+              color: theme.color.ink,
+            }}
+          >
             Recent activity
           </Text>
         </View>
         {activityItems.length > 0 ? (
-          <View style={[styles.activityList, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
+          <View
+            style={[
+              styles.activityList,
+              { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+            ]}
+          >
             {activityItems.map((activityItem, index) => (
-              <ActivityRow key={activityItem.id} item={activityItem} isLast={index === activityItems.length - 1} />
+              <ActivityRow
+                key={activityItem.id}
+                item={activityItem}
+                isLast={index === activityItems.length - 1}
+              />
             ))}
           </View>
         ) : (
-          <View style={[styles.emptyCard, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
+          <View
+            style={[
+              styles.emptyCard,
+              { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+            ]}
+          >
             <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.mist }}>
               No recent activity yet. Trials, reviews and enrolments will show up here.
             </Text>
@@ -166,20 +217,39 @@ export default function InboxScreen() {
         {/* Earnings mini */}
         {dash?.earnings_summary && (
           <Pressable
-            style={[styles.earningsMini, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}
+            style={[
+              styles.earningsMini,
+              { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+            ]}
             onPress={() => router.push('/earnings')}
           >
             <View style={[styles.earningsIcon, { backgroundColor: theme.color.ink }]}>
-              <Text style={{ fontFamily: theme.font.serif, fontSize: 18, color: theme.color.ivory }}>₹</Text>
+              <Text
+                style={{ fontFamily: theme.font.serif, fontSize: 18, color: theme.color.ivory }}
+              >
+                ₹
+              </Text>
             </View>
             <View style={{ flex: 1 }}>
               <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }}>
                 This month's earnings
               </Text>
-              <Text style={{ fontFamily: sansFor(500), fontSize: 12.5, color: theme.color.mist, marginTop: 3 }}>
+              <Text
+                style={{
+                  fontFamily: sansFor(500),
+                  fontSize: 12.5,
+                  color: theme.color.mist,
+                  marginTop: 3,
+                }}
+              >
                 {fmtAmount(thisMonth)} captured
                 {earnDelta !== 0 ? (
-                  <Text style={{ fontFamily: sansFor(700), color: earnDelta > 0 ? theme.color.jade : theme.color.rose }}>
+                  <Text
+                    style={{
+                      fontFamily: sansFor(700),
+                      color: earnDelta > 0 ? theme.color.jade : theme.color.rose,
+                    }}
+                  >
                     {`  ${earnDelta > 0 ? '▲' : '▼'} ${fmtAmount(Math.abs(earnDelta))} vs last`}
                   </Text>
                 ) : null}

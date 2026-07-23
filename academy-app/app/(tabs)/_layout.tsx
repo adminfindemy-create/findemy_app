@@ -1,9 +1,8 @@
-import React from 'react';
-import { View } from 'react-native';
-import { Tabs } from 'expo-router';
-import { IconCal, IconUsers, IconHome } from '@findemy/ui';
 import { TabBar } from '@/components/common/TabBar';
 import { useInbox } from '@/stores/inbox';
+import { IconCal, IconHome, IconUsers } from '@findemy/ui';
+import { Tabs } from 'expo-router';
+import { View } from 'react-native';
 
 /** Home / dashboard — a 2×2 grid of rounded squares (prototype icon). */
 function GridIcon({ size = 21, color }: { size?: number; color: string }) {
@@ -12,7 +11,10 @@ function GridIcon({ size = 21, color }: { size?: number; color: string }) {
   return (
     <View style={{ width: size, height: size, flexDirection: 'row', flexWrap: 'wrap', gap }}>
       {[0, 1, 2, 3].map((index) => (
-        <View key={index} style={{ width: cell, height: cell, borderRadius: 3, borderWidth: 2, borderColor: color }} />
+        <View
+          key={index}
+          style={{ width: cell, height: cell, borderRadius: 3, borderWidth: 2, borderColor: color }}
+        />
       ))}
     </View>
   );
@@ -28,13 +30,29 @@ export default function TabLayout() {
         const routeName = state.routes[state.index].name;
         // settings & workshops are Studio sub-pages reached via router.push (no
         // tab button of their own) — keep the Studio tab highlighted there.
-        const active =
-          routeName === 'settings' || routeName === 'workshops' ? 'studio' : routeName;
+        const active = routeName === 'settings' || routeName === 'workshops' ? 'studio' : routeName;
         const items = [
-          { key: 'inbox', label: 'Home', renderIcon: (c: string) => <GridIcon size={21} color={c} />, badge: newCount },
-          { key: 'schedule', label: 'Schedule', renderIcon: (c: string) => <IconCal size={22} color={c} /> },
-          { key: 'students', label: 'Students', renderIcon: (c: string) => <IconUsers size={22} color={c} /> },
-          { key: 'studio', label: 'Studio', renderIcon: (c: string) => <IconHome size={22} color={c} /> },
+          {
+            key: 'inbox',
+            label: 'Home',
+            renderIcon: (c: string) => <GridIcon size={21} color={c} />,
+            badge: newCount,
+          },
+          {
+            key: 'schedule',
+            label: 'Schedule',
+            renderIcon: (c: string) => <IconCal size={22} color={c} />,
+          },
+          {
+            key: 'students',
+            label: 'Students',
+            renderIcon: (c: string) => <IconUsers size={22} color={c} />,
+          },
+          {
+            key: 'studio',
+            label: 'Studio',
+            renderIcon: (c: string) => <IconHome size={22} color={c} />,
+          },
         ];
         return (
           <TabBar

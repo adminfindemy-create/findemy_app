@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import type React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 // Prototype `.action-bar`: a sticky bottom bar with an optional price lead and
@@ -34,11 +34,21 @@ export function ActionBar({
       {priceValue ? (
         <View style={styles.priceLead}>
           {priceLabel ? (
-            <Text style={[styles.priceLabelText, { color: theme.color.whisper, fontFamily: theme.font.sansBold }]}>
+            <Text
+              style={[
+                styles.priceLabelText,
+                { color: theme.color.whisper, fontFamily: theme.font.sansBold },
+              ]}
+            >
               {priceLabel.toUpperCase()}
             </Text>
           ) : null}
-          <Text style={[styles.priceValueText, { color: theme.color.ink, fontFamily: theme.font.sansBold }]}>
+          <Text
+            style={[
+              styles.priceValueText,
+              { color: theme.color.ink, fontFamily: theme.font.sansBold },
+            ]}
+          >
             {priceValue}
           </Text>
         </View>

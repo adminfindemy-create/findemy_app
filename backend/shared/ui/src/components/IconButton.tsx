@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { Pressable } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
@@ -25,7 +25,7 @@ export function IconButton({
   const bg = solid
     ? theme.color.ink
     : tone
-      ? (theme.color as Record<string, string>)[tone] + '15'
+      ? `${(theme.color as Record<string, string>)[tone]}15`
       : '#fff';
   return (
     <Pressable

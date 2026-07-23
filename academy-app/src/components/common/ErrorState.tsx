@@ -1,6 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useTheme, Button } from '@findemy/ui';
+import { Button, useTheme } from '@findemy/ui';
+import { StyleSheet, Text, View } from 'react-native';
 
 const MESSAGES: Record<string, string> = {
   OTP_MISMATCH: 'Wrong code. Try again.',
@@ -26,7 +25,14 @@ export function ErrorState({
 
   return (
     <View style={styles.container}>
-      <Text style={{ color: theme.color.ink, fontFamily: theme.font.sans, fontSize: 15, marginBottom: 12 }}>
+      <Text
+        style={{
+          color: theme.color.ink,
+          fontFamily: theme.font.sans,
+          fontSize: 15,
+          marginBottom: 12,
+        }}
+      >
         {resolved}
       </Text>
       {onRetry && <Button onPress={onRetry}>Retry</Button>}

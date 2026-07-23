@@ -1,22 +1,17 @@
-import React, { useMemo, useState } from "react";
-import { View, Text, ScrollView, Pressable, Alert, StyleSheet } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import { useTheme, Button, ActionBar } from "@findemy/ui";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import {
-  format,
-  addDays,
-  isSameDay,
-  startOfToday,
-} from "date-fns";
-import { useProgram } from "@/hooks/useProgram";
-import { enrichProgram } from "@/lib/programs";
-import { useProgramSlots } from "@/hooks/useSlots";
-import { useCreateBooking } from "@/hooks/useBookings";
-import { ScreenHeader } from "@/components/common/ScreenHeader";
-import { ErrorState } from "@/components/common/ErrorState";
-import { EmptyState } from "@/components/common/EmptyState";
-import { SkeletonLoader } from "@/components/common/SkeletonLoader";
+import { EmptyState } from '@/components/common/EmptyState';
+import { ErrorState } from '@/components/common/ErrorState';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { SkeletonLoader } from '@/components/common/SkeletonLoader';
+import { useCreateBooking } from '@/hooks/useBookings';
+import { useProgram } from '@/hooks/useProgram';
+import { useProgramSlots } from '@/hooks/useSlots';
+import { enrichProgram } from '@/lib/programs';
+import { ActionBar, Button, useTheme } from '@findemy/ui';
+import { addDays, format, isSameDay, startOfToday } from 'date-fns';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useMemo, useState } from 'react';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const DAYS_AHEAD = 14;
 
@@ -38,10 +33,7 @@ export default function ProgramTrialScreen() {
     [today]
   );
 
-  const program = useMemo(
-    () => (data?.program ? enrichProgram(data.program) : null),
-    [data]
-  );
+  const program = useMemo(() => (data?.program ? enrichProgram(data.program) : null), [data]);
 
   const batchMeta = useMemo(
     () =>
@@ -52,12 +44,12 @@ export default function ProgramTrialScreen() {
     [program]
   );
 
-  const dateStr = format(selectedDate, "yyyy-MM-dd");
+  const dateStr = format(selectedDate, 'yyyy-MM-dd');
   const slotsQuery = useProgramSlots(batchMeta, dateStr);
 
   if (isLoading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={["top"]}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={['top']}>
         <View style={{ padding: 24, gap: 12 }}>
           <SkeletonLoader height={32} width="60%" borderRadius={8} />
           <SkeletonLoader height={80} borderRadius={16} />
@@ -69,7 +61,7 @@ export default function ProgramTrialScreen() {
 
   if (error) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={["top"]}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={['top']}>
         <ErrorState code={(error as any)?.code} onRetry={refetch} />
       </SafeAreaView>
     );
@@ -77,7 +69,7 @@ export default function ProgramTrialScreen() {
 
   if (!program) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={["top"]}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={['top']}>
         <ScreenHeader title="Book a trial" />
         <EmptyState message="This program is no longer available." />
       </SafeAreaView>
@@ -100,12 +92,12 @@ export default function ProgramTrialScreen() {
       });
       router.push(`/booking/pay?booking_id=${(response as any).booking.id}`);
     } catch (error: any) {
-      Alert.alert("Error", error?.message ?? "Booking failed");
+      Alert.alert('Error', error?.message ?? 'Booking failed');
     }
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={["top"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={['top']}>
       <ScreenHeader title="Book a trial" />
       <ScrollView contentContainerStyle={{ paddingBottom: 130 }}>
         <View style={styles.headerWrap}>
@@ -152,7 +144,7 @@ export default function ProgramTrialScreen() {
                     letterSpacing: 0.6,
                   }}
                 >
-                  {format(date, "EEE").toUpperCase()}
+                  {format(date, 'EEE').toUpperCase()}
                 </Text>
                 <Text
                   style={{
@@ -162,17 +154,17 @@ export default function ProgramTrialScreen() {
                     marginTop: 4,
                   }}
                 >
-                  {format(date, "d")}
+                  {format(date, 'd')}
                 </Text>
                 <Text
                   style={{
                     fontFamily: theme.font.sans,
                     fontSize: 10,
-                    color: isSel ? "rgba(250,246,238,0.85)" : theme.color.mist,
+                    color: isSel ? 'rgba(250,246,238,0.85)' : theme.color.mist,
                     marginTop: 2,
                   }}
                 >
-                  {format(date, "MMM")}
+                  {format(date, 'MMM')}
                 </Text>
               </Pressable>
             );
@@ -181,7 +173,7 @@ export default function ProgramTrialScreen() {
 
         <View style={styles.slotsHead}>
           <Text style={{ fontFamily: theme.font.serif, fontSize: 22, color: theme.color.ink }}>
-            Available · {format(selectedDate, "EEE d MMM")}
+            Available · {format(selectedDate, 'EEE d MMM')}
           </Text>
         </View>
 
@@ -202,8 +194,8 @@ export default function ProgramTrialScreen() {
                   fontFamily: theme.font.sans,
                   fontSize: 13,
                   color: theme.color.mist,
-                  textAlign: "center",
-                  width: "100%",
+                  textAlign: 'center',
+                  width: '100%',
                   paddingVertical: 20,
                 }}
               >
@@ -212,7 +204,7 @@ export default function ProgramTrialScreen() {
             ) : (
               slotList.map((slot) => {
                 const remaining = slot.capacity - slot.reserved_count;
-                const full = remaining <= 0 || slot.status === "full";
+                const full = remaining <= 0 || slot.status === 'full';
                 const active = selectedSlot?.id === slot.id;
                 return (
                   <Pressable
@@ -225,11 +217,9 @@ export default function ProgramTrialScreen() {
                         backgroundColor: active
                           ? theme.color.persimmon
                           : full
-                          ? theme.color.paperWarm
-                          : theme.color.ivory,
-                        borderColor: active
-                          ? theme.color.persimmon
-                          : theme.color.hairline,
+                            ? theme.color.paperWarm
+                            : theme.color.ivory,
+                        borderColor: active ? theme.color.persimmon : theme.color.hairline,
                       },
                     ]}
                   >
@@ -237,17 +227,21 @@ export default function ProgramTrialScreen() {
                       style={{
                         fontFamily: theme.font.sansBold,
                         fontSize: 14,
-                        color: active ? theme.color.ivory : full ? theme.color.mist : theme.color.ink,
+                        color: active
+                          ? theme.color.ivory
+                          : full
+                            ? theme.color.mist
+                            : theme.color.ink,
                       }}
                     >
-                      {format(new Date(slot.slot_time), "h:mm a")}
+                      {format(new Date(slot.slot_time), 'h:mm a')}
                     </Text>
                     {slot.coach_name ? (
                       <Text
                         style={{
                           fontFamily: theme.font.sans,
                           fontSize: 11,
-                          color: active ? "rgba(250,246,238,0.85)" : theme.color.mist,
+                          color: active ? 'rgba(250,246,238,0.85)' : theme.color.mist,
                           marginTop: 2,
                         }}
                         numberOfLines={1}
@@ -260,22 +254,22 @@ export default function ProgramTrialScreen() {
                         fontFamily: theme.font.sansSemibold,
                         fontSize: 11,
                         color: active
-                          ? "rgba(250,246,238,0.85)"
+                          ? 'rgba(250,246,238,0.85)'
                           : full
-                          ? theme.color.mist
-                          : remaining <= 2
-                          ? theme.color.persimmon
-                          : theme.color.jade,
+                            ? theme.color.mist
+                            : remaining <= 2
+                              ? theme.color.persimmon
+                              : theme.color.jade,
                         marginTop: 2,
                       }}
                     >
-                      {full ? "Full" : remaining === 1 ? "1 left" : `${remaining} left`}
+                      {full ? 'Full' : remaining === 1 ? '1 left' : `${remaining} left`}
                     </Text>
                     <Text
                       style={{
                         fontFamily: theme.font.sans,
                         fontSize: 11,
-                        color: active ? "rgba(250,246,238,0.85)" : theme.color.mist,
+                        color: active ? 'rgba(250,246,238,0.85)' : theme.color.mist,
                         marginTop: 2,
                       }}
                     >
@@ -293,7 +287,7 @@ export default function ProgramTrialScreen() {
             fontFamily: theme.font.sans,
             fontSize: 11,
             color: theme.color.mist,
-            textAlign: "center",
+            textAlign: 'center',
             marginTop: 14,
           }}
         >
@@ -333,7 +327,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 14,
     borderWidth: 1,
-    alignItems: "center",
+    alignItems: 'center',
   },
   slotsHead: {
     paddingHorizontal: 24,
@@ -342,16 +336,16 @@ const styles = StyleSheet.create({
   },
   slotsGrid: {
     paddingHorizontal: 24,
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
   },
   slot: {
     flexGrow: 1,
-    flexBasis: "30%",
+    flexBasis: '30%',
     paddingVertical: 12,
     paddingHorizontal: 8,
-    alignItems: "center",
+    alignItems: 'center',
     borderRadius: 14,
     borderWidth: 1,
   },

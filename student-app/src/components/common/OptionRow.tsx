@@ -1,6 +1,6 @@
-import React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { useTheme } from "@findemy/ui";
+import { useTheme } from '@findemy/ui';
+import type React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 // Prototype `.opt`: a radio option row used for batch/plan/method selection.
 export function OptionRow({
@@ -29,20 +29,38 @@ export function OptionRow({
         styles.opt,
         {
           borderColor: selected ? theme.color.persimmon : theme.color.hairline,
-          backgroundColor: "#fff",
+          backgroundColor: '#fff',
           opacity: disabled ? 0.5 : 1,
         },
       ]}
     >
       <View style={{ flex: 1, minWidth: 0 }}>
-        <Text style={{ fontFamily: theme.font.sansBold, fontSize: 14.5, color: theme.color.ink }}>{title}</Text>
+        <Text style={{ fontFamily: theme.font.sansBold, fontSize: 14.5, color: theme.color.ink }}>
+          {title}
+        </Text>
         {sub ? (
-          <Text style={{ fontFamily: theme.font.sansMedium, fontSize: 12, color: theme.color.mist, marginTop: 2 }}>{sub}</Text>
+          <Text
+            style={{
+              fontFamily: theme.font.sansMedium,
+              fontSize: 12,
+              color: theme.color.mist,
+              marginTop: 2,
+            }}
+          >
+            {sub}
+          </Text>
         ) : null}
       </View>
       {right ?? (
-        <View style={[styles.radio, { borderColor: selected ? theme.color.persimmon : theme.color.hairline }]}>
-          {selected ? <View style={[styles.radioDot, { backgroundColor: theme.color.persimmon }]} /> : null}
+        <View
+          style={[
+            styles.radio,
+            { borderColor: selected ? theme.color.persimmon : theme.color.hairline },
+          ]}
+        >
+          {selected ? (
+            <View style={[styles.radioDot, { backgroundColor: theme.color.persimmon }]} />
+          ) : null}
         </View>
       )}
     </Pressable>
@@ -51,8 +69,8 @@ export function OptionRow({
 
 const styles = StyleSheet.create({
   opt: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
     borderWidth: 1.5,
     borderRadius: 16,
@@ -64,8 +82,8 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   radioDot: { width: 10, height: 10, borderRadius: 5 },
 });

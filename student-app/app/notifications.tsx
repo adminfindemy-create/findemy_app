@@ -1,31 +1,30 @@
-import React from "react";
-import { View, Text, ScrollView, Pressable, StyleSheet, RefreshControl } from "react-native";
-import { useRouter } from "expo-router";
-import { useTheme } from "@findemy/ui";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { formatDistanceToNow } from "date-fns";
-import { ScreenHeader } from "@/components/common/ScreenHeader";
-import { EmptyState } from "@/components/common/EmptyState";
-import { ErrorState } from "@/components/common/ErrorState";
-import { SkeletonLoader } from "@/components/common/SkeletonLoader";
+import { EmptyState } from '@/components/common/EmptyState';
+import { ErrorState } from '@/components/common/ErrorState';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { SkeletonLoader } from '@/components/common/SkeletonLoader';
 import {
-  useNotifications,
-  useMarkNotificationRead,
   useMarkAllNotificationsRead,
-} from "@/hooks/useNotifications";
+  useMarkNotificationRead,
+  useNotifications,
+} from '@/hooks/useNotifications';
+import { useTheme } from '@findemy/ui';
+import { formatDistanceToNow } from 'date-fns';
+import { useRouter } from 'expo-router';
+import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // M5.1: notification inbox. Deep-linking by `data.screen` is intentionally
 // limited to routes that already exist in this app — anything else just marks
 // read without navigating away.
 const SCREEN_ROUTES: Record<string, string> = {
-  classes: "/(tabs)/classes",
-  batches: "/(tabs)/classes",
-  enrollments: "/(tabs)/classes",
-  trials: "/bookings",
-  bookings: "/bookings",
-  events: "/(tabs)/events",
-  workshops: "/(tabs)/events",
-  reviews: "/(tabs)/classes",
+  classes: '/(tabs)/classes',
+  batches: '/(tabs)/classes',
+  enrollments: '/(tabs)/classes',
+  trials: '/bookings',
+  bookings: '/bookings',
+  events: '/(tabs)/events',
+  workshops: '/(tabs)/events',
+  reviews: '/(tabs)/classes',
 };
 
 export default function NotificationsScreen() {
@@ -46,13 +45,19 @@ export default function NotificationsScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={["top"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={['top']}>
       <ScreenHeader
         title="Notifications"
         rightAction={
           unreadCount > 0 ? (
             <Pressable onPress={() => markAllRead.mutate()} hitSlop={8}>
-              <Text style={{ fontFamily: theme.font.sansSemibold, fontSize: 13, color: theme.color.persimmon }}>
+              <Text
+                style={{
+                  fontFamily: theme.font.sansSemibold,
+                  fontSize: 13,
+                  color: theme.color.persimmon,
+                }}
+              >
                 Mark all read
               </Text>
             </Pressable>
@@ -145,8 +150,8 @@ const styles = StyleSheet.create({
     paddingBottom: 48,
   },
   row: {
-    flexDirection: "row",
-    alignItems: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'flex-start',
     gap: 10,
     borderWidth: 1,
     borderRadius: 16,

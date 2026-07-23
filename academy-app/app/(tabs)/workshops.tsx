@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, RefreshControl, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useTheme, sansFor, Button, BlockPrintCover, IconPlus } from '@findemy/ui';
-import { useStudioWorkshops } from '@/hooks/useStudioQueries';
-import { formatRupees } from '@/lib/format';
+import { ErrorState } from '@/components/common/ErrorState';
 import { Screen } from '@/components/common/Screen';
 import { SegChoice } from '@/components/common/SegChoice';
 import { SkeletonLoader } from '@/components/common/SkeletonLoader';
-import { ErrorState } from '@/components/common/ErrorState';
+import { useStudioWorkshops } from '@/hooks/useStudioQueries';
+import { formatRupees } from '@/lib/format';
 import type { Workshop } from '@findemy/types';
+import { BlockPrintCover, Button, IconPlus, sansFor, useTheme } from '@findemy/ui';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 function statusInfo(workshop: Workshop, theme: any): { label: string; bg: string; fg: string } {
-  if (workshop.status === 'draft') return { label: 'Draft', bg: theme.color.paperWarm, fg: theme.color.mist };
+  if (workshop.status === 'draft')
+    return { label: 'Draft', bg: theme.color.paperWarm, fg: theme.color.mist };
   if (workshop.live) return { label: 'Live now', bg: theme.color.persimmon, fg: '#fff' };
   const start = new Date(workshop.start_at).getTime();
   const soon = start - Date.now() > 0 && start - Date.now() < 60 * 60 * 1000;
@@ -20,7 +21,11 @@ function statusInfo(workshop: Workshop, theme: any): { label: string; bg: string
   return { label: 'Upcoming', bg: theme.color.ink, fg: '#fff' };
 }
 
-function WorkshopCard({ workshop, variant, onPress }: { workshop: Workshop; variant: 1 | 2 | 3 | 4; onPress: () => void }) {
+function WorkshopCard({
+  workshop,
+  variant,
+  onPress,
+}: { workshop: Workshop; variant: 1 | 2 | 3 | 4; onPress: () => void }) {
   const theme = useTheme();
   const date = new Date(workshop.start_at);
   const free = workshop.price_paise === 0;
@@ -34,21 +39,61 @@ function WorkshopCard({ workshop, variant, onPress }: { workshop: Workshop; vari
   const verb = free ? 'registered' : 'booked';
 
   return (
-    <Pressable onPress={onPress} style={[styles.card, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}>
-      <BlockPrintCover category="music" variant={variant} letter={workshop.title?.[0] ?? 'W'} height={120}>
+    <Pressable
+      onPress={onPress}
+      style={[
+        styles.card,
+        { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+        theme.shadow.sm,
+      ]}
+    >
+      <BlockPrintCover
+        category="music"
+        variant={variant}
+        letter={workshop.title?.[0] ?? 'W'}
+        height={120}
+      >
         <View style={[styles.badge, { backgroundColor: status.bg }]}>
-          <Text style={{ fontFamily: sansFor(800), fontSize: 10, letterSpacing: 0.4, color: status.fg, textTransform: 'uppercase' }}>{status.label}</Text>
+          <Text
+            style={{
+              fontFamily: sansFor(800),
+              fontSize: 10,
+              letterSpacing: 0.4,
+              color: status.fg,
+              textTransform: 'uppercase',
+            }}
+          >
+            {status.label}
+          </Text>
         </View>
       </BlockPrintCover>
       <View style={{ padding: 14 }}>
-        <Text style={{ fontFamily: sansFor(800), fontSize: 15, color: theme.color.ink }} numberOfLines={1}>
+        <Text
+          style={{ fontFamily: sansFor(800), fontSize: 15, color: theme.color.ink }}
+          numberOfLines={1}
+        >
           {workshop.title}
         </Text>
-        <Text style={{ fontFamily: sansFor(600), fontSize: 12.5, color: theme.color.mist, marginTop: 3 }} numberOfLines={1}>
-          {date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} · {date.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' })} · {hrs} · {place}
+        <Text
+          style={{
+            fontFamily: sansFor(600),
+            fontSize: 12.5,
+            color: theme.color.mist,
+            marginTop: 3,
+          }}
+          numberOfLines={1}
+        >
+          {date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} ·{' '}
+          {date.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' })} · {hrs} ·{' '}
+          {place}
         </Text>
-        <Text style={{ fontFamily: sansFor(700), fontSize: 13, color: theme.color.ink, marginTop: 6 }}>
-          {price} · <Text style={{ fontFamily: sansFor(600), color: theme.color.mist }}>{workshop.registered_count} of {workshop.capacity} {verb}</Text>
+        <Text
+          style={{ fontFamily: sansFor(700), fontSize: 13, color: theme.color.ink, marginTop: 6 }}
+        >
+          {price} ·{' '}
+          <Text style={{ fontFamily: sansFor(600), color: theme.color.mist }}>
+            {workshop.registered_count} of {workshop.capacity} {verb}
+          </Text>
         </Text>
       </View>
     </Pressable>
@@ -66,7 +111,13 @@ export default function WorkshopsScreen() {
   const all: Workshop[] = data?.items ?? [];
   const items = all.filter((workshop) => {
     const start = new Date(workshop.start_at);
-    if (tab === 'live') return !!workshop.live || (workshop.status === 'upcoming' && start.getTime() - now.getTime() > 0 && start.getTime() - now.getTime() < 60 * 60 * 1000);
+    if (tab === 'live')
+      return (
+        !!workshop.live ||
+        (workshop.status === 'upcoming' &&
+          start.getTime() - now.getTime() > 0 &&
+          start.getTime() - now.getTime() < 60 * 60 * 1000)
+      );
     if (tab === 'up') return workshop.status !== 'completed' && start >= now;
     return start < now && !workshop.live;
   });
@@ -78,8 +129,26 @@ export default function WorkshopsScreen() {
 
   const hero = (
     <View style={styles.hero}>
-      <Text style={{ fontFamily: sansFor(700), fontSize: 11, letterSpacing: 1.8, color: theme.color.persimmon }}>EVENTS YOU HOST</Text>
-      <Text style={{ fontFamily: theme.font.serif, fontSize: 34, lineHeight: 38, letterSpacing: -0.6, color: theme.color.ink, marginTop: 4 }}>
+      <Text
+        style={{
+          fontFamily: sansFor(700),
+          fontSize: 11,
+          letterSpacing: 1.8,
+          color: theme.color.persimmon,
+        }}
+      >
+        EVENTS YOU HOST
+      </Text>
+      <Text
+        style={{
+          fontFamily: theme.font.serif,
+          fontSize: 34,
+          lineHeight: 38,
+          letterSpacing: -0.6,
+          color: theme.color.ink,
+          marginTop: 4,
+        }}
+      >
         Workshops
       </Text>
     </View>
@@ -111,20 +180,39 @@ export default function WorkshopsScreen() {
         ) : isError ? (
           <ErrorState onRetry={refetch} />
         ) : items.length === 0 ? (
-          <Text style={{ fontFamily: theme.font.sans, fontSize: 14, color: theme.color.mist, marginTop: 40, textAlign: 'center' }}>
+          <Text
+            style={{
+              fontFamily: theme.font.sans,
+              fontSize: 14,
+              color: theme.color.mist,
+              marginTop: 40,
+              textAlign: 'center',
+            }}
+          >
             {tab === 'up'
               ? 'No upcoming workshops. Create one below.'
               : tab === 'live'
-              ? 'No workshops live right now.'
-              : 'No past workshops.'}
+                ? 'No workshops live right now.'
+                : 'No past workshops.'}
           </Text>
         ) : (
           items.map((workshop, index) => (
-            <WorkshopCard key={workshop.id} workshop={workshop} variant={((index % 4) + 1) as 1 | 2 | 3 | 4} onPress={() => router.push(`/workshops/${workshop.id}`)} />
+            <WorkshopCard
+              key={workshop.id}
+              workshop={workshop}
+              variant={((index % 4) + 1) as 1 | 2 | 3 | 4}
+              onPress={() => router.push(`/workshops/${workshop.id}`)}
+            />
           ))
         )}
 
-        <Button variant="primary" block icon={<IconPlus size={18} color="#fff" />} style={{ marginTop: 4 }} onPress={() => router.push('/workshops/new')}>
+        <Button
+          variant="primary"
+          block
+          icon={<IconPlus size={18} color="#fff" />}
+          style={{ marginTop: 4 }}
+          onPress={() => router.push('/workshops/new')}
+        >
           Create workshop
         </Button>
       </ScrollView>
@@ -135,5 +223,12 @@ export default function WorkshopsScreen() {
 const styles = StyleSheet.create({
   hero: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12, backgroundColor: 'transparent' },
   card: { borderRadius: 18, borderWidth: 1, overflow: 'hidden' },
-  badge: { position: 'absolute', top: 10, left: 10, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999 },
+  badge: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+  },
 });

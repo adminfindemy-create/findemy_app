@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Pressable, Text, StyleSheet } from 'react-native';
+import type React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 export type NavItem = {
@@ -21,7 +21,12 @@ export function NavBar({
 }) {
   const theme = useTheme();
   return (
-    <View style={[styles.bar, { height, backgroundColor: 'rgba(251,247,239,0.92)', borderTopColor: theme.color.hairline }]}>
+    <View
+      style={[
+        styles.bar,
+        { height, backgroundColor: 'rgba(251,247,239,0.92)', borderTopColor: theme.color.hairline },
+      ]}
+    >
       {items.map((item) => {
         const isActive = item.key === active;
         return (

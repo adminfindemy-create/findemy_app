@@ -1,4 +1,4 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 export function SectionHeader({
@@ -13,12 +13,26 @@ export function SectionHeader({
   const theme = useTheme();
   return (
     <View style={styles.row}>
-      <Text style={{ fontFamily: theme.font.sans, fontSize: 16, fontWeight: '600', color: theme.color.ink }}>
+      <Text
+        style={{
+          fontFamily: theme.font.sans,
+          fontSize: 16,
+          fontWeight: '600',
+          color: theme.color.ink,
+        }}
+      >
         {title}
       </Text>
       {actionLabel && onAction ? (
         <Pressable onPress={onAction}>
-          <Text style={{ fontFamily: theme.font.sans, fontSize: 13, fontWeight: '500', color: theme.color.persimmon }}>
+          <Text
+            style={{
+              fontFamily: theme.font.sans,
+              fontSize: 13,
+              fontWeight: '500',
+              color: theme.color.persimmon,
+            }}
+          >
             {actionLabel}
           </Text>
         </Pressable>

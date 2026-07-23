@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
-import { View, Text, Pressable, TextInput, Alert, StyleSheet } from 'react-native';
-import { useTheme, sansFor, Button, AttachmentPicker, type Attachment, type PickedAsset } from '@findemy/ui';
-import { useLocalSearchParams } from 'expo-router';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { ErrorState } from '@/components/common/ErrorState';
 import { Screen } from '@/components/common/Screen';
 import { ScreenHeader } from '@/components/common/ScreenHeader';
-import { ErrorState } from '@/components/common/ErrorState';
 import { api, uploadMultipart } from '@/lib/api';
+import {
+  type Attachment,
+  AttachmentPicker,
+  Button,
+  type PickedAsset,
+  sansFor,
+  useTheme,
+} from '@findemy/ui';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 // M5.2: teacher-uploaded study material for this batch. Reuses the shared
 // <AttachmentPicker> built for M2.2 (backend/shared/ui/src/components/AttachmentPicker.tsx)
@@ -101,10 +108,19 @@ export default function BatchResourcesScreen() {
           placeholderTextColor={theme.color.mist}
           style={[
             styles.input,
-            { fontFamily: sansFor(600), color: theme.color.ink, backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+            {
+              fontFamily: sansFor(600),
+              color: theme.color.ink,
+              backgroundColor: theme.color.ivory,
+              borderColor: theme.color.hairline,
+            },
           ]}
         />
-        <AttachmentPicker value={attachment} onChange={setAttachment} onUpload={uploadResourceAttachment} />
+        <AttachmentPicker
+          value={attachment}
+          onChange={setAttachment}
+          onUpload={uploadResourceAttachment}
+        />
         <Button onPress={handleAdd} loading={createMut.isPending} block>
           Add resource
         </Button>
@@ -113,7 +129,9 @@ export default function BatchResourcesScreen() {
       <View style={styles.section}>
         <Text style={[styles.sectionLabel, { color: theme.color.mist }]}>Shared with students</Text>
         {resourcesQuery.isLoading ? (
-          <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.mist }}>Loading…</Text>
+          <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.mist }}>
+            Loading…
+          </Text>
         ) : resourcesQuery.isError ? (
           <ErrorState message="Couldn't load resources." onRetry={() => resourcesQuery.refetch()} />
         ) : resources.length === 0 ? (
@@ -125,18 +143,35 @@ export default function BatchResourcesScreen() {
             {resources.map((resource) => (
               <View
                 key={resource.id}
-                style={[styles.row, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}
+                style={[
+                  styles.row,
+                  { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+                ]}
               >
                 <View style={{ flex: 1, minWidth: 0 }}>
-                  <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }} numberOfLines={1}>
+                  <Text
+                    style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }}
+                    numberOfLines={1}
+                  >
                     {resource.title}
                   </Text>
-                  <Text style={{ fontFamily: sansFor(500), fontSize: 12, color: theme.color.mist, marginTop: 2 }}>
+                  <Text
+                    style={{
+                      fontFamily: sansFor(500),
+                      fontSize: 12,
+                      color: theme.color.mist,
+                      marginTop: 2,
+                    }}
+                  >
                     {resource.file_type}
                   </Text>
                 </View>
                 <Pressable onPress={() => handleDelete(resource.id, resource.title)} hitSlop={8}>
-                  <Text style={{ fontFamily: sansFor(700), fontSize: 12.5, color: theme.color.rose }}>Delete</Text>
+                  <Text
+                    style={{ fontFamily: sansFor(700), fontSize: 12.5, color: theme.color.rose }}
+                  >
+                    Delete
+                  </Text>
                 </Pressable>
               </View>
             ))}
@@ -149,8 +184,19 @@ export default function BatchResourcesScreen() {
 
 const styles = StyleSheet.create({
   section: { gap: 10, marginTop: 16 },
-  sectionLabel: { fontFamily: sansFor(700), fontSize: 12, letterSpacing: 1.2, textTransform: 'uppercase' },
-  input: { borderWidth: 1, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14 },
+  sectionLabel: {
+    fontFamily: sansFor(700),
+    fontSize: 12,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  input: {
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 14,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

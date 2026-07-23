@@ -1,6 +1,6 @@
-import React from "react";
-import { Modal, View, Pressable, StyleSheet } from "react-native";
-import { tokens, useTheme } from "@findemy/ui";
+import { tokens, useTheme } from '@findemy/ui';
+import type React from 'react';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
 export function BottomSheet({
   visible,
@@ -19,10 +19,7 @@ export function BottomSheet({
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose} />
       <View
-        style={[
-          styles.sheet,
-          { backgroundColor: theme.color.paper, maxHeight: `${heightPct}%` },
-        ]}
+        style={[styles.sheet, { backgroundColor: theme.color.paper, maxHeight: `${heightPct}%` }]}
       >
         <View style={[styles.handle, { backgroundColor: theme.color.hairline }]} />
         {children}
@@ -34,7 +31,7 @@ export function BottomSheet({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: "rgba(20,16,14,0.45)",
+    backgroundColor: 'rgba(20,16,14,0.45)',
   },
   sheet: {
     // Prototype `.sheet`: 30px top radius, generous padding.
@@ -52,7 +49,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 5,
     borderRadius: 99,
-    alignSelf: "center",
+    alignSelf: 'center',
     marginTop: 8,
     marginBottom: 16,
   },

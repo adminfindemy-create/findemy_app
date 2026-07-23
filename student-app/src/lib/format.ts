@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format } from 'date-fns';
 
 /**
  * Render a paise amount as INR. Default: rounded to whole rupees with
@@ -7,20 +7,20 @@ import { format } from "date-fns";
  */
 export function formatRupees(paise: number, opts?: { withDecimals?: boolean }): string {
   const withDecimals = opts?.withDecimals ?? false;
-  const sign = paise < 0 ? "−" : "";
+  const sign = paise < 0 ? '−' : '';
   const rupees = Math.abs(paise) / 100;
   const value = withDecimals
-    ? rupees.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-    : Math.round(rupees).toLocaleString("en-IN");
+    ? rupees.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    : Math.round(rupees).toLocaleString('en-IN');
   return `${sign}₹${value}`;
 }
 
 /** "Saturday, 19 April 2026" */
 export function formatTrialDate(iso: string): string {
-  return format(new Date(iso), "EEEE, d MMMM yyyy");
+  return format(new Date(iso), 'EEEE, d MMMM yyyy');
 }
 
 /** "Sat, 19 Apr" */
 export function formatTrialDateShort(iso: string): string {
-  return format(new Date(iso), "EEE, d MMM");
+  return format(new Date(iso), 'EEE, d MMM');
 }

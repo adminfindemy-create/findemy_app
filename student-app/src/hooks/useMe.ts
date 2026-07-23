@@ -1,8 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { api } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
 
 export const useMe = () =>
   useQuery({
-    queryKey: ["me"],
+    queryKey: ['me'],
     queryFn: () => api.me.get(),
   });

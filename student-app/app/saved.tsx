@@ -1,13 +1,12 @@
-import React from "react";
-import { View, ScrollView, StyleSheet, RefreshControl } from "react-native";
-import { useRouter } from "expo-router";
-import { useTheme } from "@findemy/ui";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ScreenHeader } from "@/components/common/ScreenHeader";
-import { EmptyState } from "@/components/common/EmptyState";
-import { SkeletonCard } from "@/components/common/SkeletonLoader";
-import { AcademyCard } from "@/components/academy/AcademyCard";
-import { useSavedAcademies, useToggleSavedAcademy } from "@/hooks/useSaved";
+import { AcademyCard } from '@/components/academy/AcademyCard';
+import { EmptyState } from '@/components/common/EmptyState';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { SkeletonCard } from '@/components/common/SkeletonLoader';
+import { useSavedAcademies, useToggleSavedAcademy } from '@/hooks/useSaved';
+import { useTheme } from '@findemy/ui';
+import { useRouter } from 'expo-router';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SavedScreen() {
   const router = useRouter();
@@ -18,7 +17,7 @@ export default function SavedScreen() {
   const items = (saved.data as any)?.items ?? [];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={["top"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={['top']}>
       <ScreenHeader title="Wishlist" />
 
       {saved.isLoading ? (
@@ -31,7 +30,7 @@ export default function SavedScreen() {
         <EmptyState
           message="No saved academies yet. Tap ♡ on any academy to add it here."
           actionLabel="Explore academies"
-          onAction={() => router.push("/(tabs)")}
+          onAction={() => router.push('/(tabs)')}
         />
       ) : (
         <ScrollView

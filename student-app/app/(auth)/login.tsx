@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { View, Text } from "react-native";
-import { useRouter } from "expo-router";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useTheme, Input, Button } from "@findemy/ui";
-import { AuthScaffold, AuthHeading, AuthSub, Em } from "@/components/auth/AuthScaffold";
-import { api } from "@/lib/api";
+import { AuthHeading, AuthScaffold, AuthSub, Em } from '@/components/auth/AuthScaffold';
+import { api } from '@/lib/api';
+import { Button, Input, useTheme } from '@findemy/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Text, View } from 'react-native';
+import { z } from 'zod';
 
 const schema = z.object({
   phone: z.string().min(10).max(10),
@@ -18,24 +18,24 @@ export default function LoginScreen() {
   const router = useRouter();
   const theme = useTheme();
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState('');
 
   const { control, handleSubmit } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { phone: "" },
+    defaultValues: { phone: '' },
   });
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
-    setErrorMsg("");
+    setErrorMsg('');
     try {
-      const response = await api.auth.requestOtp({ phone: data.phone, role: "student" });
+      const response = await api.auth.requestOtp({ phone: data.phone, role: 'student' });
       router.push(`/(auth)/signup-otp?otp_id=${response.otp_id}&phone=${data.phone}`);
     } catch (error: any) {
-      if (error.code === "RATE_LIMITED") {
-        setErrorMsg("Too many attempts, try in a few minutes.");
+      if (error.code === 'RATE_LIMITED') {
+        setErrorMsg('Too many attempts, try in a few minutes.');
       } else {
-        setErrorMsg("Something went wrong. Please try again.");
+        setErrorMsg('Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -59,7 +59,13 @@ export default function LoginScreen() {
             <Input
               label="Phone number"
               prefix={
-                <Text style={{ fontFamily: theme.font.sansBold, fontSize: 16, color: theme.color.inkSoft }}>
+                <Text
+                  style={{
+                    fontFamily: theme.font.sansBold,
+                    fontSize: 16,
+                    color: theme.color.inkSoft,
+                  }}
+                >
                   +91
                 </Text>
               }
@@ -75,7 +81,14 @@ export default function LoginScreen() {
       </View>
 
       {errorMsg ? (
-        <Text style={{ color: theme.color.rose, fontFamily: theme.font.sans, fontSize: 13, marginTop: 8 }}>
+        <Text
+          style={{
+            color: theme.color.rose,
+            fontFamily: theme.font.sans,
+            fontSize: 13,
+            marginTop: 8,
+          }}
+        >
           {errorMsg}
         </Text>
       ) : null}
@@ -86,12 +99,12 @@ export default function LoginScreen() {
         </Button>
       </View>
 
-      <View style={{ marginTop: 24, alignItems: "center" }}>
+      <View style={{ marginTop: 24, alignItems: 'center' }}>
         <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.mist }}>
-          New to Findemy?{" "}
+          New to Findemy?{' '}
           <Text
             style={{ fontFamily: theme.font.sansBold, color: theme.color.persimmon }}
-            onPress={() => router.push("/(auth)/signup")}
+            onPress={() => router.push('/(auth)/signup')}
           >
             Sign up
           </Text>

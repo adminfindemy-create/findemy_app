@@ -1,7 +1,7 @@
-import React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { useTheme } from "@findemy/ui";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from '@findemy/ui';
+import type React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type TabBarItem = {
   key: string;
@@ -29,7 +29,7 @@ export function TabBar({
       <View style={[styles.bar, theme.shadow.lg]}>
         {items.map((item) => {
           const isActive = item.key === active;
-          const iconColor = isActive ? "#fff" : "rgba(255,255,255,0.55)";
+          const iconColor = isActive ? '#fff' : 'rgba(255,255,255,0.55)';
           return (
             <Pressable
               key={item.key}
@@ -56,31 +56,31 @@ export function TabBar({
 
 const styles = StyleSheet.create({
   wrap: {
-    position: "absolute",
+    position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    alignItems: "center",
+    alignItems: 'center',
   },
   bar: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 4,
-    backgroundColor: "rgba(22,18,15,0.95)",
+    backgroundColor: 'rgba(22,18,15,0.95)',
     borderRadius: 999,
     padding: 6,
   },
   tab: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
     borderRadius: 999,
     paddingVertical: 12,
     paddingHorizontal: 12,
   },
   lbl: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 13,
-    fontWeight: "700",
+    fontWeight: '700',
   },
 });

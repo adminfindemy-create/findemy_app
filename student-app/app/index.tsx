@@ -1,11 +1,11 @@
-import { useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
-import { useTheme } from "@findemy/ui";
-import { useAuth } from "@/stores/auth";
-import { SplashWaves } from "@/components/splash/SplashWaves";
-import { FindemyLogoMark } from "@/components/splash/FindemyLogoMark";
-import { FindemyWordmark } from "@/components/splash/FindemyWordmark";
+import { FindemyLogoMark } from '@/components/splash/FindemyLogoMark';
+import { FindemyWordmark } from '@/components/splash/FindemyWordmark';
+import { SplashWaves } from '@/components/splash/SplashWaves';
+import { useAuth } from '@/stores/auth';
+import { useTheme } from '@findemy/ui';
+import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function SplashScreen() {
   const router = useRouter();
@@ -15,9 +15,9 @@ export default function SplashScreen() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (accessToken) {
-        router.replace("/(tabs)");
+        router.replace('/(tabs)');
       } else {
-        router.replace("/(auth)");
+        router.replace('/(auth)');
       }
     }, 1200);
     return () => clearTimeout(timer);
@@ -34,16 +34,9 @@ export default function SplashScreen() {
           <FindemyWordmark size={56} />
         </View>
 
-        <View
-          style={[styles.rule, { backgroundColor: theme.color.persimmon }]}
-        />
+        <View style={[styles.rule, { backgroundColor: theme.color.persimmon }]} />
 
-        <Text
-          style={[
-            styles.discover,
-            { color: theme.color.ivory, fontFamily: theme.font.sans },
-          ]}
-        >
+        <Text style={[styles.discover, { color: theme.color.ivory, fontFamily: theme.font.sans }]}>
           DISCOVER YOUR ART
         </Text>
       </View>
@@ -54,13 +47,13 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 40,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   column: {
-    alignItems: "center",
+    alignItems: 'center',
   },
   wordmarkWrap: {
     marginTop: 28,
@@ -76,6 +69,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     letterSpacing: 4,
     opacity: 0.7,
-    textAlign: "center",
+    textAlign: 'center',
   },
 });

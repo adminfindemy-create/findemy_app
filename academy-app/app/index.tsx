@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useAuth } from '@/stores/auth';
 import { useTheme } from '@findemy/ui';
+import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 
 export default function SplashScreen() {
   const router = useRouter();
@@ -21,7 +21,14 @@ export default function SplashScreen() {
   }, [accessToken, router]);
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.color.ivory }}>
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: theme.color.ivory,
+      }}
+    >
       <ActivityIndicator color={theme.color.persimmon} />
     </View>
   );

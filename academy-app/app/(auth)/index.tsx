@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Platform, Alert, Pressable } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import * as AppleAuthentication from 'expo-apple-authentication';
-import * as Crypto from 'expo-crypto';
-import { useTheme, BlockPrintCover, Button } from '@findemy/ui';
-import { Em, AuthBadge } from '@/components/auth/AuthScaffold';
-import type { AcademyAccount, Academy } from '@findemy/types';
+import { AuthBadge, Em } from '@/components/auth/AuthScaffold';
 import { api } from '@/lib/api';
 import { useAuth } from '@/stores/auth';
 import { useOnboarding } from '@/stores/onboarding';
+import type { Academy, AcademyAccount } from '@findemy/types';
+import { BlockPrintCover, Button, useTheme } from '@findemy/ui';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import * as Crypto from 'expo-crypto';
+import { useRouter } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
+import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Lazy-required so the JS bundle doesn't crash if the native module isn't linked
 // (e.g. running in Expo Go, or before a dev-client rebuild).
@@ -48,13 +48,9 @@ function configureGoogleSignin() {
 function coerceAccount(raw: Record<string, unknown> | undefined): AcademyAccount | null {
   if (!raw) return null;
   const ownerName =
-    (raw.ownerName as string | undefined) ??
-    (raw.owner_name as string | undefined) ??
-    null;
+    (raw.ownerName as string | undefined) ?? (raw.owner_name as string | undefined) ?? null;
   const academyId =
-    (raw.academyId as string | undefined) ??
-    (raw.academy_id as string | undefined) ??
-    null;
+    (raw.academyId as string | undefined) ?? (raw.academy_id as string | undefined) ?? null;
   return {
     id: String(raw.id ?? ''),
     phone: raw.phone ? String(raw.phone) : null,
@@ -215,8 +211,7 @@ export default function WelcomeScreen() {
       // Silent on user cancellation / in-progress
       if (
         googleStatusCodes &&
-        (code === googleStatusCodes.SIGN_IN_CANCELLED ||
-          code === googleStatusCodes.IN_PROGRESS)
+        (code === googleStatusCodes.SIGN_IN_CANCELLED || code === googleStatusCodes.IN_PROGRESS)
       ) {
         return;
       }
@@ -256,7 +251,8 @@ export default function WelcomeScreen() {
           Run your <Em>studio</Em>, fill your classes.
         </Text>
         <Text style={[styles.sub, { fontFamily: theme.font.sans, color: theme.color.mist }]}>
-          Get discovered by learners nearby. Manage trials, batches, attendance & enrolments — all in one place.
+          Get discovered by learners nearby. Manage trials, batches, attendance & enrolments — all
+          in one place.
         </Text>
 
         {/* Category art grid (block-print covers) */}
@@ -301,7 +297,11 @@ export default function WelcomeScreen() {
             onPress={handleGoogle}
             icon={
               <View style={[styles.gIcon, { borderColor: theme.color.hairline }]}>
-                <Text style={{ fontSize: 13, fontFamily: theme.font.sansBold, color: theme.color.ink }}>G</Text>
+                <Text
+                  style={{ fontSize: 13, fontFamily: theme.font.sansBold, color: theme.color.ink }}
+                >
+                  G
+                </Text>
               </View>
             }
           >
@@ -332,7 +332,13 @@ export default function WelcomeScreen() {
               hitSlop={8}
               style={{ paddingHorizontal: 12, paddingVertical: 4 }}
             >
-              <Text style={{ fontFamily: theme.font.sansSemibold, fontSize: 13.5, color: theme.color.mist }}>
+              <Text
+                style={{
+                  fontFamily: theme.font.sansSemibold,
+                  fontSize: 13.5,
+                  color: theme.color.mist,
+                }}
+              >
                 New here?{' '}
                 <Text style={{ fontFamily: theme.font.sansBold, color: theme.color.persimmon }}>
                   List your academy

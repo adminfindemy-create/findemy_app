@@ -1,5 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  type StyleProp,
+  StyleSheet,
+  Text,
+  View,
+  type ViewStyle,
+} from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 // M4.2: net-new date/time picker for scheduling a future 1:1 coaching session.
@@ -16,7 +24,20 @@ import { useTheme } from '../ThemeProvider';
 // vice versa) can render before `onChange` fires with a complete Date.
 
 const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTH_SHORT = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
 function startOfDay(date: Date): Date {
   const next = new Date(date);
@@ -31,7 +52,11 @@ function addDays(date: Date, days: number): Date {
 }
 
 function isSameDay(a: Date, b: Date): boolean {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
 }
 
 function formatTime(minutesFromMidnight: number): string {
@@ -79,7 +104,7 @@ export function DateTimePicker({
 
   const [pickedDate, setPickedDate] = useState<Date>(() => (value ? startOfDay(value) : today));
   const [pickedMinutes, setPickedMinutes] = useState<number | null>(() =>
-    value ? value.getHours() * 60 + value.getMinutes() : null,
+    value ? value.getHours() * 60 + value.getMinutes() : null
   );
 
   // If the parent resets the field (e.g. clearing a form), drop the stale
@@ -91,7 +116,7 @@ export function DateTimePicker({
 
   const dateRange = useMemo(
     () => Array.from({ length: daysAhead }, (_, i) => addDays(today, i)),
-    [today, daysAhead],
+    [today, daysAhead]
   );
 
   const timeSlots = useMemo(() => {
@@ -152,13 +177,34 @@ export function DateTimePicker({
                 },
               ]}
             >
-              <Text style={{ fontFamily: theme.font.sansBold, fontSize: 9, letterSpacing: 0.5, color: isSel ? '#fff' : theme.color.mist }}>
+              <Text
+                style={{
+                  fontFamily: theme.font.sansBold,
+                  fontSize: 9,
+                  letterSpacing: 0.5,
+                  color: isSel ? '#fff' : theme.color.mist,
+                }}
+              >
                 {DAY_SHORT[date.getDay()].toUpperCase()}
               </Text>
-              <Text style={{ fontFamily: theme.font.serif, fontSize: 18, color: isSel ? '#fff' : theme.color.ink, marginTop: 2 }}>
+              <Text
+                style={{
+                  fontFamily: theme.font.serif,
+                  fontSize: 18,
+                  color: isSel ? '#fff' : theme.color.ink,
+                  marginTop: 2,
+                }}
+              >
                 {date.getDate()}
               </Text>
-              <Text style={{ fontFamily: theme.font.sansMedium, fontSize: 9, color: isSel ? 'rgba(255,255,255,0.85)' : theme.color.whisper, marginTop: 1 }}>
+              <Text
+                style={{
+                  fontFamily: theme.font.sansMedium,
+                  fontSize: 9,
+                  color: isSel ? 'rgba(255,255,255,0.85)' : theme.color.whisper,
+                  marginTop: 1,
+                }}
+              >
                 {MONTH_SHORT[date.getMonth()]}
               </Text>
             </Pressable>
@@ -180,13 +226,23 @@ export function DateTimePicker({
               style={[
                 styles.timeSlot,
                 {
-                  backgroundColor: isSel ? theme.color.persimmon : disabled ? theme.color.paperWarm : theme.color.ivory,
+                  backgroundColor: isSel
+                    ? theme.color.persimmon
+                    : disabled
+                      ? theme.color.paperWarm
+                      : theme.color.ivory,
                   borderColor: isSel ? theme.color.persimmon : theme.color.hairline,
                   opacity: disabled ? 0.4 : 1,
                 },
               ]}
             >
-              <Text style={{ fontFamily: theme.font.sansSemibold, fontSize: 12.5, color: isSel ? '#fff' : disabled ? theme.color.whisper : theme.color.ink }}>
+              <Text
+                style={{
+                  fontFamily: theme.font.sansSemibold,
+                  fontSize: 12.5,
+                  color: isSel ? '#fff' : disabled ? theme.color.whisper : theme.color.ink,
+                }}
+              >
                 {formatTime(minutesFromMidnight)}
               </Text>
             </Pressable>
@@ -200,7 +256,20 @@ export function DateTimePicker({
 const styles = StyleSheet.create({
   dateStrip: { marginHorizontal: -2 },
   dateStripContent: { gap: 8, paddingVertical: 4, paddingHorizontal: 2 },
-  dateChip: { width: 54, paddingVertical: 10, borderRadius: 12, borderWidth: 1, alignItems: 'center' },
+  dateChip: {
+    width: 54,
+    paddingVertical: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
   timeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 },
-  timeSlot: { flexGrow: 1, flexBasis: '30%', paddingVertical: 10, alignItems: 'center', borderRadius: 12, borderWidth: 1 },
+  timeSlot: {
+    flexGrow: 1,
+    flexBasis: '30%',
+    paddingVertical: 10,
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1,
+  },
 });

@@ -1,10 +1,9 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { useTheme } from "@findemy/ui";
+import { useTheme } from '@findemy/ui';
+import { StyleSheet, Text, View } from 'react-native';
 
 export function OTPDisplay({ value, large = false }: { value: string; large?: boolean }) {
   const theme = useTheme();
-  const digits = value.split("");
+  const digits = value.split('');
   return (
     <View style={styles.row}>
       {Array.from({ length: 4 }).map((_, i) => (
@@ -25,10 +24,10 @@ export function OTPDisplay({ value, large = false }: { value: string; large?: bo
               color: theme.color.ink,
               fontFamily: theme.font.sans,
               fontSize: large ? 28 : 20,
-              fontWeight: "700",
+              fontWeight: '700',
             }}
           >
-            {digits[i] || ""}
+            {digits[i] || ''}
           </Text>
         </View>
       ))}
@@ -38,14 +37,14 @@ export function OTPDisplay({ value, large = false }: { value: string; large?: bo
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: "row",
-    justifyContent: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
     gap: 8,
   },
   cell: {
     borderWidth: 1.5,
     borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

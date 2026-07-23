@@ -64,27 +64,27 @@ export const tokens = {
   type: {
     // Display (huge serif italic, splash + auth heroes)
     splash: { size: 78, lineHeight: 78, weight: 400 },
-    hero:   { size: 44, lineHeight: 46, weight: 400 },
-    h1:     { size: 38, lineHeight: 40, weight: 400 },
-    h2:     { size: 30, lineHeight: 32, weight: 400 },
-    h3:     { size: 24, lineHeight: 28, weight: 400 },
-    h4:     { size: 22, lineHeight: 26, weight: 400 },
-    h5:     { size: 18, lineHeight: 22, weight: 600 },
+    hero: { size: 44, lineHeight: 46, weight: 400 },
+    h1: { size: 38, lineHeight: 40, weight: 400 },
+    h2: { size: 30, lineHeight: 32, weight: 400 },
+    h3: { size: 24, lineHeight: 28, weight: 400 },
+    h4: { size: 22, lineHeight: 26, weight: 400 },
+    h5: { size: 18, lineHeight: 22, weight: 600 },
 
     // Sans body / utility
-    body:     { size: 14, lineHeight: 20, weight: 400 },
-    bodyLg:   { size: 15, lineHeight: 22, weight: 400 },
-    small:    { size: 13, lineHeight: 18, weight: 400 },
-    micro:    { size: 12, lineHeight: 16, weight: 500 },
-    tiny:     { size: 11, lineHeight: 14, weight: 500 },
-    label:    { size: 10, lineHeight: 12, weight: 600 },
+    body: { size: 14, lineHeight: 20, weight: 400 },
+    bodyLg: { size: 15, lineHeight: 22, weight: 400 },
+    small: { size: 13, lineHeight: 18, weight: 400 },
+    micro: { size: 12, lineHeight: 16, weight: 500 },
+    tiny: { size: 11, lineHeight: 14, weight: 500 },
+    label: { size: 10, lineHeight: 12, weight: 600 },
 
     // Legacy aliases (kept so existing screens don't break — point at the
     // closest new equivalent).
-    display:  { size: 44, lineHeight: 46, weight: 400 },
-    title:    { size: 24, lineHeight: 28, weight: 400 },
+    display: { size: 44, lineHeight: 46, weight: 400 },
+    title: { size: 24, lineHeight: 28, weight: 400 },
     subtitle: { size: 18, lineHeight: 22, weight: 600 },
-    caption:  { size: 11, lineHeight: 14, weight: 500 },
+    caption: { size: 11, lineHeight: 14, weight: 500 },
   },
   space: {
     0: 0,
@@ -138,10 +138,10 @@ export const tokens = {
   // Per-category palette for art / chip / accent surfaces — used by
   // BlockPrintCover, badges, chips.
   category: {
-    music:  { base: '#FBE9D6', accent: '#EC5A2B', ink: '#5B2B14' },
-    dance:  { base: '#D9EBE3', accent: '#1E6F66', ink: '#0E3936' },
-    arts:   { base: '#FBE4B8', accent: '#C8862A', ink: '#5B3F0E' },
-    yoga:   { base: '#E2EAF4', accent: '#3F6FA8', ink: '#2A3D55' },
+    music: { base: '#FBE9D6', accent: '#EC5A2B', ink: '#5B2B14' },
+    dance: { base: '#D9EBE3', accent: '#1E6F66', ink: '#0E3936' },
+    arts: { base: '#FBE4B8', accent: '#C8862A', ink: '#5B3F0E' },
+    yoga: { base: '#E2EAF4', accent: '#3F6FA8', ink: '#2A3D55' },
   },
 } as const;
 
@@ -153,7 +153,7 @@ export type Theme = typeof tokens;
  * `sans` family, which RN won't render bolder for a named custom font.
  */
 export function sansFor(weight?: string | number): string {
-  const numericWeight = typeof weight === 'string' ? parseInt(weight, 10) : weight ?? 400;
+  const numericWeight = typeof weight === 'string' ? Number.parseInt(weight, 10) : (weight ?? 400);
   if (numericWeight >= 700) return tokens.font.sansBold;
   if (numericWeight >= 600) return tokens.font.sansSemibold;
   if (numericWeight >= 500) return tokens.font.sansMedium;

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 export function Tag({
@@ -28,7 +28,14 @@ export function Tag({
 
   return (
     <View style={[styles.tag, { backgroundColor: bgMap[tone] }]}>
-      <Text style={{ color: textMap[tone], fontFamily: theme.font.sans, fontSize: 11, fontWeight: '600' }}>
+      <Text
+        style={{
+          color: textMap[tone],
+          fontFamily: theme.font.sans,
+          fontSize: 11,
+          fontWeight: '600',
+        }}
+      >
         {label}
       </Text>
     </View>

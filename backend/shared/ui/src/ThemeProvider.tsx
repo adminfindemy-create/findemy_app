@@ -1,5 +1,6 @@
-import React, { createContext, useContext } from 'react';
-import { lightTheme, darkTheme } from './theme';
+import type React from 'react';
+import { createContext, useContext } from 'react';
+import { darkTheme, lightTheme } from './theme';
 import type { Theme } from './theme';
 
 const ThemeContext = createContext<Theme>(lightTheme);

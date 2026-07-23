@@ -1,9 +1,8 @@
-import React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { Image } from "expo-image";
-import { useTheme, IconChevR } from "@findemy/ui";
-import { format } from "date-fns";
-import { getWorkshopImage } from "@/lib/eventImages";
+import { getWorkshopImage } from '@/lib/eventImages';
+import { IconChevR, useTheme } from '@findemy/ui';
+import { format } from 'date-fns';
+import { Image } from 'expo-image';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 // Prototype `.row-card`: thumb + title + "Workshop · date" sub + fee/seats foot.
 // Tapping the card opens the detail screen (register happens there).
@@ -12,10 +11,11 @@ export function WorkshopRowCard({ workshop, onPress }: { workshop: any; onPress:
 
   const rawStart = workshop.start_at ?? workshop.startAt;
   const date = rawStart ? new Date(rawStart) : null;
-  const dateValid = date && !isNaN(date.getTime());
+  const dateValid = date && !Number.isNaN(date.getTime());
 
   const pricePaise = workshop.price_paise ?? workshop.pricePaise ?? 0;
-  const price = pricePaise === 0 ? "Free" : `₹${Math.round(pricePaise / 100).toLocaleString("en-IN")}`;
+  const price =
+    pricePaise === 0 ? 'Free' : `₹${Math.round(pricePaise / 100).toLocaleString('en-IN')}`;
 
   const capacity = workshop.capacity ?? 0;
   const registered = workshop.registered_count ?? workshop.registeredCount ?? 0;
@@ -25,32 +25,52 @@ export function WorkshopRowCard({ workshop, onPress }: { workshop: any; onPress:
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.card, { backgroundColor: "#fff", borderColor: theme.color.hairline, ...theme.shadow.sm }]}
+      style={[
+        styles.card,
+        { backgroundColor: '#fff', borderColor: theme.color.hairline, ...theme.shadow.sm },
+      ]}
     >
-      <Image source={{ uri: getWorkshopImage(workshop.type) }} style={styles.thumb} contentFit="cover" transition={150} />
+      <Image
+        source={{ uri: getWorkshopImage(workshop.type) }}
+        style={styles.thumb}
+        contentFit="cover"
+        transition={150}
+      />
 
       <View style={styles.body}>
-        <Text style={[styles.ttl, { fontFamily: theme.font.sansBold, color: theme.color.ink }]} numberOfLines={1}>
+        <Text
+          style={[styles.ttl, { fontFamily: theme.font.sansBold, color: theme.color.ink }]}
+          numberOfLines={1}
+        >
           {workshop.title}
         </Text>
 
         <View style={styles.subRow}>
           <View style={[styles.badge, { backgroundColor: theme.color.persimmonSoft }]}>
             <Text style={[styles.badgeText, { color: theme.color.persimmon }]}>
-              {workshop.type === "online" ? "Online" : "Workshop"}
+              {workshop.type === 'online' ? 'Online' : 'Workshop'}
             </Text>
           </View>
           {dateValid ? (
-            <Text style={[styles.sub, { fontFamily: theme.font.sansMedium, color: theme.color.mist }]} numberOfLines={1}>
-              {format(date!, "EEE d MMM · h:mm a")}
+            <Text
+              style={[styles.sub, { fontFamily: theme.font.sansMedium, color: theme.color.mist }]}
+              numberOfLines={1}
+            >
+              {format(date!, 'EEE d MMM · h:mm a')}
             </Text>
           ) : null}
         </View>
 
         <View style={styles.foot}>
-          <Text style={[styles.footText, { fontFamily: theme.font.sansMedium, color: theme.color.mist }]} numberOfLines={1}>
+          <Text
+            style={[
+              styles.footText,
+              { fontFamily: theme.font.sansMedium, color: theme.color.mist },
+            ]}
+            numberOfLines={1}
+          >
             {price}
-            {isFull ? "  ·  Full" : spotsLeft <= 5 ? `  ·  ${spotsLeft} left` : ""}
+            {isFull ? '  ·  Full' : spotsLeft <= 5 ? `  ·  ${spotsLeft} left` : ''}
           </Text>
           <IconChevR size={18} color={theme.color.whisper} />
         </View>
@@ -61,8 +81,8 @@ export function WorkshopRowCard({ workshop, onPress }: { workshop: any; onPress:
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
     borderWidth: 1,
     borderRadius: 18,
@@ -72,14 +92,14 @@ const styles = StyleSheet.create({
   thumb: { width: 66, height: 66, borderRadius: 14 },
   body: { flex: 1, minWidth: 0 },
   ttl: { fontSize: 15, letterSpacing: -0.1, lineHeight: 17 },
-  subRow: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 4 },
+  subRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 },
   badge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999 },
-  badgeText: { fontSize: 9.5, fontWeight: "700", letterSpacing: 0.5 },
+  badgeText: { fontSize: 9.5, fontWeight: '700', letterSpacing: 0.5 },
   sub: { fontSize: 12, flexShrink: 1 },
   foot: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginTop: 7,
   },
   footText: { fontSize: 12, flex: 1 },

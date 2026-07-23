@@ -1,5 +1,5 @@
-import { useQuery, useQueries } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { api } from '@/lib/api';
+import { useQueries, useQuery } from '@tanstack/react-query';
 
 // S2.1: "slots" are retired. Trial booking is against the batch's upcoming class
 // sessions (capacity − enrolled headroom). We keep the MergedSlot shape so the
@@ -19,27 +19,29 @@ function timesToSlots(
   data: { available?: number; times?: string[] } | undefined,
   batchId: string,
   date?: string,
-  coachName?: string,
+  coachName?: string
 ): MergedSlot[] {
   const available = Number(data?.available ?? 0);
   const times = (data?.times ?? []) as string[];
-  return times
-    // class times are after 05:30 IST, so the UTC date prefix matches the IST date.
-    .filter((time) => !date || time.slice(0, 10) === date)
-    .map((time) => ({
-      id: time,
-      slot_time: time,
-      capacity: available, // batch headroom (a trial doesn't consume it)
-      reserved_count: 0,
-      status: available > 0 ? "available" : "full",
-      batch_id: batchId,
-      coach_name: coachName,
-    }));
+  return (
+    times
+      // class times are after 05:30 IST, so the UTC date prefix matches the IST date.
+      .filter((time) => !date || time.slice(0, 10) === date)
+      .map((time) => ({
+        id: time,
+        slot_time: time,
+        capacity: available, // batch headroom (a trial doesn't consume it)
+        reserved_count: 0,
+        status: available > 0 ? 'available' : 'full',
+        batch_id: batchId,
+        coach_name: coachName,
+      }))
+  );
 }
 
 export const useTrialAvailability = (batchId: string) =>
   useQuery({
-    queryKey: ["trial-availability", batchId],
+    queryKey: ['trial-availability', batchId],
     queryFn: () => api.batches.getTrialAvailability({ id: batchId }),
     enabled: !!batchId,
   });
@@ -47,16 +49,18 @@ export const useTrialAvailability = (batchId: string) =>
 /** Back-compat hook: returns the batch's bookable sessions (optionally filtered to one date). */
 export const useBatchSlots = (batchId: string, date: string) => {
   const availabilityQuery = useTrialAvailability(batchId);
-  return { ...availabilityQuery, data: availabilityQuery.data ? { slots: timesToSlots(availabilityQuery.data, batchId, date) } : undefined };
+  return {
+    ...availabilityQuery,
+    data: availabilityQuery.data
+      ? { slots: timesToSlots(availabilityQuery.data, batchId, date) }
+      : undefined,
+  };
 };
 
-export function useProgramSlots(
-  batchMeta: { id: string; coach_name?: string }[],
-  date: string
-) {
+export function useProgramSlots(batchMeta: { id: string; coach_name?: string }[], date: string) {
   const queries = useQueries({
     queries: batchMeta.map((meta) => ({
-      queryKey: ["trial-availability", meta.id],
+      queryKey: ['trial-availability', meta.id],
       queryFn: () => api.batches.getTrialAvailability({ id: meta.id }),
       enabled: !!meta.id,
     })),

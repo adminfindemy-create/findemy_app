@@ -1,12 +1,12 @@
-import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
-import { useTheme, sansFor, Spill, IconChevR } from '@findemy/ui';
 import { Screen } from '@/components/common/Screen';
 import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { SkeletonLoader } from '@/components/common/SkeletonLoader';
 import { useStudioInbox } from '@/hooks/useStudioQueries';
+import { IconChevR, Spill, sansFor, useTheme } from '@findemy/ui';
 import { format } from 'date-fns';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 function fmtAmount(paise: number): string {
   const amount = Math.round(paise / 100);
@@ -18,7 +18,11 @@ function fmtAmount(paise: number): string {
 export default function TrialsListScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const { data: inboxData, isLoading, refetch } = useStudioInbox({ status: 'new', refetchInterval: 30_000 });
+  const {
+    data: inboxData,
+    isLoading,
+    refetch,
+  } = useStudioInbox({ status: 'new', refetchInterval: 30_000 });
 
   useFocusEffect(
     React.useCallback(() => {
@@ -60,7 +64,12 @@ export default function TrialsListScreen() {
           <SkeletonLoader height={72} borderRadius={16} />
         </View>
       ) : trialItems.length === 0 ? (
-        <View style={[styles.emptyCard, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
+        <View
+          style={[
+            styles.emptyCard,
+            { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+          ]}
+        >
           <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.mist }}>
             No new trial requests right now.
           </Text>
@@ -68,32 +77,54 @@ export default function TrialsListScreen() {
       ) : (
         trialItems.map((trial: any) => {
           const when = trial.scheduled_at ? new Date(trial.scheduled_at) : null;
-          const whenValid = when && !isNaN(when.getTime());
+          const whenValid = when && !Number.isNaN(when.getTime());
           const sub = [
             whenValid ? format(when!, 'EEE d MMM · h:mm a') : null,
             trial.coach_name,
             trial.trial_fee_paise != null ? fmtAmount(trial.trial_fee_paise) : null,
-          ].filter(Boolean).join(' · ');
+          ]
+            .filter(Boolean)
+            .join(' · ');
           return (
             <Pressable
               key={trial.id}
-              style={[styles.rowCard, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}
+              style={[
+                styles.rowCard,
+                { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+              ]}
               onPress={() => router.push(`/trial/${trial.id}` as any)}
             >
               <View style={[styles.av, { backgroundColor: theme.color.jade }]}>
-                <Text style={{ fontFamily: theme.font.serifItalic, fontSize: 15, color: theme.color.ivory }}>
+                <Text
+                  style={{
+                    fontFamily: theme.font.serifItalic,
+                    fontSize: 15,
+                    color: theme.color.ivory,
+                  }}
+                >
                   {trial.student_name?.[0]?.toUpperCase() ?? '?'}
                 </Text>
               </View>
               <View style={{ flex: 1, minWidth: 0 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Text style={{ fontFamily: sansFor(700), fontSize: 14.5, color: theme.color.ink }} numberOfLines={1}>
+                  <Text
+                    style={{ fontFamily: sansFor(700), fontSize: 14.5, color: theme.color.ink }}
+                    numberOfLines={1}
+                  >
                     {trial.batch_title ?? 'Trial'}
                   </Text>
                   <Spill state={trial.status ?? 'pending'} />
                 </View>
                 {sub ? (
-                  <Text style={{ fontFamily: sansFor(500), fontSize: 12.5, color: theme.color.mist, marginTop: 3 }} numberOfLines={1}>
+                  <Text
+                    style={{
+                      fontFamily: sansFor(500),
+                      fontSize: 12.5,
+                      color: theme.color.mist,
+                      marginTop: 3,
+                    }}
+                    numberOfLines={1}
+                  >
                     {sub}
                   </Text>
                 ) : null}

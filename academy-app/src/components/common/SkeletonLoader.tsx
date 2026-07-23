@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import { useTheme } from '@findemy/ui';
+import { useEffect, useRef } from 'react';
 import { Animated } from 'react-native';
 import type { ViewStyle } from 'react-native';
-import { useTheme } from '@findemy/ui';
 
 export function SkeletonLoader({
   width,

@@ -1,6 +1,5 @@
-import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { useTheme, sansFor } from '@findemy/ui';
+import { sansFor, useTheme } from '@findemy/ui';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 // Prototype `.seg-choice`: full-width equal segments, ink active fill, sans 700/13.
 // Distinct from the shared pill `Tabs` — this is the academy's segmented control.
@@ -30,7 +29,13 @@ export function SegChoice<T extends string>({
               },
             ]}
           >
-            <Text style={{ fontFamily: sansFor(700), fontSize: 13, color: active ? theme.color.ivory : theme.color.inkSoft }}>
+            <Text
+              style={{
+                fontFamily: sansFor(700),
+                fontSize: 13,
+                color: active ? theme.color.ivory : theme.color.inkSoft,
+              }}
+            >
               {item.label}
             </Text>
           </Pressable>

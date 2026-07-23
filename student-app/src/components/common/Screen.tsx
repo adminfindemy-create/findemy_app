@@ -1,7 +1,7 @@
-import React from "react";
-import { View, ScrollView, StyleSheet } from "react-native";
-import { useTheme } from "@findemy/ui";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from '@findemy/ui';
+import type React from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function Screen({
   children,

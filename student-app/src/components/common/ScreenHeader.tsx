@@ -1,7 +1,7 @@
-import React from "react";
-import { View, Text } from "react-native";
-import { useTheme, IconButton, IconChevL } from "@findemy/ui";
-import { useRouter } from "expo-router";
+import { IconButton, IconChevL, useTheme } from '@findemy/ui';
+import { useRouter } from 'expo-router';
+import type React from 'react';
+import { Text, View } from 'react-native';
 
 // Prototype `.topbar`: a round icon-button back, a left-aligned sans title
 // (20/800), then an optional right action pushed to the end.
@@ -20,8 +20,8 @@ export function ScreenHeader({
   return (
     <View
       style={{
-        flexDirection: "row",
-        alignItems: "center",
+        flexDirection: 'row',
+        alignItems: 'center',
         gap: 12,
         paddingHorizontal: 18,
         paddingVertical: 8,
@@ -39,7 +39,7 @@ export function ScreenHeader({
           flex: 1,
           fontFamily: theme.font.sansBold,
           fontSize: 20,
-          fontWeight: "800",
+          fontWeight: '800',
           letterSpacing: -0.2,
           color: theme.color.ink,
         }}

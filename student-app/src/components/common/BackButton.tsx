@@ -1,7 +1,6 @@
-import React from "react";
-import { Pressable, Text, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
-import { useRouter } from "expo-router";
-import { useTheme } from "@findemy/ui";
+import { useTheme } from '@findemy/ui';
+import { useRouter } from 'expo-router';
+import { Pressable, type StyleProp, StyleSheet, Text, type ViewStyle } from 'react-native';
 
 export function BackButton({
   onPress,
@@ -40,7 +39,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

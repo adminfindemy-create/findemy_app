@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import { useTheme, Button, Summary, SummaryRow, IconCheck, IconCal, IconClock } from "@findemy/ui";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useEnrollmentDetail } from "@/hooks/useEnrollmentDetail";
+import { useEnrollmentDetail } from '@/hooks/useEnrollmentDetail';
+import { Button, IconCal, IconCheck, IconClock, Summary, SummaryRow, useTheme } from '@findemy/ui';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PACKAGE_LABELS: Record<string, { label: string; months: number }> = {
-  monthly: { label: "Monthly", months: 1 },
-  quarterly: { label: "Quarterly", months: 3 },
-  annual: { label: "Annual", months: 12 },
+  monthly: { label: 'Monthly', months: 1 },
+  quarterly: { label: 'Quarterly', months: 3 },
+  annual: { label: 'Annual', months: 12 },
 };
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 // YYYY-MM-DD (or ISO) -> "22 Jun 2026"; avoids Hermes Intl locale gaps.
 function formatDate(iso: string | null | undefined) {
-  if (!iso) return "—";
+  if (!iso) return '—';
   const date = new Date(iso);
-  if (isNaN(date.getTime())) return "—";
+  if (Number.isNaN(date.getTime())) return '—';
   return `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
 }
 
@@ -30,9 +30,9 @@ export default function EnrollmentConfirmationScreen() {
   }>();
   const [timedOut, setTimedOut] = useState(false);
 
-  const detail = useEnrollmentDetail(enrollment_id ?? "");
+  const detail = useEnrollmentDetail(enrollment_id ?? '');
   const enrollment = (detail.data as any)?.enrollment;
-  const isActive = enrollment?.status === "active";
+  const isActive = enrollment?.status === 'active';
 
   useEffect(() => {
     if (isActive) return;
@@ -50,7 +50,7 @@ export default function EnrollmentConfirmationScreen() {
   if (!isActive && !timedOut) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }}>
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 24 }}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <Text style={{ fontFamily: theme.font.sans, fontSize: 15, color: theme.color.mist }}>
             Confirming your enrollment…
           </Text>
@@ -62,20 +62,20 @@ export default function EnrollmentConfirmationScreen() {
   if (timedOut && !isActive) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }}>
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 24 }}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <Text
             style={{
               fontFamily: theme.font.sans,
               fontSize: 15,
               color: theme.color.mist,
-              textAlign: "center",
+              textAlign: 'center',
               lineHeight: 21,
             }}
           >
             Still processing. You'll receive a notification when your enrollment is confirmed.
           </Text>
-          <View style={{ marginTop: 24, alignSelf: "stretch", paddingHorizontal: 20 }}>
-            <Button onPress={() => router.replace("/(tabs)/classes")} block>
+          <View style={{ marginTop: 24, alignSelf: 'stretch', paddingHorizontal: 20 }}>
+            <Button onPress={() => router.replace('/(tabs)/classes')} block>
               Done
             </Button>
           </View>
@@ -85,7 +85,7 @@ export default function EnrollmentConfirmationScreen() {
   }
 
   const period = enrollment?.current_period ?? enrollment?.periods?.[0];
-  const packageType = period?.package_type ?? "monthly";
+  const packageType = period?.package_type ?? 'monthly';
   const pkgInfo = PACKAGE_LABELS[packageType] ?? PACKAGE_LABELS.monthly;
 
   return (
@@ -103,28 +103,30 @@ export default function EnrollmentConfirmationScreen() {
               color: theme.color.ink,
               lineHeight: 38,
               letterSpacing: -0.5,
-              textAlign: "center",
+              textAlign: 'center',
               marginTop: 18,
             }}
           >
             {"You're "}
-            <Text style={{ fontFamily: theme.font.serifItalic, color: theme.color.jade }}>enrolled</Text>
-            {"!"}
+            <Text style={{ fontFamily: theme.font.serifItalic, color: theme.color.jade }}>
+              enrolled
+            </Text>
+            {'!'}
           </Text>
           <Text
             style={{
               fontFamily: theme.font.sans,
               fontSize: 13.5,
               color: theme.color.inkSoft,
-              textAlign: "center",
+              textAlign: 'center',
               lineHeight: 20,
               marginTop: 10,
               paddingHorizontal: 20,
             }}
           >
-            Welcome to{" "}
+            Welcome to{' '}
             <Text style={{ fontFamily: theme.font.sansBold, color: theme.color.ink }}>
-              {batch_title ?? "your class"}
+              {batch_title ?? 'your class'}
             </Text>
             . Find your schedule and join classes under Classes.
           </Text>
@@ -134,7 +136,7 @@ export default function EnrollmentConfirmationScreen() {
           <SummaryRow
             icon={<IconCal size={18} color={theme.color.jade} />}
             label="Class"
-            value={batch_title ?? "—"}
+            value={batch_title ?? '—'}
           />
           {period?.start_date ? (
             <SummaryRow
@@ -146,17 +148,17 @@ export default function EnrollmentConfirmationScreen() {
           <SummaryRow
             icon={<IconClock size={18} color={theme.color.jade} />}
             label="Plan"
-            value={`${pkgInfo.label} · ${pkgInfo.months} month${pkgInfo.months > 1 ? "s" : ""} · auto-renews`}
+            value={`${pkgInfo.label} · ${pkgInfo.months} month${pkgInfo.months > 1 ? 's' : ''} · auto-renews`}
             last
           />
         </Summary>
 
         {/* Actions */}
         <View style={{ marginTop: 24, gap: 10 }}>
-          <Button onPress={() => router.replace("/(tabs)/classes")} block variant="jade">
+          <Button onPress={() => router.replace('/(tabs)/classes')} block variant="jade">
             View my classes
           </Button>
-          <Button onPress={() => router.replace("/(tabs)")} block variant="ghost">
+          <Button onPress={() => router.replace('/(tabs)')} block variant="ghost">
             Back to discover
           </Button>
         </View>
@@ -167,7 +169,7 @@ export default function EnrollmentConfirmationScreen() {
 
 const styles = StyleSheet.create({
   hero: {
-    alignItems: "center",
+    alignItems: 'center',
     paddingTop: 48,
     paddingBottom: 28,
   },
@@ -175,7 +177,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

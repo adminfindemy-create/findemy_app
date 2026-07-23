@@ -1,16 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
-import { View, Text, StyleSheet, Platform, Alert, Pressable } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import * as AppleAuthentication from "expo-apple-authentication";
-import * as Crypto from "expo-crypto";
-import { useTheme, BlockPrintCover, Button, IconPhone } from "@findemy/ui";
-import { Em } from "@/components/auth/AuthScaffold";
-import { api } from "@/lib/api";
-import { useAuth } from "@/stores/auth";
-import type { User } from "@/stores/auth";
-import { useOnboarding } from "@/stores/onboarding";
-import { nextOnboardingStep } from "@/lib/onboarding";
+import { Em } from '@/components/auth/AuthScaffold';
+import { api } from '@/lib/api';
+import { nextOnboardingStep } from '@/lib/onboarding';
+import { useAuth } from '@/stores/auth';
+import type { User } from '@/stores/auth';
+import { useOnboarding } from '@/stores/onboarding';
+import { BlockPrintCover, Button, IconPhone, useTheme } from '@findemy/ui';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import * as Crypto from 'expo-crypto';
+import { useRouter } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
+import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Lazy-required so the JS bundle doesn't crash if the native module isn't linked
 // (e.g. running in Expo Go, or before a dev-client rebuild).
@@ -18,7 +18,7 @@ let GoogleSignin: any = null;
 let googleStatusCodes: any = null;
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const mod = require("@react-native-google-signin/google-signin");
+  const mod = require('@react-native-google-signin/google-signin');
   GoogleSignin = mod.GoogleSignin;
   googleStatusCodes = mod.statusCodes;
 } catch {
@@ -35,7 +35,7 @@ function configureGoogleSignin() {
     GoogleSignin.configure({
       iosClientId,
       webClientId,
-      scopes: ["email", "profile"],
+      scopes: ['email', 'profile'],
     });
     return true;
   } catch {
@@ -61,14 +61,14 @@ export default function WelcomeScreen() {
   const routeAfterAuth = (user: User | null | undefined, isNewUser: boolean) => {
     const step = nextOnboardingStep(user);
     if (isNewUser || step) {
-      router.replace((step ?? "/(auth)/onboarding") as any);
+      router.replace((step ?? '/(auth)/onboarding') as any);
     } else {
-      router.replace("/(tabs)");
+      router.replace('/(tabs)');
     }
   };
 
   const handleApple = async () => {
-    if (Platform.OS !== "ios") return;
+    if (Platform.OS !== 'ios') return;
     setAppleLoading(true);
     try {
       const rawNonce = Crypto.randomUUID();
@@ -86,14 +86,14 @@ export default function WelcomeScreen() {
       });
 
       if (!credential.identityToken) {
-        Alert.alert("Sign in failed", "Apple did not return an identity token.");
+        Alert.alert('Sign in failed', 'Apple did not return an identity token.');
         return;
       }
 
       // Apple only returns fullName on the very first sign-in. Stash it locally
       // so the onboarding screen can pre-fill — backend won't get it from the JWT.
-      const given = credential.fullName?.givenName ?? "";
-      const family = credential.fullName?.familyName ?? "";
+      const given = credential.fullName?.givenName ?? '';
+      const family = credential.fullName?.familyName ?? '';
       const composedName = `${given} ${family}`.trim();
       if (composedName) {
         setOnboardingMany({ name: composedName });
@@ -102,7 +102,7 @@ export default function WelcomeScreen() {
       const response = await api.auth.oauthApple({
         idToken: credential.identityToken,
         nonce: rawNonce,
-        role: "student",
+        role: 'student',
       });
 
       const user = (response.user as User | undefined) ?? null;
@@ -110,7 +110,7 @@ export default function WelcomeScreen() {
         access: response.access_token,
         refresh: response.refresh_token,
         user: user as User,
-        attendanceOtp: response.attendance_otp ?? "",
+        attendanceOtp: response.attendance_otp ?? '',
       });
       routeAfterAuth(user, response.is_new_user);
     } catch (error: any) {
@@ -119,7 +119,7 @@ export default function WelcomeScreen() {
         return;
       }
       Alert.alert(
-        "Sign in failed",
+        'Sign in failed',
         error?.message ?? "Couldn't sign in with Apple. Try again or use phone."
       );
     } finally {
@@ -130,8 +130,8 @@ export default function WelcomeScreen() {
   const handleGoogle = async () => {
     if (!GoogleSignin) {
       Alert.alert(
-        "Google Sign-In unavailable",
-        "Native module not linked. Rebuild the dev client after `pnpm install`."
+        'Google Sign-In unavailable',
+        'Native module not linked. Rebuild the dev client after `pnpm install`.'
       );
       return;
     }
@@ -144,16 +144,16 @@ export default function WelcomeScreen() {
       const result = await GoogleSignin.signIn();
 
       // SDK v14 returns { type: 'success', data: { idToken, user } } | { type: 'cancelled' }
-      if (result?.type === "cancelled") return;
+      if (result?.type === 'cancelled') return;
       const idToken: string | undefined = result?.data?.idToken ?? result?.idToken;
       if (!idToken) {
-        Alert.alert("Sign in failed", "Google did not return an idToken.");
+        Alert.alert('Sign in failed', 'Google did not return an idToken.');
         return;
       }
 
       const response = await api.auth.oauthGoogle({
         idToken,
-        role: "student",
+        role: 'student',
       });
 
       const user = (response.user as User | undefined) ?? null;
@@ -161,7 +161,7 @@ export default function WelcomeScreen() {
         access: response.access_token,
         refresh: response.refresh_token,
         user: user as User,
-        attendanceOtp: response.attendance_otp ?? "",
+        attendanceOtp: response.attendance_otp ?? '',
       });
       routeAfterAuth(user, response.is_new_user);
     } catch (error: any) {
@@ -169,13 +169,12 @@ export default function WelcomeScreen() {
       // Silent on user cancellation / in-progress
       if (
         googleStatusCodes &&
-        (code === googleStatusCodes.SIGN_IN_CANCELLED ||
-          code === googleStatusCodes.IN_PROGRESS)
+        (code === googleStatusCodes.SIGN_IN_CANCELLED || code === googleStatusCodes.IN_PROGRESS)
       ) {
         return;
       }
       Alert.alert(
-        "Sign in failed",
+        'Sign in failed',
         error?.message ?? "Couldn't sign in with Google. Try again or use phone."
       );
     } finally {
@@ -184,7 +183,7 @@ export default function WelcomeScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={["top", "bottom"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={['top', 'bottom']}>
       <View style={styles.container}>
         {/* Wordmark */}
         <Text style={[styles.wordmark, { fontFamily: theme.font.serif, color: theme.color.ink }]}>
@@ -201,22 +200,22 @@ export default function WelcomeScreen() {
 
         {/* Category art grid (block-print covers) */}
         <View style={styles.catGrid}>
-          {(["music", "dance", "arts", "yoga"] as const).map((cat, index) => (
+          {(['music', 'dance', 'arts', 'yoga'] as const).map((cat, index) => (
             <View key={cat} style={styles.catTile}>
               <BlockPrintCover
                 category={cat}
                 variant={(index + 1) as 1 | 2 | 3 | 4}
                 height={96}
                 hideLetter
-                style={{ width: "100%", height: 96, borderRadius: 20, overflow: "hidden" }}
+                style={{ width: '100%', height: 96, borderRadius: 20, overflow: 'hidden' }}
               >
-                <View style={{ position: "absolute", bottom: 11, left: 13 }}>
+                <View style={{ position: 'absolute', bottom: 11, left: 13 }}>
                   <Text
                     style={{
                       fontFamily: theme.font.sansBold,
                       fontSize: 16,
-                      color: "#fff",
-                      textShadowColor: "rgba(0,0,0,0.5)",
+                      color: '#fff',
+                      textShadowColor: 'rgba(0,0,0,0.5)',
                       textShadowOffset: { width: 0, height: 2 },
                       textShadowRadius: 8,
                     }}
@@ -240,32 +239,37 @@ export default function WelcomeScreen() {
             onPress={handleGoogle}
             icon={<Text style={{ fontSize: 15, fontFamily: theme.font.sansBold }}>G</Text>}
           >
-            {googleLoading ? "Signing in…" : "Continue with Google"}
+            {googleLoading ? 'Signing in…' : 'Continue with Google'}
           </Button>
 
-          {Platform.OS === "ios" ? (
+          {Platform.OS === 'ios' ? (
             <Button
               block
               variant="ghost"
               disabled={appleLoading}
               onPress={handleApple}
-              icon={<Text style={{ fontSize: 18, color: theme.color.ink, marginTop: -2 }}></Text>}
+              icon={<Text style={{ fontSize: 18, color: theme.color.ink, marginTop: -2 }} />}
             >
-              {appleLoading ? "Signing in…" : "Continue with Apple"}
+              {appleLoading ? 'Signing in…' : 'Continue with Apple'}
             </Button>
           ) : null}
 
           <Button
             block
             variant="primary"
-            onPress={() => router.push("/(auth)/login")}
+            onPress={() => router.push('/(auth)/login')}
             icon={<IconPhone size={14} color="#fff" />}
           >
             Continue with phone
           </Button>
 
-          <Pressable onPress={() => router.push("/(auth)/signup")} style={{ paddingVertical: 12, alignItems: "center" }}>
-            <Text style={{ fontFamily: theme.font.sansBold, fontSize: 14, color: theme.color.inkSoft }}>
+          <Pressable
+            onPress={() => router.push('/(auth)/signup')}
+            style={{ paddingVertical: 12, alignItems: 'center' }}
+          >
+            <Text
+              style={{ fontFamily: theme.font.sansBold, fontSize: 14, color: theme.color.inkSoft }}
+            >
               Create an account
             </Text>
           </Pressable>
@@ -284,32 +288,32 @@ const styles = StyleSheet.create({
   },
   wordmark: {
     fontSize: 30,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 20,
   },
   hero: {
     fontSize: 46,
     lineHeight: 46,
-    textAlign: "center",
+    textAlign: 'center',
   },
   sub: {
     fontSize: 14.5,
     lineHeight: 21,
-    textAlign: "center",
+    textAlign: 'center',
     marginTop: 12,
-    alignSelf: "center",
+    alignSelf: 'center',
     maxWidth: 280,
   },
   catGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 10,
     marginTop: 28,
   },
   catTile: {
-    width: "47.5%",
+    width: '47.5%',
     flexGrow: 1,
     borderRadius: 20,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
 });

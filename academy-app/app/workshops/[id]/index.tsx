@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, Alert, ActivityIndicator, StyleSheet } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useTheme, sansFor, Input, Button, IconUsers, IconChevR } from '@findemy/ui';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { ErrorState } from '@/components/common/ErrorState';
 import { Screen } from '@/components/common/Screen';
 import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { SegChoice } from '@/components/common/SegChoice';
-import { ErrorState } from '@/components/common/ErrorState';
-import { useStudioWorkshops, useUpdateWorkshop, useDeleteWorkshop } from '@/hooks/useStudioQueries';
+import { useDeleteWorkshop, useStudioWorkshops, useUpdateWorkshop } from '@/hooks/useStudioQueries';
 import type { WorkshopType } from '@findemy/types';
+import { Button, IconChevR, IconUsers, Input, sansFor, useTheme } from '@findemy/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { z } from 'zod';
 
 const schema = z
   .object({
@@ -23,7 +23,7 @@ const schema = z
     price: z.string().regex(/^\d+$/, 'Enter a whole rupee amount'),
     location: z.string().optional(),
   })
-  .refine((d) => !isNaN(new Date(`${d.start_date}T${d.start_time}`).getTime()), {
+  .refine((d) => !Number.isNaN(new Date(`${d.start_date}T${d.start_time}`).getTime()), {
     message: 'That date/time is not valid',
     path: ['start_date'],
   });
@@ -42,7 +42,16 @@ export default function EditWorkshopScreen() {
 
   const { control, handleSubmit, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { title: '', description: '', start_date: '', start_time: '', duration_min: '90', capacity: '20', price: '0', location: '' },
+    defaultValues: {
+      title: '',
+      description: '',
+      start_date: '',
+      start_time: '',
+      duration_min: '90',
+      capacity: '20',
+      price: '0',
+      location: '',
+    },
   });
 
   useEffect(() => {
@@ -123,7 +132,9 @@ export default function EditWorkshopScreen() {
     return (
       <Screen header={<ScreenHeader title="Workshop" showBack />} bottomTab={null}>
         <View style={{ padding: 24, gap: 12 }}>
-          <Text style={{ color: theme.color.mist, fontFamily: theme.font.sans }}>Workshop not found.</Text>
+          <Text style={{ color: theme.color.mist, fontFamily: theme.font.sans }}>
+            Workshop not found.
+          </Text>
           <Button onPress={() => router.back()}>Go back</Button>
         </View>
       </Screen>
@@ -159,7 +170,12 @@ export default function EditWorkshopScreen() {
             </View>
           ) : null}
           <View style={{ flex: 1 }}>
-            <Button variant="primary" block loading={updateWorkshop.isPending} onPress={handleSubmit(onSubmit)}>
+            <Button
+              variant="primary"
+              block
+              loading={updateWorkshop.isPending}
+              onPress={handleSubmit(onSubmit)}
+            >
               Save changes
             </Button>
           </View>
@@ -170,14 +186,27 @@ export default function EditWorkshopScreen() {
         {/* Who booked → attendees list */}
         <Pressable
           onPress={() => router.push(`/workshops/${id}/attendees` as never)}
-          style={[styles.bookedRow, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}
+          style={[
+            styles.bookedRow,
+            { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+            theme.shadow.sm,
+          ]}
         >
           <View style={[styles.bookedIcon, { backgroundColor: theme.color.persimmonSoft }]}>
             <IconUsers size={18} color={theme.color.persimmonDeep} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }}>Who booked</Text>
-            <Text style={{ fontFamily: sansFor(600), fontSize: 12, color: theme.color.mist, marginTop: 1 }}>
+            <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }}>
+              Who booked
+            </Text>
+            <Text
+              style={{
+                fontFamily: sansFor(600),
+                fontSize: 12,
+                color: theme.color.mist,
+                marginTop: 1,
+              }}
+            >
               {workshop.registered_count} of {workshop.capacity} booked
             </Text>
           </View>
@@ -189,7 +218,12 @@ export default function EditWorkshopScreen() {
           control={control}
           name="title"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <Input placeholder="Workshop title" value={value} onChangeText={onChange} error={error?.message} />
+            <Input
+              placeholder="Workshop title"
+              value={value}
+              onChangeText={onChange}
+              error={error?.message}
+            />
           )}
         />
 
@@ -210,7 +244,12 @@ export default function EditWorkshopScreen() {
               control={control}
               name="start_date"
               render={({ field: { onChange, value }, fieldState: { error } }) => (
-                <Input placeholder="YYYY-MM-DD" value={value} onChangeText={onChange} error={error?.message} />
+                <Input
+                  placeholder="YYYY-MM-DD"
+                  value={value}
+                  onChangeText={onChange}
+                  error={error?.message}
+                />
               )}
             />
           </View>
@@ -220,7 +259,12 @@ export default function EditWorkshopScreen() {
               control={control}
               name="start_time"
               render={({ field: { onChange, value }, fieldState: { error } }) => (
-                <Input placeholder="HH:MM" value={value} onChangeText={onChange} error={error?.message} />
+                <Input
+                  placeholder="HH:MM"
+                  value={value}
+                  onChangeText={onChange}
+                  error={error?.message}
+                />
               )}
             />
           </View>
@@ -233,7 +277,12 @@ export default function EditWorkshopScreen() {
               control={control}
               name="price"
               render={({ field: { onChange, value } }) => (
-                <Input placeholder="0 for free" keyboardType="number-pad" value={value} onChangeText={onChange} />
+                <Input
+                  placeholder="0 for free"
+                  keyboardType="number-pad"
+                  value={value}
+                  onChangeText={onChange}
+                />
               )}
             />
           </View>
@@ -243,7 +292,12 @@ export default function EditWorkshopScreen() {
               control={control}
               name="capacity"
               render={({ field: { onChange, value } }) => (
-                <Input placeholder="20" keyboardType="number-pad" value={value} onChangeText={onChange} />
+                <Input
+                  placeholder="20"
+                  keyboardType="number-pad"
+                  value={value}
+                  onChangeText={onChange}
+                />
               )}
             />
           </View>
@@ -254,7 +308,12 @@ export default function EditWorkshopScreen() {
           control={control}
           name="duration_min"
           render={({ field: { onChange, value } }) => (
-            <Input placeholder="90" keyboardType="number-pad" value={value} onChangeText={onChange} />
+            <Input
+              placeholder="90"
+              keyboardType="number-pad"
+              value={value}
+              onChangeText={onChange}
+            />
           )}
         />
 
@@ -265,7 +324,11 @@ export default function EditWorkshopScreen() {
               control={control}
               name="location"
               render={({ field: { onChange, value } }) => (
-                <Input placeholder="e.g. Hauz Khas, New Delhi" value={value} onChangeText={onChange} />
+                <Input
+                  placeholder="e.g. Hauz Khas, New Delhi"
+                  value={value}
+                  onChangeText={onChange}
+                />
               )}
             />
           </>
@@ -276,13 +339,22 @@ export default function EditWorkshopScreen() {
           control={control}
           name="description"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <Input placeholder="What will attendees do & learn?" value={value} onChangeText={onChange} error={error?.message} multiline numberOfLines={3} />
+            <Input
+              placeholder="What will attendees do & learn?"
+              value={value}
+              onChangeText={onChange}
+              error={error?.message}
+              multiline
+              numberOfLines={3}
+            />
           )}
         />
 
         <View style={{ height: 20 }} />
         <Button variant="ghost" block loading={deleteWorkshop.isPending} onPress={onDelete}>
-          <Text style={{ fontFamily: theme.font.sansBold, color: theme.color.rose }}>Delete workshop</Text>
+          <Text style={{ fontFamily: theme.font.sansBold, color: theme.color.rose }}>
+            Delete workshop
+          </Text>
         </Button>
       </View>
     </Screen>
@@ -291,8 +363,30 @@ export default function EditWorkshopScreen() {
 
 const styles = StyleSheet.create({
   container: { paddingVertical: 8, paddingBottom: 16 },
-  fgh: { fontFamily: sansFor(700), fontSize: 12, letterSpacing: 1.2, textTransform: 'uppercase', marginTop: 16, marginBottom: 8 },
+  fgh: {
+    fontFamily: sansFor(700),
+    fontSize: 12,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginTop: 16,
+    marginBottom: 8,
+  },
   row: { flexDirection: 'row', gap: 12 },
-  bookedRow: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 16, borderWidth: 1, padding: 12, paddingHorizontal: 14, marginTop: 8 },
-  bookedIcon: { width: 36, height: 36, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
+  bookedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 12,
+    paddingHorizontal: 14,
+    marginTop: 8,
+  },
+  bookedIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

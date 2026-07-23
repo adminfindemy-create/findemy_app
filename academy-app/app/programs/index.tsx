@@ -1,12 +1,11 @@
-import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
-import { useTheme, sansFor, Button, IconChevR } from '@findemy/ui';
-import { useRouter } from 'expo-router';
+import { ErrorState } from '@/components/common/ErrorState';
 import { Screen } from '@/components/common/Screen';
 import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { useStudioPrograms } from '@/hooks/useStudioQueries';
-import { ErrorState } from '@/components/common/ErrorState';
+import { Button, IconChevR, sansFor, useTheme } from '@findemy/ui';
+import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 const CATEGORY_COLORS: Record<string, string> = {
   music: '#5C2A4A',
@@ -30,36 +29,69 @@ export default function ProgramsScreen() {
           <ErrorState message="Couldn't load programs." onRetry={refetch} />
         ) : programs.length === 0 ? (
           <View style={{ paddingVertical: 24, alignItems: 'center', gap: 12 }}>
-            <Text style={{ color: theme.color.mist, fontFamily: theme.font.sans }}>No programs yet</Text>
-            <Button variant="primary" onPress={() => router.push('/programs/new')}>Create your first program</Button>
+            <Text style={{ color: theme.color.mist, fontFamily: theme.font.sans }}>
+              No programs yet
+            </Text>
+            <Button variant="primary" onPress={() => router.push('/programs/new')}>
+              Create your first program
+            </Button>
           </View>
         ) : (
           <View style={{ gap: 10 }}>
             {programs.map((program) => {
               const cat = (program.category ?? '').toLowerCase();
-              const dot = cat === 'arts' ? theme.color.persimmon : (CATEGORY_COLORS[cat] ?? theme.color.mist);
+              const dot =
+                cat === 'arts' ? theme.color.persimmon : (CATEGORY_COLORS[cat] ?? theme.color.mist);
               const sub = [
                 cat ? cat[0].toUpperCase() + cat.slice(1) : null,
                 `${program.batch_count} batch${program.batch_count === 1 ? '' : 'es'}`,
-              ].filter(Boolean).join(' · ');
+              ]
+                .filter(Boolean)
+                .join(' · ');
               return (
                 <Pressable
                   key={program.id}
                   onPress={() => router.push(`/programs/${program.id}`)}
-                  style={[styles.rowCard, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}
+                  style={[
+                    styles.rowCard,
+                    { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+                    theme.shadow.sm,
+                  ]}
                 >
                   {(program as any).cover_url ? (
-                    <Image source={{ uri: (program as any).cover_url }} style={styles.thumb} contentFit="cover" />
+                    <Image
+                      source={{ uri: (program as any).cover_url }}
+                      style={styles.thumb}
+                      contentFit="cover"
+                    />
                   ) : (
-                    <View style={[styles.thumb, { backgroundColor: dot, alignItems: 'center', justifyContent: 'center' }]}>
-                      <Text style={{ fontFamily: theme.font.serif, fontSize: 20, color: '#fff' }}>{program.title?.[0]}</Text>
+                    <View
+                      style={[
+                        styles.thumb,
+                        { backgroundColor: dot, alignItems: 'center', justifyContent: 'center' },
+                      ]}
+                    >
+                      <Text style={{ fontFamily: theme.font.serif, fontSize: 20, color: '#fff' }}>
+                        {program.title?.[0]}
+                      </Text>
                     </View>
                   )}
                   <View style={{ flex: 1, minWidth: 0 }}>
-                    <Text style={{ fontFamily: sansFor(700), fontSize: 14.5, color: theme.color.ink }} numberOfLines={1}>
+                    <Text
+                      style={{ fontFamily: sansFor(700), fontSize: 14.5, color: theme.color.ink }}
+                      numberOfLines={1}
+                    >
                       {program.title}
                     </Text>
-                    <Text style={{ fontFamily: sansFor(500), fontSize: 12.5, color: theme.color.mist, marginTop: 3 }} numberOfLines={1}>
+                    <Text
+                      style={{
+                        fontFamily: sansFor(500),
+                        fontSize: 12.5,
+                        color: theme.color.mist,
+                        marginTop: 3,
+                      }}
+                      numberOfLines={1}
+                    >
                       {sub}
                     </Text>
                   </View>
@@ -67,7 +99,12 @@ export default function ProgramsScreen() {
                 </Pressable>
               );
             })}
-            <Button variant="primary" block style={{ marginTop: 8 }} onPress={() => router.push('/programs/new')}>
+            <Button
+              variant="primary"
+              block
+              style={{ marginTop: 8 }}
+              onPress={() => router.push('/programs/new')}
+            >
               New program
             </Button>
           </View>

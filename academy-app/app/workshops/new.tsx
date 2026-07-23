@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, Alert, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useTheme, sansFor, Input, Button } from '@findemy/ui';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { Screen } from '@/components/common/Screen';
 import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { SegChoice } from '@/components/common/SegChoice';
 import { useCreateWorkshop } from '@/hooks/useStudioQueries';
 import type { WorkshopType } from '@findemy/types';
+import { Button, Input, sansFor, useTheme } from '@findemy/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Alert, StyleSheet, Text, View } from 'react-native';
+import { z } from 'zod';
 
 const schema = z
   .object({
@@ -22,7 +22,7 @@ const schema = z
     price: z.string().regex(/^\d+$/, 'Enter a whole rupee amount'),
     location: z.string().optional(),
   })
-  .refine((d) => !isNaN(new Date(`${d.start_date}T${d.start_time}`).getTime()), {
+  .refine((d) => !Number.isNaN(new Date(`${d.start_date}T${d.start_time}`).getTime()), {
     message: 'That date/time is not valid',
     path: ['start_date'],
   });
@@ -37,7 +37,16 @@ export default function NewWorkshopScreen() {
 
   const { control, handleSubmit } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { title: '', description: '', start_date: '', start_time: '', duration_min: '90', capacity: '20', price: '0', location: '' },
+    defaultValues: {
+      title: '',
+      description: '',
+      start_date: '',
+      start_time: '',
+      duration_min: '90',
+      capacity: '20',
+      price: '0',
+      location: '',
+    },
   });
 
   const submit = (status: 'draft' | 'upcoming') =>
@@ -73,12 +82,22 @@ export default function NewWorkshopScreen() {
       footer={
         <View style={{ flexDirection: 'row', gap: 10 }}>
           <View style={{ flex: 1 }}>
-            <Button variant="ghost" block loading={createWorkshop.isPending} onPress={submit('draft')}>
+            <Button
+              variant="ghost"
+              block
+              loading={createWorkshop.isPending}
+              onPress={submit('draft')}
+            >
               Save draft
             </Button>
           </View>
           <View style={{ flex: 1 }}>
-            <Button variant="primary" block loading={createWorkshop.isPending} onPress={submit('upcoming')}>
+            <Button
+              variant="primary"
+              block
+              loading={createWorkshop.isPending}
+              onPress={submit('upcoming')}
+            >
               Publish
             </Button>
           </View>
@@ -91,7 +110,12 @@ export default function NewWorkshopScreen() {
           control={control}
           name="title"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <Input placeholder="e.g. Songwriting 101" value={value} onChangeText={onChange} error={error?.message} />
+            <Input
+              placeholder="e.g. Songwriting 101"
+              value={value}
+              onChangeText={onChange}
+              error={error?.message}
+            />
           )}
         />
 
@@ -112,7 +136,12 @@ export default function NewWorkshopScreen() {
               control={control}
               name="start_date"
               render={({ field: { onChange, value }, fieldState: { error } }) => (
-                <Input placeholder="YYYY-MM-DD" value={value} onChangeText={onChange} error={error?.message} />
+                <Input
+                  placeholder="YYYY-MM-DD"
+                  value={value}
+                  onChangeText={onChange}
+                  error={error?.message}
+                />
               )}
             />
           </View>
@@ -122,7 +151,12 @@ export default function NewWorkshopScreen() {
               control={control}
               name="start_time"
               render={({ field: { onChange, value }, fieldState: { error } }) => (
-                <Input placeholder="HH:MM" value={value} onChangeText={onChange} error={error?.message} />
+                <Input
+                  placeholder="HH:MM"
+                  value={value}
+                  onChangeText={onChange}
+                  error={error?.message}
+                />
               )}
             />
           </View>
@@ -135,7 +169,12 @@ export default function NewWorkshopScreen() {
               control={control}
               name="price"
               render={({ field: { onChange, value } }) => (
-                <Input placeholder="0 for free" keyboardType="number-pad" value={value} onChangeText={onChange} />
+                <Input
+                  placeholder="0 for free"
+                  keyboardType="number-pad"
+                  value={value}
+                  onChangeText={onChange}
+                />
               )}
             />
           </View>
@@ -145,7 +184,12 @@ export default function NewWorkshopScreen() {
               control={control}
               name="capacity"
               render={({ field: { onChange, value } }) => (
-                <Input placeholder="20" keyboardType="number-pad" value={value} onChangeText={onChange} />
+                <Input
+                  placeholder="20"
+                  keyboardType="number-pad"
+                  value={value}
+                  onChangeText={onChange}
+                />
               )}
             />
           </View>
@@ -156,7 +200,12 @@ export default function NewWorkshopScreen() {
           control={control}
           name="duration_min"
           render={({ field: { onChange, value } }) => (
-            <Input placeholder="90" keyboardType="number-pad" value={value} onChangeText={onChange} />
+            <Input
+              placeholder="90"
+              keyboardType="number-pad"
+              value={value}
+              onChangeText={onChange}
+            />
           )}
         />
 
@@ -167,7 +216,11 @@ export default function NewWorkshopScreen() {
               control={control}
               name="location"
               render={({ field: { onChange, value } }) => (
-                <Input placeholder="e.g. Hauz Khas, New Delhi" value={value} onChangeText={onChange} />
+                <Input
+                  placeholder="e.g. Hauz Khas, New Delhi"
+                  value={value}
+                  onChangeText={onChange}
+                />
               )}
             />
           </>
@@ -178,7 +231,14 @@ export default function NewWorkshopScreen() {
           control={control}
           name="description"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <Input placeholder="What will attendees do & learn?" value={value} onChangeText={onChange} error={error?.message} multiline numberOfLines={3} />
+            <Input
+              placeholder="What will attendees do & learn?"
+              value={value}
+              onChangeText={onChange}
+              error={error?.message}
+              multiline
+              numberOfLines={3}
+            />
           )}
         />
       </View>
@@ -188,6 +248,13 @@ export default function NewWorkshopScreen() {
 
 const styles = StyleSheet.create({
   container: { paddingVertical: 8, paddingBottom: 16 },
-  fgh: { fontFamily: sansFor(700), fontSize: 12, letterSpacing: 1.2, textTransform: 'uppercase', marginTop: 16, marginBottom: 8 },
+  fgh: {
+    fontFamily: sansFor(700),
+    fontSize: 12,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginTop: 16,
+    marginBottom: 8,
+  },
   row: { flexDirection: 'row', gap: 12 },
 });

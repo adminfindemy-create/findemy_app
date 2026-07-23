@@ -1,4 +1,4 @@
-import { getProgramImage } from "./programImages";
+import { getProgramImage } from './programImages';
 
 // Programs are now server-provided (a real entity — see
 // ai-usage/final-app/plan/programs-and-batch-discontinuation.md). The client no longer groups
@@ -37,7 +37,7 @@ export type Coach = {
   specialty?: string;
 };
 
-export type ProgramMedia = { url: string; type: "photo" | "video" };
+export type ProgramMedia = { url: string; type: 'photo' | 'video' };
 
 export type Program = {
   id: string;
@@ -58,10 +58,12 @@ export type Program = {
 
 // A batch-level summary shown where the program used to carry a single level.
 function deriveLevel(batches: ProgramBatch[]): string {
-  const levels = Array.from(new Set(batches.map((batch) => batch.level).filter((level): level is string => !!level)));
+  const levels = Array.from(
+    new Set(batches.map((batch) => batch.level).filter((level): level is string => !!level))
+  );
   if (levels.length === 1) return levels[0];
-  if (levels.length > 1) return "All levels";
-  return "";
+  if (levels.length > 1) return 'All levels';
+  return '';
 }
 
 // Turn a server program (from GET /academies/:id → programs[] or GET /programs/:id) into the
@@ -75,9 +77,9 @@ export function enrichProgram(serverProgram: any): Program {
     title: serverProgram.title,
     category: serverProgram.category,
     level,
-    description: (serverProgram.description ?? "") as string,
+    description: (serverProgram.description ?? '') as string,
     things_to_know: serverProgram.things_to_know ?? [],
-    image_url: getProgramImage(serverProgram.category, level || batches[0]?.level || ""),
+    image_url: getProgramImage(serverProgram.category, level || batches[0]?.level || ''),
     media: (serverProgram.media ?? []) as ProgramMedia[],
     coach_names: serverProgram.coach_names ?? [],
     trial_fee_paise: serverProgram.trial_fee_paise ?? 0,

@@ -1,4 +1,4 @@
-import type { User } from "@/stores/auth";
+import type { User } from '@/stores/auth';
 
 /**
  * Returns the route path of the next onboarding step the user must complete,
@@ -8,7 +8,7 @@ import type { User } from "@/stores/auth";
  */
 export function nextOnboardingStep(user: User | null | undefined): string | null {
   if (!user) return null;
-  if (!user.name || !user.location) return "/(auth)/onboarding";
-  if (!user.interests || user.interests.length === 0) return "/(auth)/interests";
+  if (!user.name || !user.location) return '/(auth)/onboarding';
+  if (!user.interests || user.interests.length === 0) return '/(auth)/interests';
   return null;
 }

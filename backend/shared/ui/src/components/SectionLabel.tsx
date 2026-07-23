@@ -1,4 +1,4 @@
-import { Text, StyleSheet, type StyleProp, type TextStyle } from 'react-native';
+import { type StyleProp, StyleSheet, Text, type TextStyle } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 // Prototype `.block h3` — the small uppercase grey heading that labels each
@@ -13,7 +13,9 @@ export function SectionLabel({
 }) {
   const theme = useTheme();
   return (
-    <Text style={[styles.label, { color: theme.color.whisper, fontFamily: theme.font.sansBold }, style]}>
+    <Text
+      style={[styles.label, { color: theme.color.whisper, fontFamily: theme.font.sansBold }, style]}
+    >
       {children.toUpperCase()}
     </Text>
   );

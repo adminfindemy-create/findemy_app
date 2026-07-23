@@ -1,12 +1,18 @@
-import { useEffect } from "react";
-import { Stack, useRouter, useSegments, useRootNavigationState } from "expo-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useFonts } from "expo-font";
-import { ThemeProvider, PhoneStatusBar } from "@findemy/ui";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { ToastProvider } from "@/components/common/Toast";
-import { useAuth } from "@/stores/auth";
-import { nextOnboardingStep } from "@/lib/onboarding";
+import { ToastProvider } from '@/components/common/Toast';
+import { nextOnboardingStep } from '@/lib/onboarding';
+import { initSentry } from '@/lib/sentry';
+import { useAuth } from '@/stores/auth';
+import { PhoneStatusBar, ThemeProvider } from '@findemy/ui';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useFonts } from 'expo-font';
+import { Stack, useRootNavigationState, useRouter, useSegments } from 'expo-router';
+import { useEffect } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+// Fire Sentry init at module load — before any React tree mounts — so
+// bootstrap-time errors (font load, navigation, native module init) are
+// captured. `initSentry` is a no-op if EXPO_PUBLIC_SENTRY_DSN is unset.
+initSentry();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,18 +40,18 @@ function AuthGuard() {
     // on the very first effect pass — calling router.replace synchronously
     // throws "Attempted to navigate before mounting the Root Layout component".
     const timer = setTimeout(() => {
-      const inAuthGroup = segments[0] === "(auth)";
+      const inAuthGroup = segments[0] === '(auth)';
 
       if (!accessToken) {
         if (!inAuthGroup) {
-          router.replace("/(auth)");
+          router.replace('/(auth)');
         }
         return;
       }
 
       const step = nextOnboardingStep(user);
       if (step) {
-        const currentPath = "/" + segments.join("/");
+        const currentPath = `/${segments.join('/')}`;
         if (currentPath !== step) {
           router.replace(step as any);
         }
@@ -53,7 +59,7 @@ function AuthGuard() {
       }
 
       if (inAuthGroup) {
-        router.replace("/(tabs)");
+        router.replace('/(tabs)');
       }
     }, 0);
 
@@ -69,21 +75,15 @@ export default function RootLayout() {
   // weight-suffixed faces are registered so explicit fontFamily references can
   // pick an exact cut; the type ramp mostly drives weight via fontWeight.
   const [fontsLoaded, fontError] = useFonts({
-    LibreCaslonDisplay: require("../assets/fonts/LibreCaslonDisplay-Regular.ttf"),
-    LibreCaslonText: require("../assets/fonts/LibreCaslonText-Regular.ttf"),
-    "LibreCaslonText-Italic": require("../assets/fonts/LibreCaslonText-Italic.ttf"),
-    "LibreCaslonText-Bold": require("../assets/fonts/LibreCaslonText-Bold.ttf"),
-    PlusJakartaSans: require("../assets/fonts/PlusJakartaSans-Regular.ttf"),
-    "PlusJakartaSans-Medium": require("../assets/fonts/PlusJakartaSans-Medium.ttf"),
-    "PlusJakartaSans-SemiBold": require("../assets/fonts/PlusJakartaSans-SemiBold.ttf"),
-    "PlusJakartaSans-Bold": require("../assets/fonts/PlusJakartaSans-Bold.ttf"),
+    LibreCaslonDisplay: require('../assets/fonts/LibreCaslonDisplay-Regular.ttf'),
+    LibreCaslonText: require('../assets/fonts/LibreCaslonText-Regular.ttf'),
+    'LibreCaslonText-Italic': require('../assets/fonts/LibreCaslonText-Italic.ttf'),
+    'LibreCaslonText-Bold': require('../assets/fonts/LibreCaslonText-Bold.ttf'),
+    PlusJakartaSans: require('../assets/fonts/PlusJakartaSans-Regular.ttf'),
+    'PlusJakartaSans-Medium': require('../assets/fonts/PlusJakartaSans-Medium.ttf'),
+    'PlusJakartaSans-SemiBold': require('../assets/fonts/PlusJakartaSans-SemiBold.ttf'),
+    'PlusJakartaSans-Bold': require('../assets/fonts/PlusJakartaSans-Bold.ttf'),
   });
-
-  useEffect(() => {
-    // TODO: Configure Sentry before production
-    // import * as Sentry from 'sentry-expo';
-    // Sentry.init({ dsn: process.env.EXPO_PUBLIC_SENTRY_DSN, enableInExpoDevelopment: false });
-  }, []);
 
   // Hold the first paint until fonts are ready so screens don't flash in the
   // system fallback before swapping to Libre Caslon / Plus Jakarta Sans. If

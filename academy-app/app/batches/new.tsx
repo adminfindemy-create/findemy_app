@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Alert, Modal, Pressable, Switch, StyleSheet } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useTheme, Input, Button, Chip, sansFor } from '@findemy/ui';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { Screen } from '@/components/common/Screen';
 import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { useToast } from '@/components/common/Toast';
-import { useStudioCoaches, useCreateBatch, useCreateCoach, useStudioProgram } from '@/hooks/useStudioQueries';
+import {
+  useCreateBatch,
+  useCreateCoach,
+  useStudioCoaches,
+  useStudioProgram,
+} from '@/hooks/useStudioQueries';
+import { Button, Chip, Input, sansFor, useTheme } from '@findemy/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Alert, Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { z } from 'zod';
 
 // S1.3: discounts are entered as whole percentages, capped at 30% (≡ 3000 bps server-side).
 const discountPct = z
@@ -59,7 +64,14 @@ export default function NewBatchScreen() {
 
   const { control, handleSubmit } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { capacity: '', trial_fee: '', monthly_fee: '', sessions_per_month: '', quarterly_discount: '0', annual_discount: '0' },
+    defaultValues: {
+      capacity: '',
+      trial_fee: '',
+      monthly_fee: '',
+      sessions_per_month: '',
+      quarterly_discount: '0',
+      annual_discount: '0',
+    },
   });
 
   const onSubmit = async (data: FormData) => {
@@ -97,14 +109,20 @@ export default function NewBatchScreen() {
       return;
     }
     try {
-      const response = await createCoach.mutateAsync({ name: coachName.trim(), specialty: coachSpecialty.trim() });
+      const response = await createCoach.mutateAsync({
+        name: coachName.trim(),
+        specialty: coachSpecialty.trim(),
+      });
       await refetchCoaches();
       const newCoachId = (response as any)?.coach?.id;
       if (typeof newCoachId === 'string' && newCoachId) {
         setCoachId(newCoachId);
       } else {
         // Don't silently clear the current selection if the response shape changed.
-        console.warn('[batches/new] createCoach returned no coach.id; leaving selection unchanged', response);
+        console.warn(
+          '[batches/new] createCoach returned no coach.id; leaving selection unchanged',
+          response
+        );
       }
       setCoachName('');
       setCoachSpecialty('');
@@ -128,12 +146,29 @@ export default function NewBatchScreen() {
     <Screen header={<ScreenHeader title="New batch" showBack />} bottomTab={null} scroll>
       <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}>
         {/* Program context — title/category/description are owned by the program. */}
-        <View style={{ backgroundColor: theme.color.ivory, borderColor: theme.color.hairline, borderWidth: 1, borderRadius: 14, padding: 14, marginBottom: 18 }}>
+        <View
+          style={{
+            backgroundColor: theme.color.ivory,
+            borderColor: theme.color.hairline,
+            borderWidth: 1,
+            borderRadius: 14,
+            padding: 14,
+            marginBottom: 18,
+          }}
+        >
           <Text style={[fgh, { marginBottom: 4 }]}>Program</Text>
           <Text style={{ fontFamily: sansFor(700), fontSize: 15, color: theme.color.ink }}>
             {program?.title ?? '—'}
           </Text>
-          <Text style={{ fontFamily: theme.font.sans, fontSize: 12, color: theme.color.mist, marginTop: 3, textTransform: 'capitalize' }}>
+          <Text
+            style={{
+              fontFamily: theme.font.sans,
+              fontSize: 12,
+              color: theme.color.mist,
+              marginTop: 3,
+              textTransform: 'capitalize',
+            }}
+          >
             {program?.category ?? ''}
           </Text>
         </View>
@@ -141,7 +176,12 @@ export default function NewBatchScreen() {
         <Text style={[fgh, { marginTop: 2, marginBottom: 10 }]}>Level</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
           {LEVELS.map((levelOption) => (
-            <Chip key={levelOption} label={levelOption} selected={level === levelOption} onPress={() => setLevel(levelOption)} />
+            <Chip
+              key={levelOption}
+              label={levelOption}
+              selected={level === levelOption}
+              onPress={() => setLevel(levelOption)}
+            />
           ))}
         </View>
 
@@ -149,7 +189,13 @@ export default function NewBatchScreen() {
           control={control}
           name="capacity"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <Input placeholder="Capacity" keyboardType="number-pad" value={value} onChangeText={onChange} error={error?.message} />
+            <Input
+              placeholder="Capacity"
+              keyboardType="number-pad"
+              value={value}
+              onChangeText={onChange}
+              error={error?.message}
+            />
           )}
         />
 
@@ -158,7 +204,13 @@ export default function NewBatchScreen() {
             control={control}
             name="trial_fee"
             render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <Input placeholder="Trial fee (₹)" keyboardType="number-pad" value={value} onChangeText={onChange} error={error?.message} />
+              <Input
+                placeholder="Trial fee (₹)"
+                keyboardType="number-pad"
+                value={value}
+                onChangeText={onChange}
+                error={error?.message}
+              />
             )}
           />
         </View>
@@ -168,7 +220,13 @@ export default function NewBatchScreen() {
             control={control}
             name="monthly_fee"
             render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <Input placeholder="Monthly fee (₹)" keyboardType="number-pad" value={value} onChangeText={onChange} error={error?.message} />
+              <Input
+                placeholder="Monthly fee (₹)"
+                keyboardType="number-pad"
+                value={value}
+                onChangeText={onChange}
+                error={error?.message}
+              />
             )}
           />
         </View>
@@ -179,20 +237,34 @@ export default function NewBatchScreen() {
             control={control}
             name="sessions_per_month"
             render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <Input placeholder="Classes per month" keyboardType="number-pad" value={value} onChangeText={onChange} error={error?.message} />
+              <Input
+                placeholder="Classes per month"
+                keyboardType="number-pad"
+                value={value}
+                onChangeText={onChange}
+                error={error?.message}
+              />
             )}
           />
         </View>
 
         {/* S1.3: academy-set quarterly/annual discounts (≤30%) */}
-        <Text style={[fgh, { marginTop: 22, marginBottom: 10 }]}>Plan discounts (applied at enrolment)</Text>
+        <Text style={[fgh, { marginTop: 22, marginBottom: 10 }]}>
+          Plan discounts (applied at enrolment)
+        </Text>
         <View style={{ flexDirection: 'row', gap: 12 }}>
           <View style={{ flex: 1 }}>
             <Controller
               control={control}
               name="quarterly_discount"
               render={({ field: { onChange, value }, fieldState: { error } }) => (
-                <Input placeholder="Quarterly %" keyboardType="number-pad" value={value} onChangeText={onChange} error={error?.message} />
+                <Input
+                  placeholder="Quarterly %"
+                  keyboardType="number-pad"
+                  value={value}
+                  onChangeText={onChange}
+                  error={error?.message}
+                />
               )}
             />
           </View>
@@ -201,20 +273,47 @@ export default function NewBatchScreen() {
               control={control}
               name="annual_discount"
               render={({ field: { onChange, value }, fieldState: { error } }) => (
-                <Input placeholder="Annual %" keyboardType="number-pad" value={value} onChangeText={onChange} error={error?.message} />
+                <Input
+                  placeholder="Annual %"
+                  keyboardType="number-pad"
+                  value={value}
+                  onChangeText={onChange}
+                  error={error?.message}
+                />
               )}
             />
           </View>
         </View>
-        <Text style={{ fontFamily: theme.font.sans, fontSize: 12, color: theme.color.mist, marginTop: 6 }}>
+        <Text
+          style={{
+            fontFamily: theme.font.sans,
+            fontSize: 12,
+            color: theme.color.mist,
+            marginTop: 6,
+          }}
+        >
           Max 30%. Monthly plans are never discounted.
         </Text>
 
         <View style={{ marginTop: 16 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 8,
+            }}
+          >
             <Text style={fgh}>Coach</Text>
             <Pressable onPress={() => setShowCoachModal(true)}>
-              <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.persimmon, fontWeight: '600' }}>
+              <Text
+                style={{
+                  fontFamily: theme.font.sans,
+                  fontSize: 13,
+                  color: theme.color.persimmon,
+                  fontWeight: '600',
+                }}
+              >
                 + New coach
               </Text>
             </Pressable>
@@ -222,7 +321,12 @@ export default function NewBatchScreen() {
           {coaches.length > 0 ? (
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
               {coaches.map((coach: any) => (
-                <Chip key={coach.id} label={coach.name} selected={coachId === coach.id} onPress={() => setCoachId(coach.id)} />
+                <Chip
+                  key={coach.id}
+                  label={coach.name}
+                  selected={coachId === coach.id}
+                  onPress={() => setCoachId(coach.id)}
+                />
               ))}
             </View>
           ) : (
@@ -234,8 +338,17 @@ export default function NewBatchScreen() {
 
         <View style={newStyles.row}>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontFamily: theme.font.sans, fontSize: 15, color: theme.color.ink }}>Online class</Text>
-            <Text style={{ fontFamily: theme.font.sans, fontSize: 12, color: theme.color.mist, marginTop: 2 }}>
+            <Text style={{ fontFamily: theme.font.sans, fontSize: 15, color: theme.color.ink }}>
+              Online class
+            </Text>
+            <Text
+              style={{
+                fontFamily: theme.font.sans,
+                fontSize: 12,
+                color: theme.color.mist,
+                marginTop: 2,
+              }}
+            >
               Students join via video call
             </Text>
           </View>
@@ -256,17 +369,42 @@ export default function NewBatchScreen() {
       {/* Inline coach creation modal */}
       <Modal visible={showCoachModal} transparent animationType="slide">
         <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.4)' }}>
-          <View style={{ backgroundColor: theme.color.paper, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24 }}>
-            <Text style={{ fontFamily: theme.font.serif, fontSize: 22, color: theme.color.ink, marginBottom: 20 }}>
+          <View
+            style={{
+              backgroundColor: theme.color.paper,
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+              padding: 24,
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: theme.font.serif,
+                fontSize: 22,
+                color: theme.color.ink,
+                marginBottom: 20,
+              }}
+            >
               New coach
             </Text>
             <Input placeholder="Name" value={coachName} onChangeText={setCoachName} />
             <View style={{ marginTop: 12 }}>
-              <Input placeholder="Specialty (e.g. Guitar, Classical Dance)" value={coachSpecialty} onChangeText={setCoachSpecialty} />
+              <Input
+                placeholder="Specialty (e.g. Guitar, Classical Dance)"
+                value={coachSpecialty}
+                onChangeText={setCoachSpecialty}
+              />
             </View>
             <View style={{ flexDirection: 'row', gap: 12, marginTop: 24 }}>
               <View style={{ flex: 1 }}>
-                <Button block onPress={() => { setShowCoachModal(false); setCoachName(''); setCoachSpecialty(''); }}>
+                <Button
+                  block
+                  onPress={() => {
+                    setShowCoachModal(false);
+                    setCoachName('');
+                    setCoachSpecialty('');
+                  }}
+                >
                   Cancel
                 </Button>
               </View>
@@ -284,5 +422,10 @@ export default function NewBatchScreen() {
 }
 
 const newStyles = StyleSheet.create({
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20 },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 20,
+  },
 });

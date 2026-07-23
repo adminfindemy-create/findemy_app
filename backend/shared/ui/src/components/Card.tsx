@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, type ViewStyle, type StyleProp } from 'react-native';
+import type React from 'react';
+import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 export function Card({

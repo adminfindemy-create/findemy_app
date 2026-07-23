@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useTheme, sansFor, Button, IconUser } from '@findemy/ui';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Screen } from '@/components/common/Screen';
 import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { SessionRoster } from '@/components/schedule/SessionRoster';
-import { useStartLive, useSessionAttendance, useStudioBatch } from '@/hooks/useStudioQueries';
+import { useSessionAttendance, useStartLive, useStudioBatch } from '@/hooks/useStudioQueries';
+import { Button, IconUser, sansFor, useTheme } from '@findemy/ui';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 // S3.3: academy host screen for an ONLINE batch. "Start live class" gets a host token for the
 // batch's 100ms room; students who join are auto-marked present by the peer.join webhook.
@@ -37,9 +37,17 @@ export default function LiveClassScreen() {
       <View style={styles.container}>
         {!live ? (
           <>
-            <Text style={{ fontFamily: theme.font.sans, fontSize: 14, color: theme.color.inkSoft, marginBottom: 16, lineHeight: 20 }}>
-              Start the live class. Students join from their app and are marked present automatically
-              when they connect.
+            <Text
+              style={{
+                fontFamily: theme.font.sans,
+                fontSize: 14,
+                color: theme.color.inkSoft,
+                marginBottom: 16,
+                lineHeight: 20,
+              }}
+            >
+              Start the live class. Students join from their app and are marked present
+              automatically when they connect.
             </Text>
             <Button onPress={start} block loading={startLive.isPending}>
               Start live class
@@ -50,15 +58,26 @@ export default function LiveClassScreen() {
             <View style={styles.topRow}>
               <View style={[styles.livePill, { backgroundColor: theme.color.roseSoft }]}>
                 <View style={[styles.dot, { backgroundColor: theme.color.rose }]} />
-                <Text style={{ fontFamily: sansFor(700), fontSize: 11.5, color: theme.color.rose }}>Live</Text>
+                <Text style={{ fontFamily: sansFor(700), fontSize: 11.5, color: theme.color.rose }}>
+                  Live
+                </Text>
               </View>
-              <Text style={{ fontFamily: sansFor(600), fontSize: 12, color: theme.color.mist }}>Findemy room</Text>
+              <Text style={{ fontFamily: sansFor(600), fontSize: 12, color: theme.color.mist }}>
+                Findemy room
+              </Text>
             </View>
 
             <Text style={{ fontFamily: theme.font.serif, fontSize: 26, color: theme.color.ink }}>
               {batch?.title ?? 'Live class'}
             </Text>
-            <Text style={{ fontFamily: sansFor(600), fontSize: 13, color: theme.color.mist, marginBottom: 4 }}>
+            <Text
+              style={{
+                fontFamily: sansFor(600),
+                fontSize: 13,
+                color: theme.color.mist,
+                marginBottom: 4,
+              }}
+            >
               Today{startTime ? ` · ${startTime}` : ''}
             </Text>
 
@@ -68,7 +87,9 @@ export default function LiveClassScreen() {
                 <IconUser size={30} color="rgba(255,255,255,0.55)" />
               </View>
               <View style={styles.selfTag}>
-                <Text style={{ fontFamily: sansFor(600), fontSize: 11, color: theme.color.ivory }}>You · Coach</Text>
+                <Text style={{ fontFamily: sansFor(600), fontSize: 11, color: theme.color.ivory }}>
+                  You · Coach
+                </Text>
               </View>
             </View>
 
@@ -76,12 +97,28 @@ export default function LiveClassScreen() {
               <Text style={{ fontFamily: theme.font.serif, fontSize: 30, color: theme.color.ink }}>
                 {roster?.present_count ?? 0}
               </Text>
-              <Text style={{ fontFamily: sansFor(600), fontSize: 14, color: theme.color.mist, marginBottom: 4 }}>
+              <Text
+                style={{
+                  fontFamily: sansFor(600),
+                  fontSize: 14,
+                  color: theme.color.mist,
+                  marginBottom: 4,
+                }}
+              >
                 of {roster?.total ?? 0} joined · marked present automatically
               </Text>
             </View>
-            <Text style={{ fontFamily: sansFor(500), fontSize: 12.5, color: theme.color.mist, lineHeight: 18, textAlign: 'center' }}>
-              Students join from Findemy → Your classes → Join live class. Anyone who joins is marked present.
+            <Text
+              style={{
+                fontFamily: sansFor(500),
+                fontSize: 12.5,
+                color: theme.color.mist,
+                lineHeight: 18,
+                textAlign: 'center',
+              }}
+            >
+              Students join from Findemy → Your classes → Join live class. Anyone who joins is
+              marked present.
             </Text>
 
             <SessionRoster rows={rows} verb="Joined" />
@@ -100,10 +137,44 @@ export default function LiveClassScreen() {
 const styles = StyleSheet.create({
   container: { paddingVertical: 16, gap: 12 },
   topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  livePill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999 },
+  livePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+  },
   dot: { width: 7, height: 7, borderRadius: 3.5 },
-  stage: { height: 210, borderRadius: 18, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', marginTop: 4 },
-  camCircle: { width: 66, height: 66, borderRadius: 33, alignItems: 'center', justifyContent: 'center' },
-  selfTag: { position: 'absolute', bottom: 12, left: 12, backgroundColor: 'rgba(0,0,0,0.45)', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999 },
-  countRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 8, justifyContent: 'center', marginTop: 4 },
+  stage: {
+    height: 210,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    marginTop: 4,
+  },
+  camCircle: {
+    width: 66,
+    height: 66,
+    borderRadius: 33,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  selfTag: {
+    position: 'absolute',
+    bottom: 12,
+    left: 12,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+  },
+  countRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 8,
+    justifyContent: 'center',
+    marginTop: 4,
+  },
 });

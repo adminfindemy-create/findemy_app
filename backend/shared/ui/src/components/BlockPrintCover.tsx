@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, type ViewStyle } from 'react-native';
+import type React from 'react';
+import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 export type BlockPrintCategory = 'music' | 'dance' | 'arts' | 'yoga';
@@ -38,8 +38,7 @@ export function BlockPrintCover({
 }: BlockPrintCoverProps) {
   const theme = useTheme();
   const palette =
-    (theme as any).category?.[String(category).toLowerCase()] ??
-    (theme as any).category?.music;
+    (theme as any).category?.[String(category).toLowerCase()] ?? (theme as any).category?.music;
 
   const accent = palette.accent;
   const base = palette.base;
@@ -50,13 +49,7 @@ export function BlockPrintCover({
   const conf = VARIANT_CONFIG[variant];
 
   return (
-    <View
-      style={[
-        styles.root,
-        { height, backgroundColor: base },
-        style,
-      ]}
-    >
+    <View style={[styles.root, { height, backgroundColor: base }, style]}>
       {/* Large soft disc — bottom-left ish */}
       <View
         pointerEvents="none"
@@ -110,13 +103,7 @@ export function BlockPrintCover({
       {/* Three accent dots — bottom row of texture */}
       <View pointerEvents="none" style={styles.dotRow}>
         {[0, 1, 2].map((i) => (
-          <View
-            key={i}
-            style={[
-              styles.dot,
-              { backgroundColor: ink, opacity: 0.18 - i * 0.04 },
-            ]}
-          />
+          <View key={i} style={[styles.dot, { backgroundColor: ink, opacity: 0.18 - i * 0.04 }]} />
         ))}
       </View>
 
@@ -160,7 +147,7 @@ const VARIANT_CONFIG = {
     stripe: { top: 50, rotate: '8deg' },
   },
   4: {
-    disc: { size: 220, top: -90, left: -40, right: undefined, bottom: undefined, opacity: 0.30 },
+    disc: { size: 220, top: -90, left: -40, right: undefined, bottom: undefined, opacity: 0.3 },
     petal: { size: 90, top: 60, right: 60, rotate: '-28deg', opacity: 0.16 },
     stripe: { top: 100, rotate: '-8deg' },
   },

@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from "react";
-import { Animated, StyleSheet, View } from "react-native";
-import type { ViewStyle } from "react-native";
-import { useTheme } from "@findemy/ui";
+import { useTheme } from '@findemy/ui';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
+import type { ViewStyle } from 'react-native';
 
 type Props = {
   width?: number | string;
@@ -10,7 +10,7 @@ type Props = {
   style?: ViewStyle;
 };
 
-export function SkeletonLoader({ width = "100%", height, borderRadius = 8, style }: Props) {
+export function SkeletonLoader({ width = '100%', height, borderRadius = 8, style }: Props) {
   const theme = useTheme();
   const shimmer = useRef(new Animated.Value(0)).current;
 
@@ -30,10 +30,7 @@ export function SkeletonLoader({ width = "100%", height, borderRadius = 8, style
 
   return (
     <Animated.View
-      style={[
-        { width: width as any, height, borderRadius, backgroundColor },
-        style,
-      ]}
+      style={[{ width: width as any, height, borderRadius, backgroundColor }, style]}
     />
   );
 }
@@ -67,17 +64,17 @@ export function SkeletonCompactCard({ style }: { style?: ViewStyle }) {
 const styles = StyleSheet.create({
   card: {
     borderRadius: 14,
-    overflow: "hidden",
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.06)",
+    borderColor: 'rgba(0,0,0,0.06)',
     marginBottom: 12,
   },
   compactCard: {
     width: 220,
     borderRadius: 14,
-    overflow: "hidden",
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.06)",
+    borderColor: 'rgba(0,0,0,0.06)',
   },
   cardBody: {
     padding: 12,

@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import type { Academy, AcademyAccount } from '@findemy/types';
 import * as SecureStore from 'expo-secure-store';
-import type { AcademyAccount, Academy } from '@findemy/types';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 const secureStorage = {
   getItem: (name: string) => SecureStore.getItemAsync(name),
@@ -37,8 +37,7 @@ export const useAuth = create<AuthState>()(
       setHasHydrated: (v) => set({ _hasHydrated: v }),
       setAuth: ({ access, refresh, account, academy }) =>
         set({ accessToken: access, refreshToken: refresh, account, academy }),
-      clear: () =>
-        set({ accessToken: null, refreshToken: null, account: null, academy: null }),
+      clear: () => set({ accessToken: null, refreshToken: null, account: null, academy: null }),
     }),
     {
       name: 'findemy-admin-auth',

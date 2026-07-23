@@ -1,11 +1,10 @@
-import React from 'react';
-import { View, Text, FlatList, Pressable, StyleSheet, Linking, Alert } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useTheme, sansFor } from '@findemy/ui';
-import { useBatchStudents, useStudioBatch } from '@/hooks/useStudioQueries';
 import { Screen } from '@/components/common/Screen';
 import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { TierBadge } from '@/components/students/TierBadge';
+import { useBatchStudents, useStudioBatch } from '@/hooks/useStudioQueries';
+import { sansFor, useTheme } from '@findemy/ui';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Alert, FlatList, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 function StudentRow({ student }: { student: any }) {
   const theme = useTheme();
@@ -27,20 +26,31 @@ function StudentRow({ student }: { student: any }) {
 
   return (
     <Pressable
-      style={[styles.row, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}
+      style={[
+        styles.row,
+        { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+      ]}
       onPress={() => router.push(`/students/${student.id}` as any)}
     >
       <View style={[styles.avatar, { backgroundColor: theme.color.persimmon }]}>
-        <Text style={{ fontFamily: theme.font.serifItalic, fontSize: 14, color: theme.color.ivory }}>
+        <Text
+          style={{ fontFamily: theme.font.serifItalic, fontSize: 14, color: theme.color.ivory }}
+        >
           {initial}
         </Text>
       </View>
 
       <View style={{ flex: 1, minWidth: 0 }}>
-        <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }} numberOfLines={1}>
+        <Text
+          style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }}
+          numberOfLines={1}
+        >
           {student.name}
         </Text>
-        <Text style={{ fontFamily: sansFor(500), fontSize: 12, color: theme.color.mist, marginTop: 2 }} numberOfLines={1}>
+        <Text
+          style={{ fontFamily: sansFor(500), fontSize: 12, color: theme.color.mist, marginTop: 2 }}
+          numberOfLines={1}
+        >
           {hasPct ? `${student.attendance_pct}%` : 'New'}
           {student.last_seen ? ` · last seen ${student.last_seen}` : ''}
         </Text>
@@ -81,11 +91,28 @@ export default function BatchStudentsScreen() {
         contentContainerStyle={{ paddingVertical: 12, paddingBottom: 60 }}
         ListEmptyComponent={
           isLoading ? (
-            <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.mist, textAlign: 'center', marginTop: 40 }}>
+            <Text
+              style={{
+                fontFamily: theme.font.sans,
+                fontSize: 13,
+                color: theme.color.mist,
+                textAlign: 'center',
+                marginTop: 40,
+              }}
+            >
               Loading…
             </Text>
           ) : (
-            <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.mist, textAlign: 'center', marginTop: 40, paddingHorizontal: 24 }}>
+            <Text
+              style={{
+                fontFamily: theme.font.sans,
+                fontSize: 13,
+                color: theme.color.mist,
+                textAlign: 'center',
+                marginTop: 40,
+                paddingHorizontal: 24,
+              }}
+            >
               No enrolled students yet.
             </Text>
           )

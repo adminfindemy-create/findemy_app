@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from 'expo-secure-store';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 const secureStorage = {
   getItem: async (name: string) => SecureStore.getItemAsync(name),
@@ -17,6 +17,12 @@ export type User = {
   lat?: number;
   lng?: number;
   interests?: string[];
+  // Client-only local avatar preview. Persists across sessions via
+  // SecureStore; not uploaded to the backend yet (profile API doesn't accept
+  // an avatar field — tracked as a P2 backlog item). When the API adds
+  // support, wire this through `api.me.updateOnboarding` and mirror the
+  // server value back into this field on success.
+  avatarUri?: string;
 };
 
 type AuthState = {
@@ -53,8 +59,15 @@ export const useAuth = create<AuthState>()(
         set((state) => ({ user: state.user ? { ...state.user, ...partial } : null })),
       setPushPermissionDenied: (denied) => set({ pushPermissionDenied: denied }),
       clear: () =>
-        set({ accessToken: null, refreshToken: null, user: null, attendanceOtp: null, devBypass: false, pushPermissionDenied: false }),
+        set({
+          accessToken: null,
+          refreshToken: null,
+          user: null,
+          attendanceOtp: null,
+          devBypass: false,
+          pushPermissionDenied: false,
+        }),
     }),
-    { name: "findemy-auth", storage: createJSONStorage(() => secureStorage) }
+    { name: 'findemy-auth', storage: createJSONStorage(() => secureStorage) }
   )
 );

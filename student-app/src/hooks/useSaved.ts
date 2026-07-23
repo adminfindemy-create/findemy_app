@@ -1,9 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { api } from '@/lib/api';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export function useSavedAcademies() {
   return useQuery({
-    queryKey: ["me", "saved-academies"],
+    queryKey: ['me', 'saved-academies'],
     queryFn: () => api.me.savedAcademies.list(),
   });
 }
@@ -19,7 +19,7 @@ export function useToggleSavedAcademy() {
   return useMutation({
     mutationFn: (academyId: string) => api.me.savedAcademies.toggle(academyId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["me", "saved-academies"] });
+      queryClient.invalidateQueries({ queryKey: ['me', 'saved-academies'] });
     },
   });
 }

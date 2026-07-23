@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { View, Text } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useTheme, Input, Button, Chip } from '@findemy/ui';
-import { AuthScaffold, AuthHeading, AuthSub } from '@/components/auth/AuthScaffold';
+import { AuthHeading, AuthScaffold, AuthSub } from '@/components/auth/AuthScaffold';
 import { api } from '@/lib/api';
 import { useOnboarding } from '@/stores/onboarding';
+import { Button, Chip, Input, useTheme } from '@findemy/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Text, View } from 'react-native';
+import { z } from 'zod';
 
 // Categories the backend/onboarding enum supports. The prototype also renders a
 // "Fitness" chip, but Academy category is enumerated music/dance/arts/yoga only —
@@ -91,7 +91,13 @@ export default function SignupScreen() {
             <Input
               label="Phone number"
               prefix={
-                <Text style={{ fontFamily: theme.font.sansBold, fontSize: 16, color: theme.color.inkSoft }}>
+                <Text
+                  style={{
+                    fontFamily: theme.font.sansBold,
+                    fontSize: 16,
+                    color: theme.color.inkSoft,
+                  }}
+                >
                   +91
                 </Text>
               }
@@ -106,7 +112,14 @@ export default function SignupScreen() {
         />
 
         <View>
-          <Text style={{ fontFamily: theme.font.sansBold, fontSize: 13, color: theme.color.inkSoft, marginBottom: 10 }}>
+          <Text
+            style={{
+              fontFamily: theme.font.sansBold,
+              fontSize: 13,
+              color: theme.color.inkSoft,
+              marginBottom: 10,
+            }}
+          >
             Primary category
           </Text>
           <Controller
@@ -129,7 +142,14 @@ export default function SignupScreen() {
       </View>
 
       {errorMsg ? (
-        <Text style={{ color: theme.color.rose, fontFamily: theme.font.sans, fontSize: 13, marginTop: 12 }}>
+        <Text
+          style={{
+            color: theme.color.rose,
+            fontFamily: theme.font.sans,
+            fontSize: 13,
+            marginTop: 12,
+          }}
+        >
           {errorMsg}
         </Text>
       ) : null}

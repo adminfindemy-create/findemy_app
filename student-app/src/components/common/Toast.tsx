@@ -1,9 +1,10 @@
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { Animated, StyleSheet, Text, View } from "react-native";
-import { tokens, useTheme } from "@findemy/ui";
-import { useToastBus } from "@/stores/toast";
+import { useToastBus } from '@/stores/toast';
+import { tokens, useTheme } from '@findemy/ui';
+import type React from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { Animated, StyleSheet, Text } from 'react-native';
 
-type ToastVariant = "success" | "error";
+type ToastVariant = 'success' | 'error';
 
 type ToastState = {
   message: string;
@@ -22,16 +23,19 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const opacity = useRef(new Animated.Value(0)).current;
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const show = useCallback((message: string, variant: ToastVariant = "success") => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setToast({ message, variant });
-    Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }).start();
-    timerRef.current = setTimeout(() => {
-      Animated.timing(opacity, { toValue: 0, duration: 300, useNativeDriver: true }).start(() =>
-        setToast(null)
-      );
-    }, 3000);
-  }, [opacity]);
+  const show = useCallback(
+    (message: string, variant: ToastVariant = 'success') => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      setToast({ message, variant });
+      Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }).start();
+      timerRef.current = setTimeout(() => {
+        Animated.timing(opacity, { toValue: 0, duration: 300, useNativeDriver: true }).start(() =>
+          setToast(null)
+        );
+      }, 3000);
+    },
+    [opacity]
+  );
 
   // Bridge: non-component modules enqueue via the zustand bus; surface them here.
   const busRequest = useToastBus((state) => state.request);
@@ -39,9 +43,14 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     if (busRequest) show(busRequest.message, busRequest.variant);
   }, [busRequest, show]);
 
-  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+  useEffect(
+    () => () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    },
+    []
+  );
 
-  const bg = toast?.variant === "error" ? theme.color.persimmon : theme.color.jade;
+  const bg = toast?.variant === 'error' ? theme.color.persimmon : theme.color.jade;
 
   return (
     <ToastContext.Provider value={{ show }}>
@@ -61,7 +70,7 @@ export function useToast() {
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
+    position: 'absolute',
     top: 60,
     left: 20,
     right: 20,
@@ -77,8 +86,8 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#fff",
-    textAlign: "center",
+    fontWeight: '600',
+    color: '#fff',
+    textAlign: 'center',
   },
 });

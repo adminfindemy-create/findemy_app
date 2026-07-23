@@ -1,6 +1,6 @@
-import { createClient } from "@findemy/api-client";
-import { useAuth } from "@/stores/auth";
-import { enqueueToast } from "@/stores/toast";
+import { useAuth } from '@/stores/auth';
+import { enqueueToast } from '@/stores/toast';
+import { createClient } from '@findemy/api-client';
 
 function getBaseUrl(): string {
   return process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080';
@@ -11,7 +11,7 @@ export const api = createClient({
   getAccessToken: () => useAuth.getState().accessToken,
   onUnauthorized: async () => {
     if (useAuth.getState().devBypass) {
-      return "dev-token";
+      return 'dev-token';
     }
     const { refreshToken } = useAuth.getState();
     if (!refreshToken) {
@@ -21,7 +21,7 @@ export const api = createClient({
     try {
       const response = await api.auth.refresh({ refresh_token: refreshToken });
       const user = useAuth.getState().user;
-      const attendanceOtp = useAuth.getState().attendanceOtp ?? "";
+      const attendanceOtp = useAuth.getState().attendanceOtp ?? '';
       if (user) {
         useAuth.getState().setAuth({
           access: response.access_token,
@@ -32,7 +32,7 @@ export const api = createClient({
       }
       return response.access_token;
     } catch {
-      enqueueToast("Your session expired — please sign in again.", "error");
+      enqueueToast('Your session expired — please sign in again.', 'error');
       useAuth.getState().clear();
       return null;
     }

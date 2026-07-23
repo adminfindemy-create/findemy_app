@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { OtpVerifyRequest } from '@findemy/types';
-import { useTheme, Button, OTPInput } from '@findemy/ui';
-import { AuthScaffold, AuthHeading, AuthSub } from '@/components/auth/AuthScaffold';
+import { AuthHeading, AuthScaffold, AuthSub } from '@/components/auth/AuthScaffold';
 import { api } from '@/lib/api';
 import { useAuth } from '@/stores/auth';
+import { OtpVerifyRequest } from '@findemy/types';
+import { Button, OTPInput, useTheme } from '@findemy/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Text, View } from 'react-native';
 
 export default function VerifyOtpScreen() {
   const router = useRouter();
-  const { otp_id: otpIdParam, phone: phoneParam } = useLocalSearchParams<{ otp_id: string | string[]; phone: string | string[] }>();
+  const { otp_id: otpIdParam, phone: phoneParam } = useLocalSearchParams<{
+    otp_id: string | string[];
+    phone: string | string[];
+  }>();
   const otp_id = Array.isArray(otpIdParam) ? otpIdParam[0] : otpIdParam;
   const phone = Array.isArray(phoneParam) ? phoneParam[0] : phoneParam;
   const theme = useTheme();
@@ -41,7 +44,9 @@ export default function VerifyOtpScreen() {
       if (!account) {
         // Backend genuinely returned no account record — should be rare since OTP verify
         // is expected to upsert an AcademyAccount. Fall back to support copy.
-        setError("We don't have an academy under this number. Talk to Findemy support to get onboarded.");
+        setError(
+          "We don't have an academy under this number. Talk to Findemy support to get onboarded."
+        );
         return;
       }
 
@@ -130,7 +135,10 @@ export default function VerifyOtpScreen() {
         <AuthHeading size={30}>Verify it's you.</AuthHeading>
         <AuthSub>
           Enter the 6-digit code sent to{' '}
-          <Text style={{ fontFamily: theme.font.sansBold, color: theme.color.ink }}>+91 {phone}</Text>.
+          <Text style={{ fontFamily: theme.font.sansBold, color: theme.color.ink }}>
+            +91 {phone}
+          </Text>
+          .
         </AuthSub>
       </View>
 
@@ -155,14 +163,25 @@ export default function VerifyOtpScreen() {
             Didn't get it? Resend in {countdown}s
           </Text>
         ) : (
-          <Button variant="ghost" size="sm" onPress={onResend} loading={resending} disabled={resending}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onPress={onResend}
+            loading={resending}
+            disabled={resending}
+          >
             {resending ? 'Sending…' : 'Resend code'}
           </Button>
         )}
       </View>
 
       <View style={{ marginTop: 24 }}>
-        <Button onPress={handleSubmit(onSubmit)} loading={formState.isSubmitting} variant="dark" block>
+        <Button
+          onPress={handleSubmit(onSubmit)}
+          loading={formState.isSubmitting}
+          variant="dark"
+          block
+        >
           Verify
         </Button>
       </View>

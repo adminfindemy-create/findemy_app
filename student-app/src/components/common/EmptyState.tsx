@@ -1,6 +1,5 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { useTheme, Button } from "@findemy/ui";
+import { Button, useTheme } from '@findemy/ui';
+import { StyleSheet, Text, View } from 'react-native';
 
 export function EmptyState({
   message,
@@ -19,7 +18,7 @@ export function EmptyState({
           fontFamily: theme.font.sans,
           fontSize: theme.type.body.size,
           color: theme.color.mist,
-          textAlign: "center",
+          textAlign: 'center',
         }}
       >
         {message}
@@ -36,8 +35,8 @@ export function EmptyState({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 24,
   },
 });

@@ -1,6 +1,5 @@
-import React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { useTheme } from "@findemy/ui";
+import { useTheme } from '@findemy/ui';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 // Prototype `.seg`: a pill segmented control on a paper-warm track; the active
 // segment is a white pill with a soft shadow.
@@ -22,7 +21,7 @@ export function SegTabs<T extends string>({
           <Pressable
             key={option.key}
             onPress={() => onChange(option.key)}
-            style={[styles.seg, active && { backgroundColor: "#fff", ...theme.shadow.sm }]}
+            style={[styles.seg, active && { backgroundColor: '#fff', ...theme.shadow.sm }]}
             accessibilityRole="tab"
             accessibilityState={{ selected: active }}
           >
@@ -44,15 +43,15 @@ export function SegTabs<T extends string>({
 
 const styles = StyleSheet.create({
   track: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 8,
     borderRadius: 999,
     padding: 5,
   },
   seg: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 999,
     paddingVertical: 11,
   },

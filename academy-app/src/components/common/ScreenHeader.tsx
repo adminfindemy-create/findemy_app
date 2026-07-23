@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTheme } from '@findemy/ui';
 import { useRouter } from 'expo-router';
+import type React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export function ScreenHeader({
   title,

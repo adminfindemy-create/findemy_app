@@ -1,8 +1,8 @@
-import React from "react";
-import { View, Text, ScrollView, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { useTheme, IconButton, IconChevL } from "@findemy/ui";
+import { IconButton, IconChevL, useTheme } from '@findemy/ui';
+import { useRouter } from 'expo-router';
+import type React from 'react';
+import { ScrollView, type StyleProp, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Academy-local twin of the student-app AuthScaffold: a `.topbar` back button
 // over a scrolling body on warm paper. Mirrors the prototype auth flow. Kept
@@ -34,7 +34,9 @@ export function AuthScaffold({
         <View style={styles.topbar}>
           <IconButton
             accessibilityLabel="Back"
-            onPress={onBack ?? (() => (router.canGoBack() ? router.back() : router.replace("/(auth)")))}
+            onPress={
+              onBack ?? (() => (router.canGoBack() ? router.back() : router.replace('/(auth)')))
+            }
             icon={<IconChevL size={20} color={theme.color.ink} />}
           />
         </View>
@@ -65,7 +67,7 @@ export function AuthHeading({ children, size = 32 }: { children: React.ReactNode
         fontFamily: theme.font.serif,
         fontSize: size,
         lineHeight: size * 1.04,
-        fontWeight: "400",
+        fontWeight: '400',
         color: theme.color.ink,
       }}
     >
@@ -88,7 +90,15 @@ export function Em({ children }: { children: React.ReactNode }) {
 export function AuthSub({ children }: { children: React.ReactNode }) {
   const theme = useTheme();
   return (
-    <Text style={{ fontFamily: theme.font.sans, fontSize: 14, lineHeight: 20, color: theme.color.mist, marginTop: 10 }}>
+    <Text
+      style={{
+        fontFamily: theme.font.sans,
+        fontSize: 14,
+        lineHeight: 20,
+        color: theme.color.mist,
+        marginTop: 10,
+      }}
+    >
       {children}
     </Text>
   );
@@ -104,7 +114,7 @@ export function AuthBadge({ children }: { children: React.ReactNode }) {
           fontFamily: theme.font.sansBold,
           fontSize: 10,
           letterSpacing: 1.6,
-          textTransform: "uppercase",
+          textTransform: 'uppercase',
           color: theme.color.marigold,
         }}
       >
@@ -117,14 +127,14 @@ export function AuthBadge({ children }: { children: React.ReactNode }) {
 const styles = StyleSheet.create({
   root: { flex: 1 },
   topbar: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 18,
     paddingTop: 6,
     paddingBottom: 2,
   },
   badge: {
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 999,

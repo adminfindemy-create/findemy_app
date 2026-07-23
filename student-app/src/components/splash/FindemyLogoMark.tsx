@@ -1,6 +1,6 @@
-import { View } from "react-native";
-import Svg, { Path, Circle } from "react-native-svg";
-import { useTheme } from "@findemy/ui";
+import { useTheme } from '@findemy/ui';
+import { View } from 'react-native';
+import Svg, { Path, Circle } from 'react-native-svg';
 
 type Props = {
   size?: number;
@@ -23,15 +23,15 @@ export function FindemyLogoMark({ size = 132 }: Props) {
   // (60,66) flaring up-and-out, converging to the point at (60,142).
   const PETALS: { d: string; fill: string }[] = [
     // top-left — dance (persimmon)
-    { d: "M60 66 L60 12 C40 14 26 30 26 52 C26 60 30 66 38 70 Z", fill: theme.color.persimmon },
+    { d: 'M60 66 L60 12 C40 14 26 30 26 52 C26 60 30 66 38 70 Z', fill: theme.color.persimmon },
     // mid-left — paint (jade)
-    { d: "M60 66 L38 70 C22 76 16 92 22 106 C28 100 44 90 60 82 Z", fill: theme.color.jade },
+    { d: 'M60 66 L38 70 C22 76 16 92 22 106 C28 100 44 90 60 82 Z', fill: theme.color.jade },
     // top-right — music (plum)
-    { d: "M60 66 L60 12 C80 14 94 30 94 52 C94 60 90 66 82 70 Z", fill: theme.color.plum },
+    { d: 'M60 66 L60 12 C80 14 94 30 94 52 C94 60 90 66 82 70 Z', fill: theme.color.plum },
     // mid-right — yoga (bone / sand)
-    { d: "M60 66 L82 70 C98 76 104 92 98 106 C92 100 76 90 60 82 Z", fill: theme.color.bone },
+    { d: 'M60 66 L82 70 C98 76 104 92 98 106 C92 100 76 90 60 82 Z', fill: theme.color.bone },
     // center point — figure (ivory)
-    { d: "M60 82 L22 106 C34 126 60 142 60 142 C60 142 86 126 98 106 Z", fill: theme.color.ivory },
+    { d: 'M60 82 L22 106 C34 126 60 142 60 142 C60 142 86 126 98 106 Z', fill: theme.color.ivory },
   ];
 
   return (

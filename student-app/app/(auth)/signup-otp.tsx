@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Pressable } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import { useTheme, OTPInput, Button } from "@findemy/ui";
-import { AuthScaffold, AuthHeading, AuthSub } from "@/components/auth/AuthScaffold";
-import { api } from "@/lib/api";
-import { useAuth } from "@/stores/auth";
-import { useOnboarding } from "@/stores/onboarding";
-import { useToast } from "@/components/common/Toast";
+import { AuthHeading, AuthScaffold, AuthSub } from '@/components/auth/AuthScaffold';
+import { useToast } from '@/components/common/Toast';
+import { api } from '@/lib/api';
+import { useAuth } from '@/stores/auth';
+import { useOnboarding } from '@/stores/onboarding';
+import { Button, OTPInput, useTheme } from '@findemy/ui';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Pressable, Text, View } from 'react-native';
 
 export default function SignupOtpScreen() {
   const router = useRouter();
@@ -17,9 +17,9 @@ export default function SignupOtpScreen() {
     age?: string;
   }>();
   const theme = useTheme();
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState('');
   const [resendTimer, setResendTimer] = useState(60);
   const setAuth = useAuth((state) => state.setAuth);
   const toast = useToast();
@@ -34,7 +34,7 @@ export default function SignupOtpScreen() {
   const handleVerify = async () => {
     if (code.length !== 6) return;
     setLoading(true);
-    setErrorMsg("");
+    setErrorMsg('');
     try {
       const response = await api.auth.verifyOtp({ otp_id, code });
       const user = response.user as any;
@@ -42,8 +42,8 @@ export default function SignupOtpScreen() {
         access: response.access_token,
         refresh: response.refresh_token,
         user: {
-          id: user?.id ?? "",
-          name: user?.name ?? "",
+          id: user?.id ?? '',
+          name: user?.name ?? '',
           phone: user?.phone ?? phone,
           age: user?.age,
           location: user?.location,
@@ -51,23 +51,23 @@ export default function SignupOtpScreen() {
           lng: user?.lng,
           interests: user?.interests ?? [],
         },
-        attendanceOtp: response.attendance_otp ?? "",
+        attendanceOtp: response.attendance_otp ?? '',
       });
       if (response.is_new_user) {
         const onboardingStore = useOnboarding.getState();
-        if (name) onboardingStore.setField("name", decodeURIComponent(name));
-        if (age) onboardingStore.setField("age", age);
-        router.replace("/(auth)/onboarding");
+        if (name) onboardingStore.setField('name', decodeURIComponent(name));
+        if (age) onboardingStore.setField('age', age);
+        router.replace('/(auth)/onboarding');
       } else {
-        router.replace("/(tabs)");
+        router.replace('/(tabs)');
       }
     } catch (error: any) {
-      if (error.code === "OTP_INVALID" || error.code === "OTP_EXPIRED") {
-        setErrorMsg("Invalid or expired code. Please try again.");
-      } else if (error.code === "RATE_LIMITED") {
-        setErrorMsg("Too many attempts. Please wait.");
+      if (error.code === 'OTP_INVALID' || error.code === 'OTP_EXPIRED') {
+        setErrorMsg('Invalid or expired code. Please try again.');
+      } else if (error.code === 'RATE_LIMITED') {
+        setErrorMsg('Too many attempts. Please wait.');
       } else {
-        setErrorMsg("Something went wrong. Please try again.");
+        setErrorMsg('Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -77,10 +77,10 @@ export default function SignupOtpScreen() {
   const handleResend = async () => {
     setResendTimer(60);
     try {
-      await api.auth.requestOtp({ phone, role: "student" });
-      toast.show("A new code is on its way.", "success");
+      await api.auth.requestOtp({ phone, role: 'student' });
+      toast.show('A new code is on its way.', 'success');
     } catch {
-      toast.show("Couldn't resend the code. Please try again.", "error");
+      toast.show("Couldn't resend the code. Please try again.", 'error');
       setResendTimer(0); // let them retry immediately on failure
     }
   };
@@ -97,19 +97,33 @@ export default function SignupOtpScreen() {
       </View>
 
       {errorMsg ? (
-        <Text style={{ color: theme.color.rose, fontFamily: theme.font.sans, fontSize: 13, marginTop: 12, textAlign: "center" }}>
+        <Text
+          style={{
+            color: theme.color.rose,
+            fontFamily: theme.font.sans,
+            fontSize: 13,
+            marginTop: 12,
+            textAlign: 'center',
+          }}
+        >
           {errorMsg}
         </Text>
       ) : null}
 
-      <View style={{ marginTop: 16, alignItems: "center" }}>
+      <View style={{ marginTop: 16, alignItems: 'center' }}>
         {resendTimer > 0 ? (
           <Text style={{ fontFamily: theme.font.sans, fontSize: 12, color: theme.color.mist }}>
-            Resend code in 0:{String(resendTimer).padStart(2, "0")}
+            Resend code in 0:{String(resendTimer).padStart(2, '0')}
           </Text>
         ) : (
           <Pressable onPress={handleResend} hitSlop={8}>
-            <Text style={{ fontFamily: theme.font.sansBold, fontSize: 13, color: theme.color.persimmon }}>
+            <Text
+              style={{
+                fontFamily: theme.font.sansBold,
+                fontSize: 13,
+                color: theme.color.persimmon,
+              }}
+            >
               Resend code
             </Text>
           </Pressable>
@@ -117,7 +131,13 @@ export default function SignupOtpScreen() {
       </View>
 
       <View style={{ marginTop: 24 }}>
-        <Button block variant="dark" loading={loading} disabled={code.length !== 6} onPress={handleVerify}>
+        <Button
+          block
+          variant="dark"
+          loading={loading}
+          disabled={code.length !== 6}
+          onPress={handleVerify}
+        >
           Verify
         </Button>
       </View>

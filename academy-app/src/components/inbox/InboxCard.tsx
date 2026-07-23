@@ -1,8 +1,7 @@
-import React from 'react';
-import { View, Text, Pressable, StyleSheet, Linking } from 'react-native';
-import { useTheme, Avatar, Spill, IconButton, IconPhone, IconWa } from '@findemy/ui';
 import type { TrialInboxItem } from '@findemy/types';
+import { Avatar, IconButton, IconPhone, IconWa, Spill, useTheme } from '@findemy/ui';
 import { useRouter } from 'expo-router';
+import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export function InboxCard({ item }: { item: TrialInboxItem }) {
   const theme = useTheme();
@@ -16,14 +15,28 @@ export function InboxCard({ item }: { item: TrialInboxItem }) {
       <View style={styles.row}>
         <Avatar initial={item.student_name} tone="persimmon" size="md" />
         <View style={styles.info}>
-          <Text style={{ fontFamily: theme.font.sans, fontSize: 15, fontWeight: '600', color: theme.color.ink }}>
+          <Text
+            style={{
+              fontFamily: theme.font.sans,
+              fontSize: 15,
+              fontWeight: '600',
+              color: theme.color.ink,
+            }}
+          >
             {item.student_name}
             {item.student_age ? ` · ${item.student_age}` : ''}
           </Text>
           <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.mist }}>
             {item.batch_title}
           </Text>
-          <Text style={{ fontFamily: theme.font.sans, fontSize: 12, color: theme.color.mist, marginTop: 2 }}>
+          <Text
+            style={{
+              fontFamily: theme.font.sans,
+              fontSize: 12,
+              color: theme.color.mist,
+              marginTop: 2,
+            }}
+          >
             {new Date(item.scheduled_at).toLocaleString()}
           </Text>
         </View>

@@ -1,22 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Pressable, Modal, ScrollView, StyleSheet, Alert, Linking } from 'react-native';
-import { Image } from 'expo-image';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Input, Button, useTheme, sansFor, Summary, SummaryRow, IconCal, IconPhone, IconUser, IconChevR } from '@findemy/ui';
-import { AvatarPicker } from '@/components/media/AvatarPicker';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { Screen } from '@/components/common/Screen';
 import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { AvatarPicker } from '@/components/media/AvatarPicker';
 import {
+  useAssignCoachToBatch,
+  useCoach,
+  useDeleteCoach,
+  useStudioBatches,
   useStudioCoaches,
   useUpdateCoach,
-  useDeleteCoach,
-  useCoach,
-  useAssignCoachToBatch,
-  useStudioBatches,
 } from '@/hooks/useStudioQueries';
+import {
+  Button,
+  IconCal,
+  IconChevR,
+  IconPhone,
+  IconUser,
+  Input,
+  Summary,
+  SummaryRow,
+  sansFor,
+  useTheme,
+} from '@findemy/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Image } from 'expo-image';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Alert, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { z } from 'zod';
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -54,7 +65,9 @@ export default function CoachDetailScreen() {
 
   const assignedBatches = (detail?.batches ?? []) as { id: string; title: string }[];
   const assignedIds = new Set(assignedBatches.map((batch) => batch.id));
-  const assignableBatches = ((batchesData?.items ?? []) as any[]).filter((batch) => !assignedIds.has(batch.id));
+  const assignableBatches = ((batchesData?.items ?? []) as any[]).filter(
+    (batch) => !assignedIds.has(batch.id)
+  );
 
   const doAssign = async (batchId: string) => {
     setAssignOpen(false);
@@ -120,7 +133,11 @@ export default function CoachDetailScreen() {
           showBack
           rightAction={
             <Pressable onPress={() => setEditOpen(true)} hitSlop={8}>
-              <Text style={{ fontFamily: sansFor(600), fontSize: 13, color: theme.color.persimmon }}>Edit</Text>
+              <Text
+                style={{ fontFamily: sansFor(600), fontSize: 13, color: theme.color.persimmon }}
+              >
+                Edit
+              </Text>
             </Pressable>
           }
         />
@@ -133,16 +150,37 @@ export default function CoachDetailScreen() {
         <View style={styles.hero}>
           <View style={[styles.pic, { backgroundColor: theme.color.persimmon }]}>
             {avatarUrl ? (
-              <Image source={{ uri: avatarUrl }} style={StyleSheet.absoluteFill} contentFit="cover" />
+              <Image
+                source={{ uri: avatarUrl }}
+                style={StyleSheet.absoluteFill}
+                contentFit="cover"
+              />
             ) : (
-              <Text style={{ fontFamily: theme.font.serifItalic, fontSize: 34, color: theme.color.ivory }}>
+              <Text
+                style={{
+                  fontFamily: theme.font.serifItalic,
+                  fontSize: 34,
+                  color: theme.color.ivory,
+                }}
+              >
                 {name[0]?.toUpperCase() ?? '?'}
               </Text>
             )}
           </View>
-          <Text style={{ fontFamily: theme.font.serif, fontSize: 26, color: theme.color.ink }}>{name}</Text>
+          <Text style={{ fontFamily: theme.font.serif, fontSize: 26, color: theme.color.ink }}>
+            {name}
+          </Text>
           {specialty ? (
-            <Text style={{ fontFamily: sansFor(600), fontSize: 13, color: theme.color.mist, marginTop: 3 }}>{specialty}</Text>
+            <Text
+              style={{
+                fontFamily: sansFor(600),
+                fontSize: 13,
+                color: theme.color.mist,
+                marginTop: 3,
+              }}
+            >
+              {specialty}
+            </Text>
           ) : null}
         </View>
 
@@ -159,7 +197,15 @@ export default function CoachDetailScreen() {
             value={
               phone ? (
                 <Pressable onPress={() => Linking.openURL(`tel:${phone}`)}>
-                  <Text style={{ fontFamily: theme.font.sansBold, fontSize: 15, color: theme.color.persimmon }}>{phone}</Text>
+                  <Text
+                    style={{
+                      fontFamily: theme.font.sansBold,
+                      fontSize: 15,
+                      color: theme.color.persimmon,
+                    }}
+                  >
+                    {phone}
+                  </Text>
                 </Pressable>
               ) : (
                 '—'
@@ -167,7 +213,14 @@ export default function CoachDetailScreen() {
             }
             last={!bio}
           />
-          {bio ? <SummaryRow icon={<IconUser size={16} color={iconColor} />} label="Bio" value={bio} last /> : null}
+          {bio ? (
+            <SummaryRow
+              icon={<IconUser size={16} color={iconColor} />}
+              label="Bio"
+              value={bio}
+              last
+            />
+          ) : null}
         </Summary>
 
         {/* Assigned batch rows */}
@@ -178,9 +231,14 @@ export default function CoachDetailScreen() {
               <Pressable
                 key={batch.id}
                 onPress={() => router.push(`/batches/${batch.id}` as never)}
-                style={[styles.batchRow, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}
+                style={[
+                  styles.batchRow,
+                  { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+                ]}
               >
-                <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }}>{batch.title}</Text>
+                <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }}>
+                  {batch.title}
+                </Text>
                 <IconChevR size={16} color={theme.color.whisper} />
               </Pressable>
             ))}
@@ -202,18 +260,47 @@ export default function CoachDetailScreen() {
           {assignableBatches.length === 0 ? 'All batches assigned' : 'Reassign batches'}
         </Button>
 
-        <Button block variant="ghost" loading={deleteCoach.isPending} onPress={onDelete} style={{ marginTop: 4 }}>
-          <Text style={{ fontFamily: theme.font.sansBold, color: theme.color.rose }}>Delete coach</Text>
+        <Button
+          block
+          variant="ghost"
+          loading={deleteCoach.isPending}
+          onPress={onDelete}
+          style={{ marginTop: 4 }}
+        >
+          <Text style={{ fontFamily: theme.font.sansBold, color: theme.color.rose }}>
+            Delete coach
+          </Text>
         </Button>
       </View>
 
       {/* Assign-to-batch picker */}
-      <Modal visible={assignOpen} transparent animationType="slide" onRequestClose={() => setAssignOpen(false)}>
+      <Modal
+        visible={assignOpen}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setAssignOpen(false)}
+      >
         <Pressable style={styles.scrim} onPress={() => setAssignOpen(false)} />
         <View style={[styles.sheet, { backgroundColor: theme.color.paper }]}>
           <View style={[styles.grabber, { backgroundColor: theme.color.hairline }]} />
-          <Text style={{ fontFamily: theme.font.serif, fontSize: 22, color: theme.color.ink, marginBottom: 4 }}>Assign coach</Text>
-          <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.mist, marginBottom: 14 }}>
+          <Text
+            style={{
+              fontFamily: theme.font.serif,
+              fontSize: 22,
+              color: theme.color.ink,
+              marginBottom: 4,
+            }}
+          >
+            Assign coach
+          </Text>
+          <Text
+            style={{
+              fontFamily: theme.font.sans,
+              fontSize: 13,
+              color: theme.color.mist,
+              marginBottom: 14,
+            }}
+          >
             Add {name} to another batch.
           </Text>
           <ScrollView style={{ maxHeight: 360 }}>
@@ -221,11 +308,27 @@ export default function CoachDetailScreen() {
               <Pressable
                 key={batch.id}
                 onPress={() => doAssign(batch.id)}
-                style={[styles.batchRow, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline, marginBottom: 8 }]}
+                style={[
+                  styles.batchRow,
+                  {
+                    backgroundColor: theme.color.ivory,
+                    borderColor: theme.color.hairline,
+                    marginBottom: 8,
+                  },
+                ]}
               >
                 <View>
-                  <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }}>{batch.title}</Text>
-                  <Text style={{ fontFamily: sansFor(500), fontSize: 12, color: theme.color.mist, marginTop: 2 }}>
+                  <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }}>
+                    {batch.title}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: sansFor(500),
+                      fontSize: 12,
+                      color: theme.color.mist,
+                      marginTop: 2,
+                    }}
+                  >
                     {batch.coach_name ? `Currently: ${batch.coach_name}` : 'No coach'}
                   </Text>
                 </View>
@@ -237,11 +340,25 @@ export default function CoachDetailScreen() {
       </Modal>
 
       {/* Edit coach */}
-      <Modal visible={editOpen} transparent animationType="slide" onRequestClose={() => setEditOpen(false)}>
+      <Modal
+        visible={editOpen}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setEditOpen(false)}
+      >
         <Pressable style={styles.scrim} onPress={() => setEditOpen(false)} />
         <View style={[styles.sheet, { backgroundColor: theme.color.paper }]}>
           <View style={[styles.grabber, { backgroundColor: theme.color.hairline }]} />
-          <Text style={{ fontFamily: theme.font.serif, fontSize: 22, color: theme.color.ink, marginBottom: 14 }}>Edit coach</Text>
+          <Text
+            style={{
+              fontFamily: theme.font.serif,
+              fontSize: 22,
+              color: theme.color.ink,
+              marginBottom: 14,
+            }}
+          >
+            Edit coach
+          </Text>
           <View style={{ alignItems: 'center', marginBottom: 16 }}>
             <AvatarPicker value={editAvatar} onChange={setEditAvatar} fallbackLetter={name[0]} />
           </View>
@@ -249,7 +366,12 @@ export default function CoachDetailScreen() {
             control={control}
             name="name"
             render={({ field, fieldState: { error } }) => (
-              <Input placeholder="Full name" value={field.value} onChangeText={field.onChange} error={error?.message} />
+              <Input
+                placeholder="Full name"
+                value={field.value}
+                onChangeText={field.onChange}
+                error={error?.message}
+              />
             )}
           />
           <View style={{ height: 12 }} />
@@ -257,7 +379,12 @@ export default function CoachDetailScreen() {
             control={control}
             name="specialty"
             render={({ field, fieldState: { error } }) => (
-              <Input placeholder="Specialty" value={field.value} onChangeText={field.onChange} error={error?.message} />
+              <Input
+                placeholder="Specialty"
+                value={field.value}
+                onChangeText={field.onChange}
+                error={error?.message}
+              />
             )}
           />
           <View style={{ height: 12 }} />
@@ -265,7 +392,13 @@ export default function CoachDetailScreen() {
             control={control}
             name="bio"
             render={({ field }) => (
-              <Input placeholder="Bio (optional)" value={field.value} onChangeText={field.onChange} multiline numberOfLines={3} />
+              <Input
+                placeholder="Bio (optional)"
+                value={field.value}
+                onChangeText={field.onChange}
+                multiline
+                numberOfLines={3}
+              />
             )}
           />
           <View style={{ height: 12 }} />
@@ -273,7 +406,12 @@ export default function CoachDetailScreen() {
             control={control}
             name="phone"
             render={({ field }) => (
-              <Input placeholder="Phone (optional)" value={field.value} onChangeText={field.onChange} keyboardType="phone-pad" />
+              <Input
+                placeholder="Phone (optional)"
+                value={field.value}
+                onChangeText={field.onChange}
+                keyboardType="phone-pad"
+              />
             )}
           />
           <View style={{ height: 18 }} />
@@ -289,10 +427,37 @@ export default function CoachDetailScreen() {
 const styles = StyleSheet.create({
   container: { paddingVertical: 8, gap: 16 },
   hero: { alignItems: 'center', paddingVertical: 8 },
-  pic: { width: 84, height: 84, borderRadius: 26, alignItems: 'center', justifyContent: 'center', marginBottom: 12, overflow: 'hidden' },
-  fgh: { fontFamily: sansFor(700), fontSize: 12, letterSpacing: 1.2, textTransform: 'uppercase', color: '#8A8071' },
-  batchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 14, borderRadius: 14, borderWidth: 1 },
+  pic: {
+    width: 84,
+    height: 84,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+    overflow: 'hidden',
+  },
+  fgh: {
+    fontFamily: sansFor(700),
+    fontSize: 12,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    color: '#8A8071',
+  },
+  batchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
   scrim: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)' },
-  sheet: { paddingHorizontal: 24, paddingTop: 10, paddingBottom: 36, borderTopLeftRadius: 24, borderTopRightRadius: 24 },
+  sheet: {
+    paddingHorizontal: 24,
+    paddingTop: 10,
+    paddingBottom: 36,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
   grabber: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, marginBottom: 14 },
 });

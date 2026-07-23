@@ -1,13 +1,22 @@
-import React from 'react';
-import { View, Text, StyleSheet, Linking } from 'react-native';
-import { useTheme, sansFor, Summary, SummaryRow, Button, SectionHeader, Spill, IconUsers, IconCheck } from '@findemy/ui';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { ErrorState } from '@/components/common/ErrorState';
 import { Screen } from '@/components/common/Screen';
 import { ScreenHeader } from '@/components/common/ScreenHeader';
-import { useStudioStudent } from '@/hooks/useStudioQueries';
-import { ErrorState } from '@/components/common/ErrorState';
 import { TierBadge } from '@/components/students/TierBadge';
+import { useStudioStudent } from '@/hooks/useStudioQueries';
+import {
+  Button,
+  IconCheck,
+  IconUsers,
+  SectionHeader,
+  Spill,
+  Summary,
+  SummaryRow,
+  sansFor,
+  useTheme,
+} from '@findemy/ui';
 import { format } from 'date-fns';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Linking, StyleSheet, Text, View } from 'react-native';
 
 function money(paise?: number): string {
   if (paise == null) return '—';
@@ -32,13 +41,17 @@ export default function StudentDetailScreen() {
   if (isLoading || !data) {
     return (
       <Screen header={<ScreenHeader title="Student" showBack />} bottomTab={null}>
-        <Text style={{ color: theme.color.mist, fontFamily: theme.font.sans, padding: 24 }}>Loading…</Text>
+        <Text style={{ color: theme.color.mist, fontFamily: theme.font.sans, padding: 24 }}>
+          Loading…
+        </Text>
       </Screen>
     );
   }
 
   const { student, enrollments, trial_history, attendance_history } = data as any;
-  const activeEnrollments = (enrollments ?? []).filter((enrollment: any) => enrollment.status === 'active');
+  const activeEnrollments = (enrollments ?? []).filter(
+    (enrollment: any) => enrollment.status === 'active'
+  );
   const primary = activeEnrollments[0] ?? enrollments?.[0];
 
   const initial = student.name?.[0]?.toUpperCase() ?? '?';
@@ -46,16 +59,18 @@ export default function StudentDetailScreen() {
     ? activeEnrollments.map((enrollment: any) => enrollment.batch_title).join(', ')
     : (enrollments?.[0]?.batch_title ?? 'No active batch');
   const sinceDate = primary?.started_at ? new Date(primary.started_at) : null;
-  const sinceValid = sinceDate && !isNaN(sinceDate.getTime());
+  const sinceValid = sinceDate && !Number.isNaN(sinceDate.getTime());
   const renewEnd = primary?.current_period_end ? new Date(primary.current_period_end) : null;
-  const renewValid = renewEnd && !isNaN(renewEnd.getTime());
+  const renewValid = renewEnd && !Number.isNaN(renewEnd.getTime());
   const planValue = primary
     ? `${money(primary.monthly_fee_paise)}/mo${renewValid ? ` · renews ${format(renewEnd!, 'd MMM')}` : ''}`
     : 'No active plan';
 
   const openWhatsApp = () => {
     if (!student.phone) return;
-    const msg = encodeURIComponent(`Hi ${student.name}, this is a reminder for your upcoming class. See you soon!`);
+    const msg = encodeURIComponent(
+      `Hi ${student.name}, this is a reminder for your upcoming class. See you soon!`
+    );
     Linking.openURL(`https://wa.me/${student.phone.replace(/\D/g, '')}?text=${msg}`);
   };
 
@@ -65,25 +80,59 @@ export default function StudentDetailScreen() {
         {/* Profile */}
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 18 }}>
           <View style={[styles.av, { backgroundColor: theme.color.persimmon }]}>
-            <Text style={{ fontFamily: theme.font.serifItalic, fontSize: 24, color: theme.color.ivory }}>{initial}</Text>
+            <Text
+              style={{ fontFamily: theme.font.serifItalic, fontSize: 24, color: theme.color.ivory }}
+            >
+              {initial}
+            </Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontFamily: theme.font.serif, fontSize: 26, lineHeight: 28, color: theme.color.ink }}>
+            <Text
+              style={{
+                fontFamily: theme.font.serif,
+                fontSize: 26,
+                lineHeight: 28,
+                color: theme.color.ink,
+              }}
+            >
               {student.name}
             </Text>
-            <Text style={{ fontFamily: sansFor(600), fontSize: 13, color: theme.color.mist, marginTop: 3 }}>
+            <Text
+              style={{
+                fontFamily: sansFor(600),
+                fontSize: 13,
+                color: theme.color.mist,
+                marginTop: 3,
+              }}
+            >
               {sinceValid
                 ? `Enrolled ${format(sinceDate!, 'MMM yyyy')}`
-                : [student.age ? `${student.age} yrs` : null, student.location].filter(Boolean).join(' · ') || 'Student'}
+                : [student.age ? `${student.age} yrs` : null, student.location]
+                    .filter(Boolean)
+                    .join(' · ') || 'Student'}
             </Text>
           </View>
         </View>
 
         {/* Summary */}
         <Summary>
-          <SummaryRow icon={<IconUsers size={16} color={theme.color.persimmonDeep} />} label="Batch" value={batchLine} />
           <SummaryRow
-            icon={<Text style={{ fontFamily: theme.font.serif, fontSize: 15, color: theme.color.persimmonDeep }}>₹</Text>}
+            icon={<IconUsers size={16} color={theme.color.persimmonDeep} />}
+            label="Batch"
+            value={batchLine}
+          />
+          <SummaryRow
+            icon={
+              <Text
+                style={{
+                  fontFamily: theme.font.serif,
+                  fontSize: 15,
+                  color: theme.color.persimmonDeep,
+                }}
+              >
+                ₹
+              </Text>
+            }
             label="Plan"
             value={planValue}
           />
@@ -93,8 +142,12 @@ export default function StudentDetailScreen() {
             last
             value={
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <Text style={{ fontFamily: theme.font.sansBold, fontSize: 15, color: theme.color.ink }}>
-                  {student.attendance_pct != null ? `${student.attendance_pct}% this term` : 'Not scored yet'}
+                <Text
+                  style={{ fontFamily: theme.font.sansBold, fontSize: 15, color: theme.color.ink }}
+                >
+                  {student.attendance_pct != null
+                    ? `${student.attendance_pct}% this term`
+                    : 'Not scored yet'}
                 </Text>
                 <TierBadge tier={student.tier} />
               </View>
@@ -108,7 +161,12 @@ export default function StudentDetailScreen() {
             Message
           </Button>
           {primary?.batch_id ? (
-            <Button variant="dark" block style={{ flex: 1 }} onPress={() => router.push(`/batches/${primary.batch_id}` as any)}>
+            <Button
+              variant="dark"
+              block
+              style={{ flex: 1 }}
+              onPress={() => router.push(`/batches/${primary.batch_id}` as any)}
+            >
               View batch
             </Button>
           ) : null}
@@ -120,10 +178,27 @@ export default function StudentDetailScreen() {
             <SectionHeader title="Trial history" />
             <View style={{ gap: 8 }}>
               {trial_history.map((trial: any) => (
-                <View key={trial.id} style={[styles.miniRow, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
+                <View
+                  key={trial.id}
+                  style={[
+                    styles.miniRow,
+                    { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+                  ]}
+                >
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontFamily: sansFor(600), fontSize: 14, color: theme.color.ink }}>{trial.batch_title}</Text>
-                    <Text style={{ fontFamily: sansFor(500), fontSize: 12, color: theme.color.mist, marginTop: 2 }}>
+                    <Text
+                      style={{ fontFamily: sansFor(600), fontSize: 14, color: theme.color.ink }}
+                    >
+                      {trial.batch_title}
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: sansFor(500),
+                        fontSize: 12,
+                        color: theme.color.mist,
+                        marginTop: 2,
+                      }}
+                    >
                       {format(new Date(trial.trial_at), 'd MMM yyyy')}
                     </Text>
                   </View>
@@ -140,10 +215,23 @@ export default function StudentDetailScreen() {
             <SectionHeader title="Recent attendance" />
             <View style={styles.attGrid}>
               {(attendance_history as any[]).slice(0, 20).map((record: any, index: number) => (
-                <View key={index} style={[styles.attDot, { backgroundColor: record.present ? theme.color.jade : theme.color.rose }]} />
+                <View
+                  key={index}
+                  style={[
+                    styles.attDot,
+                    { backgroundColor: record.present ? theme.color.jade : theme.color.rose },
+                  ]}
+                />
               ))}
             </View>
-            <Text style={{ fontFamily: theme.font.sans, fontSize: 11, color: theme.color.mist, marginTop: 6 }}>
+            <Text
+              style={{
+                fontFamily: theme.font.sans,
+                fontSize: 11,
+                color: theme.color.mist,
+                marginTop: 6,
+              }}
+            >
               Last 20 classes · green = present, red = absent
             </Text>
           </>

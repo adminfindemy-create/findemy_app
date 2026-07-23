@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet } from "react-native";
-import { useTheme } from "@findemy/ui";
+import { useTheme } from '@findemy/ui';
+import { StyleSheet, Text, View } from 'react-native';
 
 type Props = {
   size?: number;
@@ -12,7 +12,7 @@ export function FindemyWordmark({ size = 56 }: Props) {
     fontSize: size,
     lineHeight: size * 1.05,
     letterSpacing: -1,
-    fontWeight: "600" as const,
+    fontWeight: '600' as const,
   };
   return (
     <View style={styles.row}>
@@ -24,7 +24,7 @@ export function FindemyWordmark({ size = 56 }: Props) {
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: "row",
-    alignItems: "baseline",
+    flexDirection: 'row',
+    alignItems: 'baseline',
   },
 });

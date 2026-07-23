@@ -1,40 +1,44 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, Pressable, StyleSheet, Modal, Alert } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { ErrorState } from '@/components/common/ErrorState';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
 import {
-  tokens,
-  useTheme,
-  Button,
-  Summary,
-  SummaryRow,
-  IconChevL,
-  IconCal,
-  IconMappin,
-  IconTrophy,
-} from "@findemy/ui";
-import { Image } from "expo-image";
-import { useEvent } from "@/hooks/useEvents";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { format } from "date-fns";
-import { getEventImage } from "@/lib/eventImages";
-import { ScreenHeader } from "@/components/common/ScreenHeader";
-import { ErrorState } from "@/components/common/ErrorState";
-import {
+  useCancelEventRegistration,
   useEventRegistrationStatus,
   useRegisterForEvent,
-  useCancelEventRegistration,
-} from "@/hooks/useEventRegistration";
+} from '@/hooks/useEventRegistration';
+import { useEvent } from '@/hooks/useEvents';
+import { getEventImage } from '@/lib/eventImages';
+import {
+  Button,
+  IconCal,
+  IconChevL,
+  IconMappin,
+  IconTrophy,
+  Summary,
+  SummaryRow,
+  tokens,
+  useTheme,
+} from '@findemy/ui';
+import { format } from 'date-fns';
+import { Image } from 'expo-image';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function badgeFor(type: string, theme: any): { label: string; bg: string; fg: string } {
   switch (type) {
-    case "competition":
-      return { label: "Competition", bg: theme.color.persimmon, fg: "#fff" };
-    case "talent_hunt":
-      return { label: "Talent Hunt", bg: theme.color.persimmonSoft, fg: theme.color.persimmonDeep };
-    case "meetup":
-      return { label: "Meetup", bg: theme.color.jadeSoft, fg: theme.color.jade };
+    case 'competition':
+      return { label: 'Competition', bg: theme.color.persimmon, fg: '#fff' };
+    case 'talent_hunt':
+      return { label: 'Talent Hunt', bg: theme.color.persimmonSoft, fg: theme.color.persimmonDeep };
+    case 'meetup':
+      return { label: 'Meetup', bg: theme.color.jadeSoft, fg: theme.color.jade };
     default:
-      return { label: (type ?? "Event").replace(/_/g, " "), bg: theme.color.persimmonSoft, fg: theme.color.persimmonDeep };
+      return {
+        label: (type ?? 'Event').replace(/_/g, ' '),
+        bg: theme.color.persimmonSoft,
+        fg: theme.color.persimmonDeep,
+      };
   }
 }
 
@@ -43,14 +47,24 @@ function inr(paise?: number | null): string {
   const rupeesStr = String(rupees);
   if (rupeesStr.length <= 3) return `₹${rupeesStr}`;
   const last3 = rupeesStr.slice(-3);
-  const rest = rupeesStr.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",");
+  const rest = rupeesStr.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ',');
   return `₹${rest},${last3}`;
 }
 
 function SheetHandle() {
   const theme = useTheme();
   return (
-    <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: theme.color.hairline, alignSelf: "center", marginTop: 10, marginBottom: 6 }} />
+    <View
+      style={{
+        width: 36,
+        height: 4,
+        borderRadius: 2,
+        backgroundColor: theme.color.hairline,
+        alignSelf: 'center',
+        marginTop: 10,
+        marginBottom: 6,
+      }}
+    />
   );
 }
 
@@ -69,19 +83,21 @@ function CancelRegistrationSheet({
 }) {
   const theme = useTheme();
   const cancelMut = useCancelEventRegistration();
-  const isCompetition = eventType === "competition" || eventType === "talent_hunt";
+  const isCompetition = eventType === 'competition' || eventType === 'talent_hunt';
 
   const handleCancel = async () => {
     try {
       await cancelMut.mutateAsync({ registrationId, eventId });
       onClose();
       Alert.alert(
-        "Registration cancelled",
+        'Registration cancelled',
         isCompetition
-          ? "Your registration has been cancelled."
-          : "Your registration has been cancelled. Any refund will be processed within 5–7 business days."
+          ? 'Your registration has been cancelled.'
+          : 'Your registration has been cancelled. Any refund will be processed within 5–7 business days.'
       );
-    } catch { /* onError handles */ }
+    } catch {
+      /* onError handles */
+    }
   };
 
   return (
@@ -91,7 +107,9 @@ function CancelRegistrationSheet({
         <SheetHandle />
         <View style={{ paddingHorizontal: 24, paddingBottom: 40 }}>
           <View style={styles.titleRow}>
-            <Text style={[styles.sheetTitle, { fontFamily: theme.font.serif, color: theme.color.ink }]}>
+            <Text
+              style={[styles.sheetTitle, { fontFamily: theme.font.serif, color: theme.color.ink }]}
+            >
               Cancel registration?
             </Text>
             <Pressable onPress={onClose} hitSlop={12}>
@@ -107,9 +125,16 @@ function CancelRegistrationSheet({
               },
             ]}
           >
-            <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: isCompetition ? theme.color.rose : theme.color.jade, lineHeight: 19 }}>
+            <Text
+              style={{
+                fontFamily: theme.font.sans,
+                fontSize: 13,
+                color: isCompetition ? theme.color.rose : theme.color.jade,
+                lineHeight: 19,
+              }}
+            >
               {isCompetition
-                ? "This registration is non-refundable. You will not receive a refund for competition entries."
+                ? 'This registration is non-refundable. You will not receive a refund for competition entries.'
                 : "You'll receive a full refund within 5–7 business days."}
             </Text>
           </View>
@@ -144,7 +169,7 @@ export default function EventDetailScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={["top"]}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={['top']}>
         <ScreenHeader title="Event" />
         <View style={{ padding: 24 }}>
           <Text style={{ color: theme.color.mist, fontFamily: theme.font.sans }}>Loading…</Text>
@@ -155,7 +180,7 @@ export default function EventDetailScreen() {
 
   if (error) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={["top"]}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={['top']}>
         <ScreenHeader title="Event" />
         <ErrorState code={(error as any)?.code} onRetry={refetch} />
       </SafeAreaView>
@@ -165,24 +190,24 @@ export default function EventDetailScreen() {
   const event = (data as any)?.event ?? {};
   const start = event.start_at ? new Date(event.start_at) : null;
   const end = event.end_at ? new Date(event.end_at) : null;
-  const startValid = start && !isNaN(start.getTime());
+  const startValid = start && !Number.isNaN(start.getTime());
   const spotsLeft: number | null = event.spots_left ?? null;
   const pricePaise: number = event.price_paise ?? 0;
   const isFree = pricePaise === 0;
-  const isCompetition = event.type === "competition" || event.type === "talent_hunt";
+  const isCompetition = event.type === 'competition' || event.type === 'talent_hunt';
   const divisions: string[] = event.divisions ?? [];
   const badge = badgeFor(event.type, theme);
 
   const reg = regStatus.data;
-  const isRegistered = reg?.registered && reg?.status === "confirmed";
-  const isPending = reg?.registered && reg?.status === "pending";
-  const isCancelled = reg?.registered && reg?.status === "cancelled";
+  const isRegistered = reg?.registered && reg?.status === 'confirmed';
+  const isPending = reg?.registered && reg?.status === 'pending';
+  const isCancelled = reg?.registered && reg?.status === 'cancelled';
 
   const registrationDeadline = event.registration_deadline
     ? new Date(event.registration_deadline)
     : start
-    ? new Date(start.getTime() - (isCompetition ? 48 : 2) * 60 * 60 * 1000)
-    : null;
+      ? new Date(start.getTime() - (isCompetition ? 48 : 2) * 60 * 60 * 1000)
+      : null;
   const isDeadlinePassed = registrationDeadline ? now > registrationDeadline.getTime() : false;
   const isFull = spotsLeft !== null && spotsLeft <= 0;
   const canRegister = !isRegistered && !isPending && !isDeadlinePassed && !isFull && !isCancelled;
@@ -192,18 +217,22 @@ export default function EventDetailScreen() {
       const response = await registerMut.mutateAsync(id);
       if (response.requires_payment) {
         router.push(
-          `/events/pay?registration_id=${response.registration_id}&event_id=${id}&title=${encodeURIComponent(event.title ?? "")}&amount_paise=${response.amount_paise}` as any
+          `/events/pay?registration_id=${response.registration_id}&event_id=${id}&title=${encodeURIComponent(event.title ?? '')}&amount_paise=${response.amount_paise}` as any
         );
       } else {
-        Alert.alert("Registered!", "Your spot is confirmed.", [{ text: "OK", onPress: () => regStatus.refetch() }]);
+        Alert.alert('Registered!', 'Your spot is confirmed.', [
+          { text: 'OK', onPress: () => regStatus.refetch() },
+        ]);
       }
-    } catch { /* onError handles */ }
+    } catch {
+      /* onError handles */
+    }
   };
 
   const handlePayNow = () => {
     if (!reg?.registration_id) return;
     router.push(
-      `/events/pay?registration_id=${reg.registration_id}&event_id=${id}&title=${encodeURIComponent(event.title ?? "")}&amount_paise=${pricePaise}` as any
+      `/events/pay?registration_id=${reg.registration_id}&event_id=${id}&title=${encodeURIComponent(event.title ?? '')}&amount_paise=${pricePaise}` as any
     );
   };
 
@@ -211,13 +240,21 @@ export default function EventDetailScreen() {
   const hasBar = canRegister || isRegistered || isPending || isCancelled;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={["top"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.color.paper }} edges={['top']}>
       <ScrollView contentContainerStyle={{ paddingBottom: hasBar ? 120 : 40 }}>
         {/* Hero */}
         <View style={styles.hero}>
-          <Image source={{ uri: getEventImage(event.type) }} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
+          <Image
+            source={{ uri: getEventImage(event.type) }}
+            style={StyleSheet.absoluteFill}
+            contentFit="cover"
+            transition={150}
+          />
           <View style={[StyleSheet.absoluteFill, styles.heroScrim]} pointerEvents="none" />
-          <Pressable onPress={() => router.back()} style={[styles.heroBack, { backgroundColor: "rgba(255,255,255,0.92)" }]}>
+          <Pressable
+            onPress={() => router.back()}
+            style={[styles.heroBack, { backgroundColor: 'rgba(255,255,255,0.92)' }]}
+          >
             <IconChevL size={20} color={theme.color.ink} />
           </Pressable>
           <View style={styles.heroCaption}>
@@ -230,7 +267,9 @@ export default function EventDetailScreen() {
 
         <View style={{ paddingHorizontal: 20, marginTop: 14 }}>
           {event.organizer_name ? (
-            <Text style={{ fontFamily: theme.font.sansMedium, fontSize: 13, color: theme.color.mist }}>
+            <Text
+              style={{ fontFamily: theme.font.sansMedium, fontSize: 13, color: theme.color.mist }}
+            >
               By {event.organizer_name}
             </Text>
           ) : null}
@@ -242,23 +281,47 @@ export default function EventDetailScreen() {
               label="When"
               value={
                 startValid
-                  ? `${format(start!, "EEE, d MMM · h:mm a")}${end && !isNaN(end.getTime()) ? ` – ${format(end, "h:mm a")}` : ""}`
-                  : "—"
+                  ? `${format(start!, 'EEE, d MMM · h:mm a')}${end && !Number.isNaN(end.getTime()) ? ` – ${format(end, 'h:mm a')}` : ''}`
+                  : '—'
               }
             />
             {event.location ? (
-              <SummaryRow icon={<IconMappin size={18} color={theme.color.persimmon} />} label="Where" value={event.location} last={event.prize_paise == null} />
+              <SummaryRow
+                icon={<IconMappin size={18} color={theme.color.persimmon} />}
+                label="Where"
+                value={event.location}
+                last={event.prize_paise == null}
+              />
             ) : null}
             {event.prize_paise != null ? (
-              <SummaryRow icon={<IconTrophy size={18} color={theme.color.persimmon} />} label="Top prize" value={inr(event.prize_paise)} last />
+              <SummaryRow
+                icon={<IconTrophy size={18} color={theme.color.persimmon} />}
+                label="Top prize"
+                value={inr(event.prize_paise)}
+                last
+              />
             ) : null}
           </Summary>
 
           {/* About */}
           {event.description ? (
             <View style={{ marginTop: 22 }}>
-              <Text style={[styles.blockLabel, { fontFamily: theme.font.sansBold, color: theme.color.whisper }]}>About</Text>
-              <Text style={{ fontFamily: theme.font.sans, fontSize: 13.5, lineHeight: 21, color: theme.color.inkSoft }}>
+              <Text
+                style={[
+                  styles.blockLabel,
+                  { fontFamily: theme.font.sansBold, color: theme.color.whisper },
+                ]}
+              >
+                About
+              </Text>
+              <Text
+                style={{
+                  fontFamily: theme.font.sans,
+                  fontSize: 13.5,
+                  lineHeight: 21,
+                  color: theme.color.inkSoft,
+                }}
+              >
                 {event.description}
               </Text>
             </View>
@@ -267,11 +330,26 @@ export default function EventDetailScreen() {
           {/* Categories / divisions */}
           {divisions.length > 0 ? (
             <View style={{ marginTop: 22 }}>
-              <Text style={[styles.blockLabel, { fontFamily: theme.font.sansBold, color: theme.color.whisper }]}>Categories</Text>
+              <Text
+                style={[
+                  styles.blockLabel,
+                  { fontFamily: theme.font.sansBold, color: theme.color.whisper },
+                ]}
+              >
+                Categories
+              </Text>
               <View style={styles.chips}>
                 {divisions.map((division) => (
                   <View key={division} style={[styles.chip, { borderColor: theme.color.hairline }]}>
-                    <Text style={{ fontFamily: theme.font.sansMedium, fontSize: 13, color: theme.color.inkSoft }}>{division}</Text>
+                    <Text
+                      style={{
+                        fontFamily: theme.font.sansMedium,
+                        fontSize: 13,
+                        color: theme.color.inkSoft,
+                      }}
+                    >
+                      {division}
+                    </Text>
                   </View>
                 ))}
               </View>
@@ -280,8 +358,17 @@ export default function EventDetailScreen() {
 
           {/* Spots note (real data) */}
           {spotsLeft != null ? (
-            <Text style={{ fontFamily: theme.font.sansMedium, fontSize: 12.5, color: spotsLeft <= 5 ? theme.color.persimmon : theme.color.mist, marginTop: 18 }}>
-              {spotsLeft > 0 ? `${spotsLeft} spot${spotsLeft === 1 ? "" : "s"} left` : "Fully booked"}
+            <Text
+              style={{
+                fontFamily: theme.font.sansMedium,
+                fontSize: 12.5,
+                color: spotsLeft <= 5 ? theme.color.persimmon : theme.color.mist,
+                marginTop: 18,
+              }}
+            >
+              {spotsLeft > 0
+                ? `${spotsLeft} spot${spotsLeft === 1 ? '' : 's'} left`
+                : 'Fully booked'}
             </Text>
           ) : null}
         </View>
@@ -289,36 +376,85 @@ export default function EventDetailScreen() {
 
       {/* Action bar */}
       {hasBar && (
-        <SafeAreaView edges={["bottom"]} style={[styles.actionBar, { backgroundColor: "rgba(255,255,255,0.97)", borderTopColor: theme.color.hairline }]}>
+        <SafeAreaView
+          edges={['bottom']}
+          style={[
+            styles.actionBar,
+            { backgroundColor: 'rgba(255,255,255,0.97)', borderTopColor: theme.color.hairline },
+          ]}
+        >
           {isRegistered ? (
             <View style={{ flex: 1 }}>
-              <Button variant="jade" block disabled>Registered ✓</Button>
+              <Button variant="jade" block disabled>
+                Registered ✓
+              </Button>
               {canCancel && (
-                <Pressable onPress={() => setShowCancelSheet(true)} style={{ alignItems: "center", marginTop: 10 }}>
-                  <Text style={{ fontFamily: theme.font.sansBold, fontSize: 13, color: theme.color.rose }}>Cancel registration</Text>
+                <Pressable
+                  onPress={() => setShowCancelSheet(true)}
+                  style={{ alignItems: 'center', marginTop: 10 }}
+                >
+                  <Text
+                    style={{
+                      fontFamily: theme.font.sansBold,
+                      fontSize: 13,
+                      color: theme.color.rose,
+                    }}
+                  >
+                    Cancel registration
+                  </Text>
                 </Pressable>
               )}
             </View>
           ) : isPending && !isFree ? (
             <View style={{ flex: 1 }}>
-              <Button onPress={handlePayNow} block>Complete payment · {inr(pricePaise)}</Button>
+              <Button onPress={handlePayNow} block>
+                Complete payment · {inr(pricePaise)}
+              </Button>
             </View>
           ) : isCancelled ? (
-            <View style={[styles.cancelledBadge, { backgroundColor: theme.color.bone, borderColor: theme.color.hairline }]}>
-              <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.mist }}>Registration cancelled</Text>
+            <View
+              style={[
+                styles.cancelledBadge,
+                { backgroundColor: theme.color.bone, borderColor: theme.color.hairline },
+              ]}
+            >
+              <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.mist }}>
+                Registration cancelled
+              </Text>
             </View>
           ) : isDeadlinePassed || isFull ? (
             <View style={{ flex: 1 }}>
-              <Button disabled block>{isFull ? "Event full" : "Registration closed"}</Button>
+              <Button disabled block>
+                {isFull ? 'Event full' : 'Registration closed'}
+              </Button>
             </View>
           ) : (
             <>
               <View style={styles.priceLead}>
-                <Text style={[styles.priceL, { fontFamily: theme.font.sansBold, color: theme.color.whisper }]}>ENTRY</Text>
-                <Text style={[styles.priceV, { fontFamily: theme.font.sansBold, color: theme.color.ink }]}>{isFree ? "Free" : inr(pricePaise)}</Text>
+                <Text
+                  style={[
+                    styles.priceL,
+                    { fontFamily: theme.font.sansBold, color: theme.color.whisper },
+                  ]}
+                >
+                  ENTRY
+                </Text>
+                <Text
+                  style={[
+                    styles.priceV,
+                    { fontFamily: theme.font.sansBold, color: theme.color.ink },
+                  ]}
+                >
+                  {isFree ? 'Free' : inr(pricePaise)}
+                </Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Button onPress={handleRegister} loading={registerMut.isPending} disabled={registerMut.isPending} block>
+                <Button
+                  onPress={handleRegister}
+                  loading={registerMut.isPending}
+                  disabled={registerMut.isPending}
+                  block
+                >
                   Register
                 </Button>
               </View>
@@ -341,49 +477,61 @@ export default function EventDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  hero: { height: 270, width: "100%", backgroundColor: "#E5DDC9", position: "relative", justifyContent: "flex-end" },
-  heroScrim: { backgroundColor: "rgba(0,0,0,0.28)" },
+  hero: {
+    height: 270,
+    width: '100%',
+    backgroundColor: '#E5DDC9',
+    position: 'relative',
+    justifyContent: 'flex-end',
+  },
+  heroScrim: { backgroundColor: 'rgba(0,0,0,0.28)' },
   heroBack: {
-    position: "absolute",
+    position: 'absolute',
     top: 12,
     left: 16,
     width: 38,
     height: 38,
     borderRadius: 19,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  heroCaption: { padding: 18, position: "relative", zIndex: 2 },
-  badge: { alignSelf: "flex-start", paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999 },
-  badgeText: { fontSize: 10.5, fontWeight: "700", letterSpacing: 0.6 },
+  heroCaption: { padding: 18, position: 'relative', zIndex: 2 },
+  badge: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999 },
+  badgeText: { fontSize: 10.5, fontWeight: '700', letterSpacing: 0.6 },
   heroTitle: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 30,
     lineHeight: 32,
     marginTop: 8,
-    textShadowColor: "rgba(0,0,0,0.6)",
+    textShadowColor: 'rgba(0,0,0,0.6)',
     textShadowRadius: 12,
     textShadowOffset: { width: 0, height: 2 },
   },
-  blockLabel: { fontSize: 11, letterSpacing: 1.1, fontWeight: "700", marginBottom: 8 },
-  chips: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
-  chip: { borderWidth: 1.5, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 9, backgroundColor: "#fff" },
+  blockLabel: { fontSize: 11, letterSpacing: 1.1, fontWeight: '700', marginBottom: 8 },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  chip: {
+    borderWidth: 1.5,
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    backgroundColor: '#fff',
+  },
   actionBar: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
     paddingHorizontal: 18,
     paddingTop: 14,
     borderTopWidth: 1,
   },
   priceLead: { flexShrink: 0 },
-  priceL: { fontSize: 9.5, letterSpacing: 1.2, fontWeight: "700" },
-  priceV: { fontSize: 19, fontWeight: "800" },
-  backdrop: { flex: 1, backgroundColor: "rgba(20,16,14,0.45)" },
+  priceL: { fontSize: 9.5, letterSpacing: 1.2, fontWeight: '700' },
+  priceV: { fontSize: 19, fontWeight: '800' },
+  backdrop: { flex: 1, backgroundColor: 'rgba(20,16,14,0.45)' },
   sheet: {
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
@@ -393,8 +541,19 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 10,
   },
-  titleRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 14 },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 14,
+  },
   sheetTitle: { fontSize: 22 },
   infoBox: { borderRadius: 12, borderWidth: 1, padding: 14 },
-  cancelledBadge: { flex: 1, borderWidth: 1, borderRadius: 12, paddingVertical: 14, alignItems: "center" },
+  cancelledBadge: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
 });

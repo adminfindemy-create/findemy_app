@@ -1,9 +1,10 @@
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { Animated, StyleSheet, Text } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "@findemy/ui";
+import { useTheme } from '@findemy/ui';
+import type React from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { Animated, StyleSheet, Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-type ToastVariant = "success" | "error" | "info";
+type ToastVariant = 'success' | 'error' | 'info';
 
 type ToastState = { message: string; variant: ToastVariant } | null;
 
@@ -19,33 +20,50 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
   const genRef = useRef(0);
 
-  const show = useCallback((message: string, variant: ToastVariant = "success") => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    opacity.stopAnimation();
-    const gen = ++genRef.current;
-    setToast({ message, variant });
-    Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }).start();
-    timerRef.current = setTimeout(() => {
-      Animated.timing(opacity, { toValue: 0, duration: 300, useNativeDriver: true }).start(() => {
-        // Only clear if no newer toast has been shown since this one started fading.
-        if (genRef.current === gen) setToast(null);
-      });
-    }, 3000);
-  }, [opacity]);
+  const show = useCallback(
+    (message: string, variant: ToastVariant = 'success') => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      opacity.stopAnimation();
+      const gen = ++genRef.current;
+      setToast({ message, variant });
+      Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }).start();
+      timerRef.current = setTimeout(() => {
+        Animated.timing(opacity, { toValue: 0, duration: 300, useNativeDriver: true }).start(() => {
+          // Only clear if no newer toast has been shown since this one started fading.
+          if (genRef.current === gen) setToast(null);
+        });
+      }, 3000);
+    },
+    [opacity]
+  );
 
-  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+  useEffect(
+    () => () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    },
+    []
+  );
 
   const bg =
-    toast?.variant === "error" ? theme.color.persimmon :
-    toast?.variant === "info"  ? theme.color.ink :
-    theme.color.jade;
+    toast?.variant === 'error'
+      ? theme.color.persimmon
+      : toast?.variant === 'info'
+        ? theme.color.ink
+        : theme.color.jade;
 
   return (
     <ToastContext.Provider value={{ show }}>
       {children}
       {toast && (
-        <Animated.View style={[styles.container, { top: insets.top + 12, opacity, backgroundColor: bg, shadowColor: theme.color.ink }]}>
-          <Text style={[styles.text, { fontFamily: theme.font.sans, color: theme.color.ivory }]}>{toast.message}</Text>
+        <Animated.View
+          style={[
+            styles.container,
+            { top: insets.top + 12, opacity, backgroundColor: bg, shadowColor: theme.color.ink },
+          ]}
+        >
+          <Text style={[styles.text, { fontFamily: theme.font.sans, color: theme.color.ivory }]}>
+            {toast.message}
+          </Text>
         </Animated.View>
       )}
     </ToastContext.Provider>
@@ -58,7 +76,7 @@ export function useToast() {
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
+    position: 'absolute',
     left: 20,
     right: 20,
     borderRadius: 12,
@@ -72,7 +90,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 14,
-    fontWeight: "600",
-    textAlign: "center",
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });

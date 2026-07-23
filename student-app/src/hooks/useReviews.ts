@@ -1,5 +1,5 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { api } from '@/lib/api';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 export const useCreateReview = () =>
   useMutation({
@@ -8,6 +8,6 @@ export const useCreateReview = () =>
 
 export const useMyReviews = () =>
   useQuery({
-    queryKey: ["me", "reviews"],
+    queryKey: ['me', 'reviews'],
     queryFn: () => api.me.getMyReviews(),
   });

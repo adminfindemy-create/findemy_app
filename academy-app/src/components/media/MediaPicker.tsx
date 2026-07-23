@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, Pressable, Alert, ActivityIndicator, StyleSheet } from 'react-native';
+import { uploadMultipart } from '@/lib/api';
+import { IconPlus, IconX, sansFor, useTheme } from '@findemy/ui';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { useTheme, sansFor, IconPlus, IconX } from '@findemy/ui';
-import { uploadMultipart } from '@/lib/api';
+import { useState } from 'react';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export type MediaItem = { url: string; type: 'photo' | 'video' };
 
@@ -63,13 +63,33 @@ export function MediaPicker({
     <View>
       <View style={styles.grid}>
         {value.map((mediaItem) => (
-          <View key={mediaItem.url} style={[styles.tile, { borderColor: theme.color.hairline, backgroundColor: theme.color.charcoal }]}>
+          <View
+            key={mediaItem.url}
+            style={[
+              styles.tile,
+              { borderColor: theme.color.hairline, backgroundColor: theme.color.charcoal },
+            ]}
+          >
             {mediaItem.type === 'photo' ? (
-              <Image source={{ uri: mediaItem.url }} style={StyleSheet.absoluteFill} contentFit="cover" />
+              <Image
+                source={{ uri: mediaItem.url }}
+                style={StyleSheet.absoluteFill}
+                contentFit="cover"
+              />
             ) : (
               <View style={[StyleSheet.absoluteFill, styles.videoTile]}>
                 <Text style={{ color: '#fff', fontSize: 22 }}>▶</Text>
-                <Text style={{ fontFamily: sansFor(700), fontSize: 9.5, letterSpacing: 0.6, color: 'rgba(255,255,255,0.8)', marginTop: 4 }}>VIDEO</Text>
+                <Text
+                  style={{
+                    fontFamily: sansFor(700),
+                    fontSize: 9.5,
+                    letterSpacing: 0.6,
+                    color: 'rgba(255,255,255,0.8)',
+                    marginTop: 4,
+                  }}
+                >
+                  VIDEO
+                </Text>
               </View>
             )}
             <Pressable onPress={() => remove(mediaItem.url)} style={styles.removeBtn} hitSlop={6}>
@@ -89,14 +109,30 @@ export function MediaPicker({
             ) : (
               <>
                 <IconPlus size={20} color={theme.color.persimmon} />
-                <Text style={{ fontFamily: sansFor(700), fontSize: 11, color: theme.color.persimmon, marginTop: 4 }}>Add</Text>
+                <Text
+                  style={{
+                    fontFamily: sansFor(700),
+                    fontSize: 11,
+                    color: theme.color.persimmon,
+                    marginTop: 4,
+                  }}
+                >
+                  Add
+                </Text>
               </>
             )}
           </Pressable>
         ) : null}
       </View>
 
-      <Text style={{ fontFamily: theme.font.sans, fontSize: 12, color: theme.color.mist, marginTop: 10 }}>
+      <Text
+        style={{
+          fontFamily: theme.font.sans,
+          fontSize: 12,
+          color: theme.color.mist,
+          marginTop: 10,
+        }}
+      >
         {value.length}/{max} · photos & videos · at least 3 required
       </Text>
     </View>

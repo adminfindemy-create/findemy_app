@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useTheme, Input, Button } from '@findemy/ui';
-import { AuthScaffold, AuthHeading, AuthSub, AuthBadge } from '@/components/auth/AuthScaffold';
+import { AuthBadge, AuthHeading, AuthScaffold, AuthSub } from '@/components/auth/AuthScaffold';
 import { api } from '@/lib/api';
+import { Button, Input, useTheme } from '@findemy/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Text, View } from 'react-native';
+import { z } from 'zod';
 
 // Matches signup: India 10-digit bare number. The backend looks the account up by
 // bare phone, so a loose 8–15-digit shared schema would let mismatched input through.
@@ -58,7 +58,13 @@ export default function LoginScreen() {
             <Input
               label="Phone number"
               prefix={
-                <Text style={{ fontFamily: theme.font.sansBold, fontSize: 16, color: theme.color.inkSoft }}>
+                <Text
+                  style={{
+                    fontFamily: theme.font.sansBold,
+                    fontSize: 16,
+                    color: theme.color.inkSoft,
+                  }}
+                >
                   +91
                 </Text>
               }
@@ -74,13 +80,25 @@ export default function LoginScreen() {
       </View>
 
       {errorMsg ? (
-        <Text style={{ color: theme.color.rose, fontFamily: theme.font.sans, fontSize: 13, marginTop: 8 }}>
+        <Text
+          style={{
+            color: theme.color.rose,
+            fontFamily: theme.font.sans,
+            fontSize: 13,
+            marginTop: 8,
+          }}
+        >
           {errorMsg}
         </Text>
       ) : null}
 
       <View style={{ marginTop: 18 }}>
-        <Button block variant="dark" loading={formState.isSubmitting} onPress={handleSubmit(onSubmit)}>
+        <Button
+          block
+          variant="dark"
+          loading={formState.isSubmitting}
+          onPress={handleSubmit(onSubmit)}
+        >
           Get OTP
         </Button>
       </View>

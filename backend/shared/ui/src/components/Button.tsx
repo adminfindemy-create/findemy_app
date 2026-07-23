@@ -1,5 +1,13 @@
-import React from 'react';
-import { Pressable, Text, ActivityIndicator, StyleSheet, View, type ViewStyle, type StyleProp } from 'react-native';
+import type React from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  type StyleProp,
+  StyleSheet,
+  Text,
+  View,
+  type ViewStyle,
+} from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 // Prototype refresh: pill buttons (border-radius:999). Matches `.btn`/`.cta-*`

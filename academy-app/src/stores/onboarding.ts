@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import * as SecureStore from 'expo-secure-store';
 import type { Category } from '@findemy/types';
+import * as SecureStore from 'expo-secure-store';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 const secureStorage = {
   getItem: (name: string) => SecureStore.getItemAsync(name),
@@ -22,7 +22,9 @@ export type OnboardingState = {
     value: OnboardingState[K]
   ) => void;
   setMany: (
-    patch: Partial<Pick<OnboardingState, 'ownerName' | 'academyName' | 'city' | 'category' | 'phone'>>
+    patch: Partial<
+      Pick<OnboardingState, 'ownerName' | 'academyName' | 'city' | 'category' | 'phone'>
+    >
   ) => void;
   clear: () => void;
 };

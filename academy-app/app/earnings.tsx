@@ -1,17 +1,25 @@
-import React, { useMemo, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, TextInput } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useTheme, sansFor, tokens, Spill, IconCal, IconChevR, IconChevL } from '@findemy/ui';
-import {
-  startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear,
-  addWeeks, addMonths, addYears, format,
-} from 'date-fns';
-import { useStudioEarnings } from '@/hooks/useStudioQueries';
+import { ErrorState } from '@/components/common/ErrorState';
 import { Screen } from '@/components/common/Screen';
 import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { SkeletonLoader } from '@/components/common/SkeletonLoader';
-import { ErrorState } from '@/components/common/ErrorState';
+import { useStudioEarnings } from '@/hooks/useStudioQueries';
 import { formatRupees } from '@/lib/format';
+import { IconCal, IconChevL, IconChevR, Spill, sansFor, tokens, useTheme } from '@findemy/ui';
+import {
+  addMonths,
+  addWeeks,
+  addYears,
+  endOfMonth,
+  endOfWeek,
+  endOfYear,
+  format,
+  startOfMonth,
+  startOfWeek,
+  startOfYear,
+} from 'date-fns';
+import { useRouter } from 'expo-router';
+import { useMemo, useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 function fmt(paise: number) {
   return formatRupees(paise).replace('₹', '');
@@ -43,7 +51,11 @@ const CATS: { key: Cat; label: string }[] = [
   { key: 'workshop', label: 'Workshops' },
 ];
 
-const CATEGORY_LABEL: Record<string, string> = { trial: 'Trials', monthly: 'Monthly', workshop: 'Workshops' };
+const CATEGORY_LABEL: Record<string, string> = {
+  trial: 'Trials',
+  monthly: 'Monthly',
+  workshop: 'Workshops',
+};
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 // Window (start/end) + display label for a preset stepped by `offset` (0 = current, −1 = previous).
@@ -74,14 +86,19 @@ export default function EarningsScreen() {
   const [toStr, setToStr] = useState('');
 
   const win = presetWindow(period, offset);
-  const customValid = DATE_RE.test(fromStr) && DATE_RE.test(toStr) && new Date(fromStr) <= new Date(toStr);
+  const customValid =
+    DATE_RE.test(fromStr) && DATE_RE.test(toStr) && new Date(fromStr) <= new Date(toStr);
 
   // Query args: preset current period → { period }; stepped/custom → explicit { from, to }.
   const queryArgs = useMemo(() => {
     const category = cat || undefined;
     if (mode === 'custom') {
       if (!customValid) return { category }; // falls back to default month until a valid range is entered
-      return { category, from: new Date(`${fromStr}T00:00:00`).toISOString(), to: new Date(`${toStr}T23:59:59`).toISOString() };
+      return {
+        category,
+        from: new Date(`${fromStr}T00:00:00`).toISOString(),
+        to: new Date(`${toStr}T23:59:59`).toISOString(),
+      };
     }
     if (offset === 0) return { period, category };
     return { period, category, from: win.start.toISOString(), to: win.end.toISOString() };
@@ -92,7 +109,8 @@ export default function EarningsScreen() {
   const total = data?.total_paise ?? 0;
   const delta = data?.delta_paise ?? 0;
   const periodWord = mode === 'custom' ? 'range' : period;
-  const dkLabel = mode === 'custom' ? (customValid ? `${fromStr} → ${toStr}` : 'Pick a date range') : win.label;
+  const dkLabel =
+    mode === 'custom' ? (customValid ? `${fromStr} → ${toStr}` : 'Pick a date range') : win.label;
 
   const prev = total - delta;
   const pct = prev > 0 ? Math.round((delta / prev) * 100) : null;
@@ -103,8 +121,10 @@ export default function EarningsScreen() {
 
   const nextPayout = data?.payouts?.[0];
   const isScheduled = !!nextPayout;
-  const payoutAmount = isScheduled ? nextPayout!.amount_paise : data?.net_paise ?? total;
-  const bank = nextPayout?.bank_last4 ? `${nextPayout.bank_name ?? 'Bank'} ••${nextPayout.bank_last4}` : 'Add bank in settings';
+  const payoutAmount = isScheduled ? nextPayout?.amount_paise : (data?.net_paise ?? total);
+  const bank = nextPayout?.bank_last4
+    ? `${nextPayout.bank_name ?? 'Bank'} ••${nextPayout.bank_last4}`
+    : 'Add bank in settings';
 
   return (
     <Screen header={<ScreenHeader title="Earnings" showBack />} bottomTab={null} scroll>
@@ -116,33 +136,68 @@ export default function EarningsScreen() {
             return (
               <Pressable
                 key={preset.key}
-                onPress={() => { setMode('preset'); setPeriod(preset.key); setOffset(0); }}
-                style={[styles.segBtn, on && [{ backgroundColor: theme.color.ivory }, theme.shadow.sm]]}
+                onPress={() => {
+                  setMode('preset');
+                  setPeriod(preset.key);
+                  setOffset(0);
+                }}
+                style={[
+                  styles.segBtn,
+                  on && [{ backgroundColor: theme.color.ivory }, theme.shadow.sm],
+                ]}
               >
-                <Text style={{ fontFamily: sansFor(700), fontSize: 13, color: on ? theme.color.ink : theme.color.inkSoft }}>{preset.label}</Text>
+                <Text
+                  style={{
+                    fontFamily: sansFor(700),
+                    fontSize: 13,
+                    color: on ? theme.color.ink : theme.color.inkSoft,
+                  }}
+                >
+                  {preset.label}
+                </Text>
               </Pressable>
             );
           })}
           <Pressable
             onPress={() => setMode('custom')}
-            style={[styles.segBtn, mode === 'custom' && [{ backgroundColor: theme.color.ivory }, theme.shadow.sm]]}
+            style={[
+              styles.segBtn,
+              mode === 'custom' && [{ backgroundColor: theme.color.ivory }, theme.shadow.sm],
+            ]}
           >
-            <Text style={{ fontFamily: sansFor(700), fontSize: 13, color: mode === 'custom' ? theme.color.ink : theme.color.inkSoft }}>Custom</Text>
+            <Text
+              style={{
+                fontFamily: sansFor(700),
+                fontSize: 13,
+                color: mode === 'custom' ? theme.color.ink : theme.color.inkSoft,
+              }}
+            >
+              Custom
+            </Text>
           </Pressable>
         </View>
 
         {/* Stepper (preset) or date-range inputs (custom) */}
         {mode === 'preset' ? (
           <View style={styles.stepper}>
-            <Pressable onPress={() => setOffset((prev) => prev - 1)} hitSlop={8} style={[styles.stepBtn, { borderColor: theme.color.hairline }]}>
+            <Pressable
+              onPress={() => setOffset((prev) => prev - 1)}
+              hitSlop={8}
+              style={[styles.stepBtn, { borderColor: theme.color.hairline }]}
+            >
               <IconChevL size={18} color={theme.color.ink} />
             </Pressable>
-            <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }}>{win.label}</Text>
+            <Text style={{ fontFamily: sansFor(700), fontSize: 14, color: theme.color.ink }}>
+              {win.label}
+            </Text>
             <Pressable
               onPress={() => setOffset((prev) => Math.min(0, prev + 1))}
               disabled={offset === 0}
               hitSlop={8}
-              style={[styles.stepBtn, { borderColor: theme.color.hairline, opacity: offset === 0 ? 0.35 : 1 }]}
+              style={[
+                styles.stepBtn,
+                { borderColor: theme.color.hairline, opacity: offset === 0 ? 0.35 : 1 },
+              ]}
             >
               <IconChevR size={18} color={theme.color.ink} />
             </Pressable>
@@ -156,7 +211,14 @@ export default function EarningsScreen() {
                 onChangeText={setFromStr}
                 placeholder="YYYY-MM-DD"
                 placeholderTextColor={theme.color.mist}
-                style={[styles.rangeInput, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline, color: theme.color.ink }]}
+                style={[
+                  styles.rangeInput,
+                  {
+                    backgroundColor: theme.color.ivory,
+                    borderColor: theme.color.hairline,
+                    color: theme.color.ink,
+                  },
+                ]}
               />
             </View>
             <View style={{ flex: 1 }}>
@@ -166,7 +228,14 @@ export default function EarningsScreen() {
                 onChangeText={setToStr}
                 placeholder="YYYY-MM-DD"
                 placeholderTextColor={theme.color.mist}
-                style={[styles.rangeInput, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline, color: theme.color.ink }]}
+                style={[
+                  styles.rangeInput,
+                  {
+                    backgroundColor: theme.color.ivory,
+                    borderColor: theme.color.hairline,
+                    color: theme.color.ink,
+                  },
+                ]}
               />
             </View>
           </View>
@@ -180,9 +249,23 @@ export default function EarningsScreen() {
               <Pressable
                 key={catOption.key || 'all'}
                 onPress={() => setCat(catOption.key)}
-                style={[styles.chip, { backgroundColor: on ? theme.color.ink : theme.color.ivory, borderColor: on ? theme.color.ink : theme.color.hairline }]}
+                style={[
+                  styles.chip,
+                  {
+                    backgroundColor: on ? theme.color.ink : theme.color.ivory,
+                    borderColor: on ? theme.color.ink : theme.color.hairline,
+                  },
+                ]}
               >
-                <Text style={{ fontFamily: sansFor(600), fontSize: 12.5, color: on ? theme.color.ivory : theme.color.inkSoft }}>{catOption.label}</Text>
+                <Text
+                  style={{
+                    fontFamily: sansFor(600),
+                    fontSize: 12.5,
+                    color: on ? theme.color.ivory : theme.color.inkSoft,
+                  }}
+                >
+                  {catOption.label}
+                </Text>
               </Pressable>
             );
           })}
@@ -194,10 +277,26 @@ export default function EarningsScreen() {
             <IconCal size={20} color={theme.color.persimmon} />
           </View>
           <Text style={styles.dk}>{dkLabel}</Text>
-          <Text style={{ fontFamily: theme.font.serif, fontSize: 40, lineHeight: 44, color: theme.color.ivory, marginTop: 2 }}>
+          <Text
+            style={{
+              fontFamily: theme.font.serif,
+              fontSize: 40,
+              lineHeight: 44,
+              color: theme.color.ivory,
+              marginTop: 2,
+            }}
+          >
             ₹{fmt(total)}
           </Text>
-          <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: delta > 0 ? '#7BD0A0' : delta < 0 ? theme.color.roseSoft : 'rgba(255,255,255,0.6)', marginTop: 2 }}>
+          <Text
+            style={{
+              fontFamily: sansFor(700),
+              fontSize: 13.5,
+              color:
+                delta > 0 ? '#7BD0A0' : delta < 0 ? theme.color.roseSoft : 'rgba(255,255,255,0.6)',
+              marginTop: 2,
+            }}
+          >
             {deltaLabel}
           </Text>
 
@@ -205,15 +304,29 @@ export default function EarningsScreen() {
             <View style={styles.drow}>
               {data.by_category.slice(0, 3).map((categoryEntry) => (
                 <View key={categoryEntry.category} style={{ flex: 1 }}>
-                  <Text style={{ fontFamily: theme.font.serif, fontSize: 19, color: theme.color.ivory }}>₹{fmtBig(categoryEntry.captured_paise)}</Text>
-                  <Text style={styles.dt}>{CATEGORY_LABEL[categoryEntry.category] ?? categoryEntry.category}</Text>
+                  <Text
+                    style={{ fontFamily: theme.font.serif, fontSize: 19, color: theme.color.ivory }}
+                  >
+                    ₹{fmtBig(categoryEntry.captured_paise)}
+                  </Text>
+                  <Text style={styles.dt}>
+                    {CATEGORY_LABEL[categoryEntry.category] ?? categoryEntry.category}
+                  </Text>
                 </View>
               ))}
             </View>
           ) : null}
 
-          <Text style={{ fontFamily: sansFor(600), fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 10 }}>
-            Net ₹{fmt(data?.net_paise ?? total)} after ₹{fmt(data?.commission_paise ?? 0)} Findemy commission
+          <Text
+            style={{
+              fontFamily: sansFor(600),
+              fontSize: 11.5,
+              color: 'rgba(255,255,255,0.5)',
+              marginTop: 10,
+            }}
+          >
+            Net ₹{fmt(data?.net_paise ?? total)} after ₹{fmt(data?.commission_paise ?? 0)} Findemy
+            commission
           </Text>
         </View>
 
@@ -236,25 +349,93 @@ export default function EarningsScreen() {
               return (
                 <View style={{ gap: 8 }}>
                   <Text style={styles.h2}>Settlement</Text>
-                  <View style={[styles.card, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm, { padding: 14, gap: 10 }]}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <View
+                    style={[
+                      styles.card,
+                      { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+                      theme.shadow.sm,
+                      { padding: 14, gap: 10 },
+                    ]}
+                  >
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
                       <View style={{ flex: 1 }}>
-                        <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }}>Reserve held</Text>
-                        <Text style={{ fontFamily: theme.font.sans, fontSize: 11.5, color: theme.color.mist, marginTop: 2 }}>
+                        <Text
+                          style={{
+                            fontFamily: sansFor(700),
+                            fontSize: 13.5,
+                            color: theme.color.ink,
+                          }}
+                        >
+                          Reserve held
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: theme.font.sans,
+                            fontSize: 11.5,
+                            color: theme.color.mist,
+                            marginTop: 2,
+                          }}
+                        >
                           10% rolling reserve, released after 60 days
                         </Text>
                       </View>
-                      <Text style={{ fontFamily: theme.font.serif, fontSize: 18, color: theme.color.ink }}>₹{fmt(held)}</Text>
+                      <Text
+                        style={{
+                          fontFamily: theme.font.serif,
+                          fontSize: 18,
+                          color: theme.color.ink,
+                        }}
+                      >
+                        ₹{fmt(held)}
+                      </Text>
                     </View>
                     {owed > 0 ? (
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderTopWidth: 1, borderTopColor: theme.color.hairline, paddingTop: 10 }}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          borderTopWidth: 1,
+                          borderTopColor: theme.color.hairline,
+                          paddingTop: 10,
+                        }}
+                      >
                         <View style={{ flex: 1 }}>
-                          <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.rose }}>Owed to Findemy</Text>
-                          <Text style={{ fontFamily: theme.font.sans, fontSize: 11.5, color: theme.color.mist, marginTop: 2 }}>
+                          <Text
+                            style={{
+                              fontFamily: sansFor(700),
+                              fontSize: 13.5,
+                              color: theme.color.rose,
+                            }}
+                          >
+                            Owed to Findemy
+                          </Text>
+                          <Text
+                            style={{
+                              fontFamily: theme.font.sans,
+                              fontSize: 11.5,
+                              color: theme.color.mist,
+                              marginTop: 2,
+                            }}
+                          >
                             From discontinuation refunds — netted from future payouts
                           </Text>
                         </View>
-                        <Text style={{ fontFamily: theme.font.serif, fontSize: 18, color: theme.color.rose }}>−₹{fmt(owed)}</Text>
+                        <Text
+                          style={{
+                            fontFamily: theme.font.serif,
+                            fontSize: 18,
+                            color: theme.color.rose,
+                          }}
+                        >
+                          −₹{fmt(owed)}
+                        </Text>
                       </View>
                     ) : null}
                   </View>
@@ -265,24 +446,76 @@ export default function EarningsScreen() {
             {data?.transactions && data.transactions.length > 0 ? (
               <View style={{ gap: 8 }}>
                 <Text style={styles.h2}>Recent transactions</Text>
-                <View style={[styles.card, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}>
+                <View
+                  style={[
+                    styles.card,
+                    { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+                    theme.shadow.sm,
+                  ]}
+                >
                   {data.transactions.map((transaction, index) => {
                     const out = transaction.dir === 'out';
                     const isCommission = /commission|fee/i.test(transaction.kind) || out;
                     return (
-                      <View key={transaction.id} style={[styles.tx, index > 0 && { borderTopWidth: 1, borderTopColor: theme.color.hairline }]}>
-                        <View style={[styles.txAv, { backgroundColor: isCommission ? theme.color.paperWarm : theme.color.persimmonSoft }]}>
-                          <Text style={{ fontFamily: sansFor(800), fontSize: 13, color: isCommission ? theme.color.whisper : theme.color.persimmonDeep }}>
+                      <View
+                        key={transaction.id}
+                        style={[
+                          styles.tx,
+                          index > 0 && { borderTopWidth: 1, borderTopColor: theme.color.hairline },
+                        ]}
+                      >
+                        <View
+                          style={[
+                            styles.txAv,
+                            {
+                              backgroundColor: isCommission
+                                ? theme.color.paperWarm
+                                : theme.color.persimmonSoft,
+                            },
+                          ]}
+                        >
+                          <Text
+                            style={{
+                              fontFamily: sansFor(800),
+                              fontSize: 13,
+                              color: isCommission ? theme.color.whisper : theme.color.persimmonDeep,
+                            }}
+                          >
                             {isCommission ? '%' : '₹'}
                           </Text>
                         </View>
                         <View style={{ flex: 1, minWidth: 0 }}>
-                          <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }} numberOfLines={1}>{transaction.label}</Text>
-                          <Text style={{ fontFamily: sansFor(600), fontSize: 11.5, color: theme.color.mist, marginTop: 1 }}>
-                            {new Date(transaction.at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                          <Text
+                            style={{
+                              fontFamily: sansFor(700),
+                              fontSize: 13.5,
+                              color: theme.color.ink,
+                            }}
+                            numberOfLines={1}
+                          >
+                            {transaction.label}
+                          </Text>
+                          <Text
+                            style={{
+                              fontFamily: sansFor(600),
+                              fontSize: 11.5,
+                              color: theme.color.mist,
+                              marginTop: 1,
+                            }}
+                          >
+                            {new Date(transaction.at).toLocaleDateString('en-IN', {
+                              day: 'numeric',
+                              month: 'short',
+                            })}
                           </Text>
                         </View>
-                        <Text style={{ fontFamily: sansFor(800), fontSize: 15, color: out ? theme.color.rose : theme.color.jade }}>
+                        <Text
+                          style={{
+                            fontFamily: sansFor(800),
+                            fontSize: 15,
+                            color: out ? theme.color.rose : theme.color.jade,
+                          }}
+                        >
                           {out ? '−' : '+'}₹{fmt(transaction.amount_paise)}
                         </Text>
                       </View>
@@ -291,14 +524,29 @@ export default function EarningsScreen() {
                 </View>
               </View>
             ) : (
-              <Text style={{ fontFamily: theme.font.sans, fontSize: 13, color: theme.color.mist, paddingVertical: 12 }}>
-                No earnings in this period{cat ? ` for ${CATS.find((catOption) => catOption.key === cat)?.label.toLowerCase()}` : ''}.
+              <Text
+                style={{
+                  fontFamily: theme.font.sans,
+                  fontSize: 13,
+                  color: theme.color.mist,
+                  paddingVertical: 12,
+                }}
+              >
+                No earnings in this period
+                {cat
+                  ? ` for ${CATS.find((catOption) => catOption.key === cat)?.label.toLowerCase()}`
+                  : ''}
+                .
               </Text>
             )}
 
             {/* Next payout */}
             <Pressable
-              style={[styles.payout, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}
+              style={[
+                styles.payout,
+                { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+                theme.shadow.sm,
+              ]}
               onPress={() => router.push('/(tabs)/settings' as never)}
             >
               <View style={[styles.payoutAv, { backgroundColor: theme.color.ink }]}>
@@ -307,10 +555,19 @@ export default function EarningsScreen() {
               <View style={{ flex: 1 }}>
                 <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }}>
                   {isScheduled
-                    ? `Next payout${nextPayout!.paid_at ? ` · ${new Date(nextPayout!.paid_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}` : ''}`
+                    ? `Next payout${nextPayout?.paid_at ? ` · ${new Date(nextPayout?.paid_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}` : ''}`
                     : 'Estimated payout'}
                 </Text>
-                <Text style={{ fontFamily: sansFor(600), fontSize: 12, color: theme.color.mist, marginTop: 2 }}>{bank} · ₹{fmt(payoutAmount)}</Text>
+                <Text
+                  style={{
+                    fontFamily: sansFor(600),
+                    fontSize: 12,
+                    color: theme.color.mist,
+                    marginTop: 2,
+                  }}
+                >
+                  {bank} · ₹{fmt(payoutAmount)}
+                </Text>
               </View>
               <IconChevR size={18} color={theme.color.whisper} />
             </Pressable>
@@ -319,15 +576,43 @@ export default function EarningsScreen() {
               <View style={{ gap: 8 }}>
                 <Text style={styles.h2}>By batch</Text>
                 {data.by_batch.map((batchEarning) => (
-                  <View key={batchEarning.batch_id} style={[styles.row, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
+                  <View
+                    key={batchEarning.batch_id}
+                    style={[
+                      styles.row,
+                      { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+                    ]}
+                  >
                     <View style={[styles.rowIcon, { backgroundColor: theme.color.jadeSoft }]}>
-                      <Text style={{ fontFamily: sansFor(800), fontSize: 14, color: theme.color.jade }}>₹</Text>
+                      <Text
+                        style={{ fontFamily: sansFor(800), fontSize: 14, color: theme.color.jade }}
+                      >
+                        ₹
+                      </Text>
                     </View>
                     <View style={{ flex: 1, minWidth: 0 }}>
-                      <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }} numberOfLines={1}>{batchEarning.batch_title}</Text>
-                      <Text style={{ fontFamily: sansFor(600), fontSize: 11.5, color: theme.color.mist, marginTop: 1 }}>{batchEarning.count} bookings</Text>
+                      <Text
+                        style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }}
+                        numberOfLines={1}
+                      >
+                        {batchEarning.batch_title}
+                      </Text>
+                      <Text
+                        style={{
+                          fontFamily: sansFor(600),
+                          fontSize: 11.5,
+                          color: theme.color.mist,
+                          marginTop: 1,
+                        }}
+                      >
+                        {batchEarning.count} bookings
+                      </Text>
                     </View>
-                    <Text style={{ fontFamily: theme.font.serif, fontSize: 18, color: theme.color.ink }}>₹{fmt(batchEarning.net_paise)}</Text>
+                    <Text
+                      style={{ fontFamily: theme.font.serif, fontSize: 18, color: theme.color.ink }}
+                    >
+                      ₹{fmt(batchEarning.net_paise)}
+                    </Text>
                   </View>
                 ))}
               </View>
@@ -336,16 +621,44 @@ export default function EarningsScreen() {
             {data?.payouts && data.payouts.length > 0 ? (
               <View style={{ gap: 8 }}>
                 <Text style={styles.h2}>Payouts</Text>
-                <View style={[styles.card, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }, theme.shadow.sm]}>
+                <View
+                  style={[
+                    styles.card,
+                    { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+                    theme.shadow.sm,
+                  ]}
+                >
                   {data.payouts.map((payout, index) => (
-                    <View key={payout.id} style={[styles.tx, index > 0 && { borderTopWidth: 1, borderTopColor: theme.color.hairline }]}>
+                    <View
+                      key={payout.id}
+                      style={[
+                        styles.tx,
+                        index > 0 && { borderTopWidth: 1, borderTopColor: theme.color.hairline },
+                      ]}
+                    >
                       <View style={{ flex: 1 }}>
-                        <Text style={{ fontFamily: sansFor(700), fontSize: 13.5, color: theme.color.ink }}>Payout #{payout.id.slice(0, 6)}</Text>
+                        <Text
+                          style={{
+                            fontFamily: sansFor(700),
+                            fontSize: 13.5,
+                            color: theme.color.ink,
+                          }}
+                        >
+                          Payout #{payout.id.slice(0, 6)}
+                        </Text>
                         <View style={{ marginTop: 3, alignSelf: 'flex-start' }}>
                           <Spill state={payout.status} />
                         </View>
                       </View>
-                      <Text style={{ fontFamily: theme.font.serif, fontSize: 16, color: theme.color.jade }}>₹{fmt(payout.amount_paise)}</Text>
+                      <Text
+                        style={{
+                          fontFamily: theme.font.serif,
+                          fontSize: 16,
+                          color: theme.color.jade,
+                        }}
+                      >
+                        ₹{fmt(payout.amount_paise)}
+                      </Text>
                     </View>
                   ))}
                 </View>
@@ -362,24 +675,106 @@ const styles = StyleSheet.create({
   container: { paddingVertical: 8, gap: 14, paddingBottom: 8 },
   seg: { flexDirection: 'row', gap: 4, borderRadius: 999, padding: 5 },
   segBtn: { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 999 },
-  stepper: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 4 },
-  stepBtn: { width: 38, height: 38, borderRadius: 12, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+  stepper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 4,
+  },
+  stepBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   rangeRow: { flexDirection: 'row', gap: 12 },
-  rangeLbl: { fontFamily: sansFor(700), fontSize: 11, letterSpacing: 1, textTransform: 'uppercase', color: '#8A8071', marginBottom: 6 },
-  rangeInput: { borderWidth: 1.5, borderRadius: 12, paddingVertical: 11, paddingHorizontal: 13, fontSize: 14, fontFamily: sansFor(400) },
+  rangeLbl: {
+    fontFamily: sansFor(700),
+    fontSize: 11,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: '#8A8071',
+    marginBottom: 6,
+  },
+  rangeInput: {
+    borderWidth: 1.5,
+    borderRadius: 12,
+    paddingVertical: 11,
+    paddingHorizontal: 13,
+    fontSize: 14,
+    fontFamily: sansFor(400),
+  },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { borderRadius: 999, borderWidth: 1, paddingVertical: 8, paddingHorizontal: 14 },
   dash: { borderRadius: 22, padding: 18, overflow: 'hidden' },
-  dcal: { position: 'absolute', top: 16, right: 16, width: 44, height: 44, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
-  dk: { fontFamily: sansFor(700), fontSize: 11, letterSpacing: 1.6, textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)' },
-  drow: { flexDirection: 'row', gap: 16, marginTop: 14, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.12)', paddingTop: 12 },
-  dt: { fontFamily: sansFor(700), fontSize: 11, letterSpacing: 0.8, textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginTop: 2 },
+  dcal: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    width: 44,
+    height: 44,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dk: {
+    fontFamily: sansFor(700),
+    fontSize: 11,
+    letterSpacing: 1.6,
+    textTransform: 'uppercase',
+    color: 'rgba(255,255,255,0.55)',
+  },
+  drow: {
+    flexDirection: 'row',
+    gap: 16,
+    marginTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.12)',
+    paddingTop: 12,
+  },
+  dt: {
+    fontFamily: sansFor(700),
+    fontSize: 11,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    color: 'rgba(255,255,255,0.55)',
+    marginTop: 2,
+  },
   h2: { fontFamily: tokens.font.serif, fontSize: 20, color: '#1A1611' },
   card: { borderRadius: 16, borderWidth: 1, paddingHorizontal: 14 },
   tx: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12 },
   txAv: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  payout: { flexDirection: 'row', alignItems: 'center', gap: 13, borderRadius: 16, borderWidth: 1, padding: 14 },
-  payoutAv: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 14, borderWidth: 1, padding: 12, paddingHorizontal: 14 },
-  rowIcon: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  payout: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 13,
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 14,
+  },
+  payoutAv: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 12,
+    paddingHorizontal: 14,
+  },
+  rowIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

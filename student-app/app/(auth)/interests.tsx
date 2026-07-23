@@ -1,21 +1,21 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, Modal, Pressable } from "react-native";
-import { useRouter } from "expo-router";
-import { useTheme, Button, Chip } from "@findemy/ui";
-import { AuthScaffold, AuthHeading, AuthSub, Em } from "@/components/auth/AuthScaffold";
-import { api } from "@/lib/api";
-import { useAuth } from "@/stores/auth";
-import type { Category } from "@findemy/types";
+import { AuthHeading, AuthScaffold, AuthSub, Em } from '@/components/auth/AuthScaffold';
+import { api } from '@/lib/api';
+import { useAuth } from '@/stores/auth';
+import type { Category } from '@findemy/types';
+import { Button, Chip, useTheme } from '@findemy/ui';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 type CategoryDef = { key: Category; label: string };
 
 // Only the four real Category values are wired to the API. (The prototype also
 // shows Pottery/Theatre/Singing/Drums chips, but those aren't in the data model.)
 const CATEGORIES: CategoryDef[] = [
-  { key: "music", label: "🎵 Music" },
-  { key: "dance", label: "💃 Dance" },
-  { key: "arts",  label: "🎨 Arts" },
-  { key: "yoga",  label: "🧘 Yoga" },
+  { key: 'music', label: '🎵 Music' },
+  { key: 'dance', label: '💃 Dance' },
+  { key: 'arts', label: '🎨 Arts' },
+  { key: 'yoga', label: '🧘 Yoga' },
 ];
 
 export default function InterestsScreen() {
@@ -44,7 +44,7 @@ export default function InterestsScreen() {
       if (attendanceOtp) {
         setShowOtp(true);
       } else {
-        router.replace("/(tabs)");
+        router.replace('/(tabs)');
       }
     } catch {
       // error toast (TODO)
@@ -56,12 +56,24 @@ export default function InterestsScreen() {
   return (
     <AuthScaffold
       footer={
-        <View style={[styles.footer, { backgroundColor: theme.color.paperWarm, borderTopColor: theme.color.hairline }]}>
-          <Text style={{ flex: 1, fontFamily: theme.font.sans, fontSize: 12, color: theme.color.mist }}>
+        <View
+          style={[
+            styles.footer,
+            { backgroundColor: theme.color.paperWarm, borderTopColor: theme.color.hairline },
+          ]}
+        >
+          <Text
+            style={{ flex: 1, fontFamily: theme.font.sans, fontSize: 12, color: theme.color.mist }}
+          >
             {selected.length} of {CATEGORIES.length} selected
           </Text>
-          <Pressable onPress={() => router.replace("/(tabs)")} style={{ paddingHorizontal: 12, paddingVertical: 10 }}>
-            <Text style={{ fontFamily: theme.font.sansSemibold, fontSize: 13, color: theme.color.mist }}>
+          <Pressable
+            onPress={() => router.replace('/(tabs)')}
+            style={{ paddingHorizontal: 12, paddingVertical: 10 }}
+          >
+            <Text
+              style={{ fontFamily: theme.font.sansSemibold, fontSize: 13, color: theme.color.mist }}
+            >
               Skip
             </Text>
           </Pressable>
@@ -90,9 +102,16 @@ export default function InterestsScreen() {
       </View>
 
       <Modal visible={showOtp} transparent animationType="fade">
-        <View style={[styles.modalOverlay, { backgroundColor: "rgba(0,0,0,0.5)" }]}>
+        <View style={[styles.modalOverlay, { backgroundColor: 'rgba(0,0,0,0.5)' }]}>
           <View style={[styles.modalContent, { backgroundColor: theme.color.ivory }]}>
-            <Text style={{ fontFamily: theme.font.serif, fontSize: 30, color: theme.color.ink, marginBottom: 8 }}>
+            <Text
+              style={{
+                fontFamily: theme.font.serif,
+                fontSize: 30,
+                color: theme.color.ink,
+                marginBottom: 8,
+              }}
+            >
               Your trial code
             </Text>
             <Text
@@ -100,12 +119,13 @@ export default function InterestsScreen() {
                 fontFamily: theme.font.sans,
                 fontSize: 13,
                 color: theme.color.mist,
-                textAlign: "center",
+                textAlign: 'center',
                 marginBottom: 24,
                 lineHeight: 18,
               }}
             >
-              Show this to academies when you arrive at trials. You can find it later in your profile.
+              Show this to academies when you arrive at trials. You can find it later in your
+              profile.
             </Text>
             <Text
               style={{
@@ -116,13 +136,13 @@ export default function InterestsScreen() {
                 marginBottom: 28,
               }}
             >
-              {attendanceOtp ?? "——————"}
+              {attendanceOtp ?? '——————'}
             </Text>
             <Button
               block
               onPress={() => {
                 setShowOtp(false);
-                router.replace("/(tabs)");
+                router.replace('/(tabs)');
               }}
             >
               Got it
@@ -136,14 +156,14 @@ export default function InterestsScreen() {
 
 const styles = StyleSheet.create({
   chips: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 10,
     marginTop: 24,
   },
   footer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 10,
     paddingHorizontal: 22,
     paddingTop: 14,
@@ -152,14 +172,14 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 24,
   },
   modalContent: {
-    width: "100%",
+    width: '100%',
     borderRadius: 28,
     padding: 28,
-    alignItems: "center",
+    alignItems: 'center',
   },
 });

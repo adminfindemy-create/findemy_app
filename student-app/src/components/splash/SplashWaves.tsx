@@ -1,5 +1,5 @@
-import { View, StyleSheet } from "react-native";
-import { useTheme } from "@findemy/ui";
+import { useTheme } from '@findemy/ui';
+import { StyleSheet, View } from 'react-native';
 
 /**
  * Organic corner washes (top-left plum→brown, bottom-right olive→jade).
@@ -24,7 +24,7 @@ export function SplashWaves() {
             top: -200,
             left: -180,
             borderBottomRightRadius: 320,
-            transform: [{ rotate: "-12deg" }],
+            transform: [{ rotate: '-12deg' }],
           },
         ]}
       />
@@ -40,7 +40,7 @@ export function SplashWaves() {
             top: -150,
             left: -120,
             borderBottomRightRadius: 220,
-            transform: [{ rotate: "-8deg" }],
+            transform: [{ rotate: '-8deg' }],
           },
         ]}
       />
@@ -56,7 +56,7 @@ export function SplashWaves() {
             bottom: -220,
             right: -160,
             borderTopLeftRadius: 320,
-            transform: [{ rotate: "-10deg" }],
+            transform: [{ rotate: '-10deg' }],
           },
         ]}
       />
@@ -72,7 +72,7 @@ export function SplashWaves() {
             bottom: -180,
             right: -120,
             borderTopLeftRadius: 240,
-            transform: [{ rotate: "-6deg" }],
+            transform: [{ rotate: '-6deg' }],
           },
         ]}
       />
@@ -82,6 +82,6 @@ export function SplashWaves() {
 
 const styles = StyleSheet.create({
   blob: {
-    position: "absolute",
+    position: 'absolute',
   },
 });

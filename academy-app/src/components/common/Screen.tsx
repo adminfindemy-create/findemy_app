@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { NAV_BAR_HEIGHT, useTheme } from '@findemy/ui';
+import type React from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme, NAV_BAR_HEIGHT } from '@findemy/ui';
 export { ScreenHeader } from './ScreenHeader';
 
 export function Screen({
@@ -25,10 +25,7 @@ export function Screen({
   // bar's height so content/buttons aren't hidden behind it. Otherwise just
   // clear the home indicator with the bottom safe-area inset (+ a little slack).
   const bottomPad = bottomTab ? NAV_BAR_HEIGHT + 8 : insets.bottom + 16;
-  const containerStyle = [
-    styles.content,
-    { backgroundColor: theme.color.paperWarm },
-  ];
+  const containerStyle = [styles.content, { backgroundColor: theme.color.paperWarm }];
   const padStyle = { paddingBottom: bottomPad };
 
   return (
@@ -45,7 +42,11 @@ export function Screen({
         <View
           style={[
             styles.footer,
-            { backgroundColor: theme.color.paperWarm, borderTopColor: theme.color.hairline, paddingBottom: insets.bottom + 10 },
+            {
+              backgroundColor: theme.color.paperWarm,
+              borderTopColor: theme.color.hairline,
+              paddingBottom: insets.bottom + 10,
+            },
           ]}
         >
           {footer}

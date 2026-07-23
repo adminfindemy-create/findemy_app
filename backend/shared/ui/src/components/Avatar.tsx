@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 export function Avatar({
@@ -31,11 +31,18 @@ export function Avatar({
           width: sizePx,
           height: sizePx,
           borderRadius: sizePx / 2,
-          backgroundColor: toneMap[tone] + '20',
+          backgroundColor: `${toneMap[tone]}20`,
         },
       ]}
     >
-      <Text style={{ color: toneMap[tone], fontSize: fontMap[size], fontWeight: '600', fontFamily: theme.font.sans }}>
+      <Text
+        style={{
+          color: toneMap[tone],
+          fontSize: fontMap[size],
+          fontWeight: '600',
+          fontFamily: theme.font.sans,
+        }}
+      >
         {initial.slice(0, 1).toUpperCase()}
       </Text>
     </View>

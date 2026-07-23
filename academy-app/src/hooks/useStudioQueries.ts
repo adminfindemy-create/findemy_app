@@ -1,24 +1,24 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { useAuth } from '@/stores/auth';
 import type {
-  DashboardData,
-  InboxResponse,
-  TrialDetail,
-  ScheduleItem,
+  ActivityItem,
   Batch,
-  StudentListItem,
-  StudentSnapshot,
-  Review,
-  ReviewsSummary,
+  CreateWorkshopRequestType,
+  DashboardData,
   EarningsData,
   EarningsPeriod,
+  InboxResponse,
+  Review,
+  ReviewsSummary,
+  ScheduleItem,
   Settings,
-  Workshop,
-  ActivityItem,
-  CreateWorkshopRequestType,
+  StudentListItem,
+  StudentSnapshot,
+  TrialDetail,
   UpdateWorkshopRequestType,
+  Workshop,
 } from '@findemy/types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export function useStudioDashboard() {
   const token = useAuth((state) => state.accessToken);
@@ -119,10 +119,14 @@ export function useCreateBatch() {
     // Batches are created under a program. Title/category/description are owned by the
     // program and derived server-side, so the batch form no longer sends them.
     mutationFn: (body: {
-      program_id: string; level: string;
-      capacity: number; trial_fee_paise: number;
-      monthly_fee_paise: number; coach_id: string;
-      quarterly_discount_bps?: number; annual_discount_bps?: number;
+      program_id: string;
+      level: string;
+      capacity: number;
+      trial_fee_paise: number;
+      monthly_fee_paise: number;
+      coach_id: string;
+      quarterly_discount_bps?: number;
+      annual_discount_bps?: number;
       sessions_per_month?: number;
       mode?: 'in-studio' | 'online';
       timings?: { day_of_week: number; start_time: string; duration_min: number }[];
@@ -168,8 +172,13 @@ export type ProgramMedia = { url: string; type: 'photo' | 'video' };
 export function useCreateProgram() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: { title: string; category: string; description: string; things_to_know?: string[]; media: ProgramMedia[] }) =>
-      api.studio.programs.create(body),
+    mutationFn: (body: {
+      title: string;
+      category: string;
+      description: string;
+      things_to_know?: string[];
+      media: ProgramMedia[];
+    }) => api.studio.programs.create(body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['studio', 'programs'] });
     },
@@ -179,8 +188,12 @@ export function useCreateProgram() {
 export function useUpdateProgram(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: { title?: string; description?: string; things_to_know?: string[]; media?: ProgramMedia[] }) =>
-      api.studio.programs.update(id, body),
+    mutationFn: (body: {
+      title?: string;
+      description?: string;
+      things_to_know?: string[];
+      media?: ProgramMedia[];
+    }) => api.studio.programs.update(id, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['studio', 'programs'] });
       queryClient.invalidateQueries({ queryKey: ['studio', 'program', id] });
@@ -227,13 +240,16 @@ export function useDiscontinueBatch(id: string) {
 }
 
 export function useFinishDiscontinuation(id: string) {
-  return useBatchLifecycleMutation(id, (batchId) => api.studio.batches.finishDiscontinuation(batchId));
+  return useBatchLifecycleMutation(id, (batchId) =>
+    api.studio.batches.finishDiscontinuation(batchId)
+  );
 }
 
 export function useRefundBlocker(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (enrollmentId: string) => api.studio.batches.refundDiscontinuation(id, enrollmentId),
+    mutationFn: (enrollmentId: string) =>
+      api.studio.batches.refundDiscontinuation(id, enrollmentId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['studio', 'batch', id, 'discontinuation'] });
       queryClient.invalidateQueries({ queryKey: ['studio', 'students'] });
@@ -245,12 +261,18 @@ export function useUpdateBatch(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: {
-      title?: string; category?: 'music' | 'dance' | 'arts' | 'yoga';
-      level?: string; capacity?: number;
-      description?: string; things_to_know?: string[];
-      trial_fee_paise?: number; monthly_fee_paise?: number;
-      coach_id?: string; status?: 'active' | 'inactive';
-      quarterly_discount_bps?: number; annual_discount_bps?: number;
+      title?: string;
+      category?: 'music' | 'dance' | 'arts' | 'yoga';
+      level?: string;
+      capacity?: number;
+      description?: string;
+      things_to_know?: string[];
+      trial_fee_paise?: number;
+      monthly_fee_paise?: number;
+      coach_id?: string;
+      status?: 'active' | 'inactive';
+      quarterly_discount_bps?: number;
+      annual_discount_bps?: number;
       sessions_per_month?: number;
       mode?: 'in-studio' | 'online';
       timings?: { day_of_week: number; start_time: string; duration_min: number }[];
@@ -263,7 +285,11 @@ export function useUpdateBatch(id: string) {
 }
 
 // S3.2: live "N of M checked in" roster (scanned / not-yet). Polls while the QR is shown.
-export function useSessionAttendance({ batchId, date, enabled = true }: { batchId: string; date?: string; enabled?: boolean }) {
+export function useSessionAttendance({
+  batchId,
+  date,
+  enabled = true,
+}: { batchId: string; date?: string; enabled?: boolean }) {
   const token = useAuth((state) => state.accessToken);
   return useQuery({
     queryKey: ['studio', 'batch', batchId, 'session-attendance', date ?? 'today'],
@@ -288,7 +314,11 @@ export function useStartLive() {
   });
 }
 
-export function useStudioStudents({ q, batch_id, attendance_tier }: { q?: string; batch_id?: string; attendance_tier?: string } = {}) {
+export function useStudioStudents({
+  q,
+  batch_id,
+  attendance_tier,
+}: { q?: string; batch_id?: string; attendance_tier?: string } = {}) {
   return useQuery<{ items: StudentListItem[]; next_cursor: string | null }>({
     queryKey: ['studio', 'students', q, batch_id, attendance_tier],
     queryFn: () => api.studio.students.list({ q, batch_id, attendance_tier, limit: 20 }),
@@ -332,9 +362,17 @@ export function useRespondReview() {
   });
 }
 
-export function useStudioEarnings(
-  { period, from, to, category }: { period?: EarningsPeriod; from?: string; to?: string; category?: 'trial' | 'enrollment' | 'workshop' } = {},
-) {
+export function useStudioEarnings({
+  period,
+  from,
+  to,
+  category,
+}: {
+  period?: EarningsPeriod;
+  from?: string;
+  to?: string;
+  category?: 'trial' | 'enrollment' | 'workshop';
+} = {}) {
   return useQuery<EarningsData>({
     queryKey: ['studio', 'earnings', period, from, to, category],
     queryFn: () => api.studio.earnings.get({ period, from, to, category }),
@@ -390,7 +428,17 @@ export function useUpdateStudioSettings() {
 }
 
 export function useBatchStudents(batchId: string) {
-  return useQuery<{ students: { id: string; name: string; phone: string; age: number | null; attendance_pct: number | null; tier: 'active' | 'irregular' | 'inactive' | null; last_seen: string | null }[] }>({
+  return useQuery<{
+    students: {
+      id: string;
+      name: string;
+      phone: string;
+      age: number | null;
+      attendance_pct: number | null;
+      tier: 'active' | 'irregular' | 'inactive' | null;
+      last_seen: string | null;
+    }[];
+  }>({
     queryKey: ['studio', 'batch', batchId, 'students'],
     queryFn: () => api.studio.batches.students(batchId),
     enabled: !!batchId,
@@ -486,8 +534,13 @@ export function useAssignCoachToBatch() {
 export function useCreateCoach() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: { name: string; specialty: string; bio?: string; phone?: string; avatar_url?: string | null }) =>
-      api.studio.coaches.create(body),
+    mutationFn: (body: {
+      name: string;
+      specialty: string;
+      bio?: string;
+      phone?: string;
+      avatar_url?: string | null;
+    }) => api.studio.coaches.create(body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['studio', 'coaches'] });
     },
@@ -497,8 +550,13 @@ export function useCreateCoach() {
 export function useUpdateCoach(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: { name?: string; specialty?: string; bio?: string; phone?: string; avatar_url?: string | null }) =>
-      api.studio.coaches.update(id, body),
+    mutationFn: (body: {
+      name?: string;
+      specialty?: string;
+      bio?: string;
+      phone?: string;
+      avatar_url?: string | null;
+    }) => api.studio.coaches.update(id, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['studio', 'coaches'] });
       queryClient.invalidateQueries({ queryKey: ['studio', 'coach', id] });
@@ -520,11 +578,11 @@ export function useDeleteCoach() {
 export function useCancelSession() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: { batch_id: string; session_date: string }) => api.studio.sessions.cancel(body),
+    mutationFn: (body: { batch_id: string; session_date: string }) =>
+      api.studio.sessions.cancel(body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['studio', 'batches'] });
       queryClient.invalidateQueries({ queryKey: ['studio', 'schedule'] });
     },
   });
 }
-

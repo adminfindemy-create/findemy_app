@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Alert, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useTheme, Input, Button, Chip } from '@findemy/ui';
-import type { AcademyAccount, Academy } from '@findemy/types';
+import { AuthHeading, AuthScaffold, AuthSub, Em } from '@/components/auth/AuthScaffold';
 import { api } from '@/lib/api';
 import { useAuth } from '@/stores/auth';
 import { useOnboarding } from '@/stores/onboarding';
-import { AuthScaffold, AuthHeading, AuthSub, Em } from '@/components/auth/AuthScaffold';
+import type { Academy, AcademyAccount } from '@findemy/types';
+import { Button, Chip, Input, useTheme } from '@findemy/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Alert, StyleSheet, Text, View } from 'react-native';
+import { z } from 'zod';
 
 const CATEGORIES = [
   { key: 'music', label: 'Music' },
@@ -32,9 +32,7 @@ const schema = z.object({
   category: z.enum(['music', 'dance', 'arts', 'yoga'], {
     errorMap: () => ({ message: 'Pick a category' }),
   }),
-  phone: z
-    .string()
-    .regex(/^\d{10}$/, 'Enter a 10-digit phone number'),
+  phone: z.string().regex(/^\d{10}$/, 'Enter a 10-digit phone number'),
   modesOffered: z
     .array(z.enum(['in_studio', 'online', 'home_visit']))
     .min(1, 'Pick at least one mode'),
@@ -45,13 +43,9 @@ type FormData = z.infer<typeof schema>;
 
 function coerceAccount(raw: Record<string, unknown> | undefined): AcademyAccount {
   const ownerName =
-    (raw?.ownerName as string | undefined) ??
-    (raw?.owner_name as string | undefined) ??
-    null;
+    (raw?.ownerName as string | undefined) ?? (raw?.owner_name as string | undefined) ?? null;
   const academyId =
-    (raw?.academyId as string | undefined) ??
-    (raw?.academy_id as string | undefined) ??
-    null;
+    (raw?.academyId as string | undefined) ?? (raw?.academy_id as string | undefined) ?? null;
   return {
     id: String(raw?.id ?? ''),
     phone: raw?.phone ? String(raw.phone) : null,
@@ -104,7 +98,7 @@ export default function OnboardingScreen() {
       city: onboardingStore.city,
       // Let zod's enum reject '' so the radio is genuinely required.
       // Cast through unknown to satisfy RHF's typed defaults.
-      category: (defaultCategory || ('' as unknown as FormData['category'])),
+      category: defaultCategory || ('' as unknown as FormData['category']),
       phone: defaultPhone,
       modesOffered: [],
       tagline: '',
@@ -214,7 +208,14 @@ export default function OnboardingScreen() {
         />
 
         <View>
-          <Text style={{ fontFamily: theme.font.sansBold, fontSize: 13, color: theme.color.inkSoft, marginBottom: 10 }}>
+          <Text
+            style={{
+              fontFamily: theme.font.sansBold,
+              fontSize: 13,
+              color: theme.color.inkSoft,
+              marginBottom: 10,
+            }}
+          >
             Primary category
           </Text>
           <Controller
@@ -236,7 +237,9 @@ export default function OnboardingScreen() {
                   ))}
                 </View>
                 {error?.message ? (
-                  <Text style={{ color: theme.color.rose, fontSize: 13, marginTop: 6 }}>{error.message}</Text>
+                  <Text style={{ color: theme.color.rose, fontSize: 13, marginTop: 6 }}>
+                    {error.message}
+                  </Text>
                 ) : null}
               </View>
             )}
@@ -244,7 +247,14 @@ export default function OnboardingScreen() {
         </View>
 
         <View>
-          <Text style={{ fontFamily: theme.font.sansBold, fontSize: 13, color: theme.color.inkSoft, marginBottom: 10 }}>
+          <Text
+            style={{
+              fontFamily: theme.font.sansBold,
+              fontSize: 13,
+              color: theme.color.inkSoft,
+              marginBottom: 10,
+            }}
+          >
             Modes offered
           </Text>
           <Controller
@@ -272,7 +282,9 @@ export default function OnboardingScreen() {
                   })}
                 </View>
                 {error?.message ? (
-                  <Text style={{ color: theme.color.rose, fontSize: 13, marginTop: 6 }}>{error.message}</Text>
+                  <Text style={{ color: theme.color.rose, fontSize: 13, marginTop: 6 }}>
+                    {error.message}
+                  </Text>
                 ) : null}
               </View>
             )}
@@ -310,7 +322,13 @@ export default function OnboardingScreen() {
               }}
               error={error?.message}
               prefix={
-                <Text style={{ fontFamily: theme.font.sansBold, fontSize: 16, color: theme.color.inkSoft }}>
+                <Text
+                  style={{
+                    fontFamily: theme.font.sansBold,
+                    fontSize: 16,
+                    color: theme.color.inkSoft,
+                  }}
+                >
                   +91
                 </Text>
               }
@@ -320,7 +338,14 @@ export default function OnboardingScreen() {
       </View>
 
       {errorMsg ? (
-        <Text style={{ color: theme.color.rose, fontFamily: theme.font.sans, fontSize: 13, marginTop: 12 }}>
+        <Text
+          style={{
+            color: theme.color.rose,
+            fontFamily: theme.font.sans,
+            fontSize: 13,
+            marginTop: 12,
+          }}
+        >
           {errorMsg}
         </Text>
       ) : null}

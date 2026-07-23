@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, type ViewStyle, type StyleProp } from 'react-native';
+import type React from 'react';
+import { type StyleProp, StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 // Prototype `.summary` card + `.sum-row` rows — a labelled key/value list used
@@ -47,10 +47,14 @@ export function SummaryRow({
       ]}
     >
       {icon ? (
-        <View style={[styles.iconWrap, { backgroundColor: theme.color.persimmonSoft }]}>{icon}</View>
+        <View style={[styles.iconWrap, { backgroundColor: theme.color.persimmonSoft }]}>
+          {icon}
+        </View>
       ) : null}
       <View style={{ flex: 1, minWidth: 0 }}>
-        <Text style={[styles.label, { color: theme.color.whisper, fontFamily: theme.font.sansBold }]}>
+        <Text
+          style={[styles.label, { color: theme.color.whisper, fontFamily: theme.font.sansBold }]}
+        >
           {label.toUpperCase()}
         </Text>
         {typeof value === 'string' ? (

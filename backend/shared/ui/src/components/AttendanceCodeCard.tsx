@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 // Prototype `.otp-box` — the dark card that shows a trial's 4-digit attendance
@@ -17,8 +17,12 @@ export function AttendanceCodeCard({
   return (
     <View style={[styles.box, { backgroundColor: theme.color.ink }]}>
       <Text style={[styles.label, { fontFamily: theme.font.sansBold }]}>{label.toUpperCase()}</Text>
-      <Text style={[styles.value, { fontFamily: theme.font.sansBold }]}>{code.split('').join(' ')}</Text>
-      {hint ? <Text style={[styles.hint, { fontFamily: theme.font.sansMedium }]}>{hint}</Text> : null}
+      <Text style={[styles.value, { fontFamily: theme.font.sansBold }]}>
+        {code.split('').join(' ')}
+      </Text>
+      {hint ? (
+        <Text style={[styles.hint, { fontFamily: theme.font.sansMedium }]}>{hint}</Text>
+      ) : null}
     </View>
   );
 }

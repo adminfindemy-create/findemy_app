@@ -1,10 +1,9 @@
-import React from "react";
-import { View, Text, Pressable, StyleSheet, ActivityIndicator } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme, Button, IconX, IconCamera } from "@findemy/ui";
-import { useLiveRoomToken } from "@/hooks/useLiveRoom";
-import { ApiError } from "@findemy/types";
+import { useLiveRoomToken } from '@/hooks/useLiveRoom';
+import { ApiError } from '@findemy/types';
+import { Button, IconCamera, IconX, useTheme } from '@findemy/ui';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function LiveClassRoom() {
   const { batch_id } = useLocalSearchParams<{ batch_id: string }>();
@@ -15,7 +14,10 @@ export default function LiveClassRoom() {
   const errorCode = error instanceof ApiError ? error.code : null;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.color.ink }]} edges={["top", "bottom"]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.color.ink }]}
+      edges={['top', 'bottom']}
+    >
       {/* Top bar: close */}
       <View style={styles.topbar}>
         <Pressable onPress={() => router.back()} style={styles.closeBtn} accessibilityLabel="Close">
@@ -26,19 +28,26 @@ export default function LiveClassRoom() {
       {isLoading ? (
         <View style={styles.center}>
           <ActivityIndicator color="#fff" size="large" />
-          <Text style={[styles.label, { fontFamily: theme.font.sans, color: "#fff", marginTop: 16 }]}>
+          <Text
+            style={[styles.label, { fontFamily: theme.font.sans, color: '#fff', marginTop: 16 }]}
+          >
             Connecting to class…
           </Text>
         </View>
       ) : error ? (
         <View style={styles.center}>
-          <Text style={[styles.heading, { fontFamily: theme.font.sansBold, color: "#fff" }]}>
-            {errorCode === "NOT_IN_SESSION" ? "Class isn't live yet" : "Unable to join"}
+          <Text style={[styles.heading, { fontFamily: theme.font.sansBold, color: '#fff' }]}>
+            {errorCode === 'NOT_IN_SESSION' ? "Class isn't live yet" : 'Unable to join'}
           </Text>
-          <Text style={[styles.label, { fontFamily: theme.font.sans, color: "rgba(255,255,255,0.6)", marginTop: 8 }]}>
-            {errorCode === "NOT_IN_SESSION"
+          <Text
+            style={[
+              styles.label,
+              { fontFamily: theme.font.sans, color: 'rgba(255,255,255,0.6)', marginTop: 8 },
+            ]}
+          >
+            {errorCode === 'NOT_IN_SESSION'
               ? "The class hasn't started. Join up to 10 min before your scheduled time."
-              : "Something went wrong. Please try again."}
+              : 'Something went wrong. Please try again.'}
           </Text>
           <View style={styles.cta}>
             <Button variant="primary" onPress={() => router.back()} block>
@@ -55,15 +64,27 @@ export default function LiveClassRoom() {
           <View style={[styles.badge, { backgroundColor: theme.color.jade }]}>
             <IconCamera size={34} color="#fff" />
           </View>
-          <Text style={[styles.heading, { fontFamily: theme.font.sansBold, color: "#fff", marginTop: 18 }]}>
+          <Text
+            style={[
+              styles.heading,
+              { fontFamily: theme.font.sansBold, color: '#fff', marginTop: 18 },
+            ]}
+          >
             You're in · {data?.room_name}
           </Text>
-          <Text style={[styles.label, { fontFamily: theme.font.sans, color: "rgba(255,255,255,0.6)", marginTop: 6 }]}>
+          <Text
+            style={[
+              styles.label,
+              { fontFamily: theme.font.sans, color: 'rgba(255,255,255,0.6)', marginTop: 6 },
+            ]}
+          >
             Live class in progress
           </Text>
 
           <View style={styles.tokenCard}>
-            <Text style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, fontFamily: theme.font.sans }}>
+            <Text
+              style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, fontFamily: theme.font.sans }}
+            >
               Room ID: {data?.room_id}
             </Text>
           </View>
@@ -84,8 +105,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topbar: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 12,
   },
@@ -93,32 +114,32 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: "rgba(255,255,255,0.1)",
+    backgroundColor: 'rgba(255,255,255,0.1)',
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.16)",
-    alignItems: "center",
-    justifyContent: "center",
+    borderColor: 'rgba(255,255,255,0.16)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   center: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 32,
   },
   badge: {
     width: 84,
     height: 84,
     borderRadius: 42,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   heading: {
     fontSize: 22,
-    textAlign: "center",
+    textAlign: 'center',
   },
   label: {
     fontSize: 14,
-    textAlign: "center",
+    textAlign: 'center',
     lineHeight: 20,
   },
   tokenCard: {
@@ -127,11 +148,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    backgroundColor: "rgba(255,255,255,0.08)",
-    borderColor: "rgba(255,255,255,0.12)",
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderColor: 'rgba(255,255,255,0.12)',
   },
   cta: {
     marginTop: 32,
-    alignSelf: "stretch",
+    alignSelf: 'stretch',
   },
 });

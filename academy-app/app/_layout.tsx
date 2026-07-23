@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import { useFonts } from 'expo-font';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ThemeProvider, PhoneStatusBar } from '@findemy/ui';
-import { Stack, useRouter, useSegments, useRootNavigationState } from 'expo-router';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ToastProvider } from '@/components/common/Toast';
 import { useAuth } from '@/stores/auth';
+import { PhoneStatusBar, ThemeProvider } from '@findemy/ui';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useFonts } from 'expo-font';
+import { Stack, useRootNavigationState, useRouter, useSegments } from 'expo-router';
+import { useEffect } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,7 +45,7 @@ function AuthGuard() {
       // Mirror exactly what onboarding requires of the user: an academy with a
       // name and category. (address is derived server-side from city and is not
       // a user-entered required field, so it must not gate the guard.)
-      const academyComplete = !!(academy && academy.name && academy.category);
+      const academyComplete = !!(academy?.name && academy.category);
 
       if (!academyComplete) {
         if (!onOnboarding) {

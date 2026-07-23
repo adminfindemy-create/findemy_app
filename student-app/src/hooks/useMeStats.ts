@@ -1,8 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { api } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
 
 export const useMeStats = () =>
   useQuery({
-    queryKey: ["me", "stats"],
+    queryKey: ['me', 'stats'],
     queryFn: () => api.me.getStats(),
   });

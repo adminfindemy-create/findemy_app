@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { View, Text, Pressable, ActivityIndicator, StyleSheet, Alert } from 'react-native';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
+import { useState } from 'react';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 import { IconPlus, IconX } from '../icons';
 
@@ -83,7 +83,12 @@ export function AttachmentPicker({
 
   if (value) {
     return (
-      <View style={[styles.tile, { borderColor: theme.color.hairline, backgroundColor: theme.color.paperWarm }]}>
+      <View
+        style={[
+          styles.tile,
+          { borderColor: theme.color.hairline, backgroundColor: theme.color.paperWarm },
+        ]}
+      >
         {value.type === 'photo' ? (
           <Image source={{ uri: value.url }} style={StyleSheet.absoluteFill} contentFit="cover" />
         ) : (
@@ -104,7 +109,12 @@ export function AttachmentPicker({
           </View>
         )}
         {!disabled ? (
-          <Pressable onPress={remove} style={styles.removeBtn} hitSlop={6} accessibilityLabel="Remove attachment">
+          <Pressable
+            onPress={remove}
+            style={styles.removeBtn}
+            hitSlop={6}
+            accessibilityLabel="Remove attachment"
+          >
             <IconX size={12} color="#fff" />
           </Pressable>
         ) : null}

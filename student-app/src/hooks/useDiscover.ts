@@ -1,14 +1,14 @@
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { api } from '@/lib/api';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
 export const useDiscoverTopRated = (location: { lat?: number | null; lng?: number | null }) =>
   useQuery({
-    queryKey: ["discover", "top-rated", location],
+    queryKey: ['discover', 'top-rated', location],
     queryFn: () =>
       api.academies.list({
         lat: location.lat ?? undefined,
         lng: location.lng ?? undefined,
-        sort: "top_rated",
+        sort: 'top_rated',
         limit: 5,
       }),
     enabled: location.lat != null && location.lng != null,
@@ -27,14 +27,14 @@ export const useInfiniteDiscover = (params: {
   enabled?: boolean;
 }) =>
   useInfiniteQuery({
-    queryKey: ["discover", "nearby", params],
+    queryKey: ['discover', 'nearby', params],
     queryFn: ({ pageParam }) =>
       api.academies.list({
         lat: params.lat ?? undefined,
         lng: params.lng ?? undefined,
         category: params.category || undefined,
         q: params.q || undefined,
-        sort: "distance",
+        sort: 'distance',
         cursor: pageParam,
         limit: 20,
         online: params.online || undefined,

@@ -1,6 +1,6 @@
+import { useAuth } from '@/stores/auth';
 import { createClient } from '@findemy/api-client';
 import { ApiError } from '@findemy/types';
-import { useAuth } from '@/stores/auth';
 
 const REFRESH_TIMEOUT_MS = 10_000;
 

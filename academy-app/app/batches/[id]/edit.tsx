@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Alert, Pressable, TextInput } from 'react-native';
-import { useTheme, Button, Chip, sansFor, tokens } from '@findemy/ui';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useStudioBatch, useDeleteBatch, useUpdateBatch, useStudioCoaches } from '@/hooks/useStudioQueries';
 import { Screen } from '@/components/common/Screen';
 import { ScreenHeader } from '@/components/common/ScreenHeader';
+import {
+  useDeleteBatch,
+  useStudioBatch,
+  useStudioCoaches,
+  useUpdateBatch,
+} from '@/hooks/useStudioQueries';
+import { Button, Chip, sansFor, tokens, useTheme } from '@findemy/ui';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const CATEGORIES = ['music', 'dance', 'arts', 'yoga'] as const;
@@ -67,7 +72,9 @@ export default function BatchEditScreen() {
   }, [existing]);
 
   const toggleDay = (dayNum: number) =>
-    setDays((prev) => (prev.includes(dayNum) ? prev.filter((day) => day !== dayNum) : [...prev, dayNum].sort()));
+    setDays((prev) =>
+      prev.includes(dayNum) ? prev.filter((day) => day !== dayNum) : [...prev, dayNum].sort()
+    );
 
   const onSubmit = async () => {
     if (!title.trim()) {
@@ -81,9 +88,16 @@ export default function BatchEditScreen() {
       return;
     }
     const dur = Number(durationMin) || 60;
-    const timings = days.map((dayNum) => ({ day_of_week: dayNum, start_time: startTime, duration_min: dur }));
+    const timings = days.map((dayNum) => ({
+      day_of_week: dayNum,
+      start_time: startTime,
+      duration_min: dur,
+    }));
     try {
-      const things = thingsToKnow.split('\n').map((line) => line.trim()).filter(Boolean);
+      const things = thingsToKnow
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean);
       await updateBatch.mutateAsync({
         title: title.trim(),
         category,
@@ -127,7 +141,7 @@ export default function BatchEditScreen() {
             }
           },
         },
-      ],
+      ]
     );
   };
 
@@ -151,7 +165,14 @@ export default function BatchEditScreen() {
   };
 
   const coaches = coachesData?.items ?? [];
-  const inputStyle = [styles.input, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline, color: theme.color.ink }];
+  const inputStyle = [
+    styles.input,
+    {
+      backgroundColor: theme.color.ivory,
+      borderColor: theme.color.hairline,
+      color: theme.color.ink,
+    },
+  ];
   const label = (t: string) => (
     <Text style={[styles.glabel, { color: theme.color.mist }]}>{t}</Text>
   );
@@ -160,17 +181,34 @@ export default function BatchEditScreen() {
     <Screen header={<ScreenHeader title="Edit batch" showBack />} bottomTab={null} scroll>
       <View style={styles.container}>
         {label('NAME')}
-        <TextInput value={title} onChangeText={setTitle} placeholder="Batch title" placeholderTextColor={theme.color.mist} style={inputStyle} />
+        <TextInput
+          value={title}
+          onChangeText={setTitle}
+          placeholder="Batch title"
+          placeholderTextColor={theme.color.mist}
+          style={inputStyle}
+        />
 
         {label('CATEGORY')}
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
           {CATEGORIES.map((categoryOption) => (
-            <Chip key={categoryOption} label={categoryOption} selected={category === categoryOption} onPress={() => setCategory(categoryOption)} />
+            <Chip
+              key={categoryOption}
+              label={categoryOption}
+              selected={category === categoryOption}
+              onPress={() => setCategory(categoryOption)}
+            />
           ))}
         </View>
 
         {label('LEVEL')}
-        <TextInput value={level} onChangeText={setLevel} placeholder="e.g. Beginner" placeholderTextColor={theme.color.mist} style={inputStyle} />
+        <TextInput
+          value={level}
+          onChangeText={setLevel}
+          placeholder="e.g. Beginner"
+          placeholderTextColor={theme.color.mist}
+          style={inputStyle}
+        />
 
         {label('ABOUT THIS BATCH')}
         <TextInput
@@ -202,10 +240,20 @@ export default function BatchEditScreen() {
                 onPress={() => toggleDay(index)}
                 style={[
                   styles.dayToggle,
-                  { backgroundColor: on ? theme.color.ink : theme.color.ivory, borderColor: on ? theme.color.ink : theme.color.hairline },
+                  {
+                    backgroundColor: on ? theme.color.ink : theme.color.ivory,
+                    borderColor: on ? theme.color.ink : theme.color.hairline,
+                  },
                 ]}
               >
-                <Text style={{ fontFamily: theme.font.sans, fontSize: 12, fontWeight: '600', color: on ? theme.color.ivory : theme.color.inkSoft }}>
+                <Text
+                  style={{
+                    fontFamily: theme.font.sans,
+                    fontSize: 12,
+                    fontWeight: '600',
+                    color: on ? theme.color.ivory : theme.color.inkSoft,
+                  }}
+                >
                   {label}
                 </Text>
               </Pressable>
@@ -216,11 +264,24 @@ export default function BatchEditScreen() {
         {label('TIME')}
         <View style={styles.twoCol}>
           <View style={{ flex: 1 }}>
-            <TextInput value={startTime} onChangeText={setStartTime} placeholder="18:00" placeholderTextColor={theme.color.mist} style={inputStyle} />
+            <TextInput
+              value={startTime}
+              onChangeText={setStartTime}
+              placeholder="18:00"
+              placeholderTextColor={theme.color.mist}
+              style={inputStyle}
+            />
             <Text style={[styles.hint, { color: theme.color.mist }]}>Start (HH:MM)</Text>
           </View>
           <View style={{ flex: 1 }}>
-            <TextInput value={durationMin} onChangeText={setDurationMin} keyboardType="number-pad" placeholder="60" placeholderTextColor={theme.color.mist} style={inputStyle} />
+            <TextInput
+              value={durationMin}
+              onChangeText={setDurationMin}
+              keyboardType="number-pad"
+              placeholder="60"
+              placeholderTextColor={theme.color.mist}
+              style={inputStyle}
+            />
             <Text style={[styles.hint, { color: theme.color.mist }]}>Duration (min)</Text>
           </View>
         </View>
@@ -235,13 +296,30 @@ export default function BatchEditScreen() {
                 onPress={() => setMode(modeOption)}
                 style={[
                   styles.modeCard,
-                  { backgroundColor: on ? theme.color.persimmonSoft : theme.color.ivory, borderColor: on ? theme.color.persimmon : theme.color.hairline },
+                  {
+                    backgroundColor: on ? theme.color.persimmonSoft : theme.color.ivory,
+                    borderColor: on ? theme.color.persimmon : theme.color.hairline,
+                  },
                 ]}
               >
-                <Text style={{ fontFamily: theme.font.sans, fontSize: 13, fontWeight: '600', color: theme.color.ink }}>
+                <Text
+                  style={{
+                    fontFamily: theme.font.sans,
+                    fontSize: 13,
+                    fontWeight: '600',
+                    color: theme.color.ink,
+                  }}
+                >
                   {modeOption === 'in-studio' ? 'In studio' : 'Online'}
                 </Text>
-                <Text style={{ fontFamily: theme.font.sans, fontSize: 10, color: theme.color.mist, marginTop: 2 }}>
+                <Text
+                  style={{
+                    fontFamily: theme.font.sans,
+                    fontSize: 10,
+                    color: theme.color.mist,
+                    marginTop: 2,
+                  }}
+                >
                   {modeOption === 'in-studio' ? 'At your address' : 'Join via video call'}
                 </Text>
               </Pressable>
@@ -251,40 +329,120 @@ export default function BatchEditScreen() {
 
         {label('PLAN DISCOUNTS (≤30%)')}
         <View style={styles.twoCol}>
-          <View style={[styles.priceTile, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
+          <View
+            style={[
+              styles.priceTile,
+              { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+            ]}
+          >
             <Text style={[styles.priceLabel, { color: theme.color.mist }]}>QUARTERLY %</Text>
-            <TextInput value={quarterlyDiscount} onChangeText={setQuarterlyDiscount} keyboardType="number-pad" placeholder="0" placeholderTextColor={theme.color.mist} style={[styles.priceInput, { color: theme.color.ink }]} />
+            <TextInput
+              value={quarterlyDiscount}
+              onChangeText={setQuarterlyDiscount}
+              keyboardType="number-pad"
+              placeholder="0"
+              placeholderTextColor={theme.color.mist}
+              style={[styles.priceInput, { color: theme.color.ink }]}
+            />
           </View>
-          <View style={[styles.priceTile, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
+          <View
+            style={[
+              styles.priceTile,
+              { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+            ]}
+          >
             <Text style={[styles.priceLabel, { color: theme.color.mist }]}>ANNUAL %</Text>
-            <TextInput value={annualDiscount} onChangeText={setAnnualDiscount} keyboardType="number-pad" placeholder="0" placeholderTextColor={theme.color.mist} style={[styles.priceInput, { color: theme.color.ink }]} />
+            <TextInput
+              value={annualDiscount}
+              onChangeText={setAnnualDiscount}
+              keyboardType="number-pad"
+              placeholder="0"
+              placeholderTextColor={theme.color.mist}
+              style={[styles.priceInput, { color: theme.color.ink }]}
+            />
           </View>
         </View>
 
         {existing?.trial_spots != null ? (
-          <Text style={{ fontFamily: theme.font.sans, fontSize: 12, color: theme.color.mist, marginTop: 10 }}>
-            {existing.trial_spots} trial spot{existing.trial_spots === 1 ? '' : 's'} open · spots open automatically (capacity − enrolled)
+          <Text
+            style={{
+              fontFamily: theme.font.sans,
+              fontSize: 12,
+              color: theme.color.mist,
+              marginTop: 10,
+            }}
+          >
+            {existing.trial_spots} trial spot{existing.trial_spots === 1 ? '' : 's'} open · spots
+            open automatically (capacity − enrolled)
           </Text>
         ) : null}
 
         {label('PRICING')}
         <View style={styles.twoCol}>
-          <View style={[styles.priceTile, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
+          <View
+            style={[
+              styles.priceTile,
+              { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+            ]}
+          >
             <Text style={[styles.priceLabel, { color: theme.color.mist }]}>TRIAL ₹</Text>
-            <TextInput value={trialFee} onChangeText={setTrialFee} keyboardType="number-pad" placeholder="0" placeholderTextColor={theme.color.mist} style={[styles.priceInput, { color: theme.color.ink }]} />
+            <TextInput
+              value={trialFee}
+              onChangeText={setTrialFee}
+              keyboardType="number-pad"
+              placeholder="0"
+              placeholderTextColor={theme.color.mist}
+              style={[styles.priceInput, { color: theme.color.ink }]}
+            />
           </View>
-          <View style={[styles.priceTile, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
+          <View
+            style={[
+              styles.priceTile,
+              { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+            ]}
+          >
             <Text style={[styles.priceLabel, { color: theme.color.mist }]}>MONTHLY ₹</Text>
-            <TextInput value={monthlyFee} onChangeText={setMonthlyFee} keyboardType="number-pad" placeholder="0" placeholderTextColor={theme.color.mist} style={[styles.priceInput, { color: theme.color.ink }]} />
+            <TextInput
+              value={monthlyFee}
+              onChangeText={setMonthlyFee}
+              keyboardType="number-pad"
+              placeholder="0"
+              placeholderTextColor={theme.color.mist}
+              style={[styles.priceInput, { color: theme.color.ink }]}
+            />
           </View>
-          <View style={[styles.priceTile, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
+          <View
+            style={[
+              styles.priceTile,
+              { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+            ]}
+          >
             <Text style={[styles.priceLabel, { color: theme.color.mist }]}>CAPACITY</Text>
-            <TextInput value={capacity} onChangeText={setCapacity} keyboardType="number-pad" placeholder="10" placeholderTextColor={theme.color.mist} style={[styles.priceInput, { color: theme.color.ink }]} />
+            <TextInput
+              value={capacity}
+              onChangeText={setCapacity}
+              keyboardType="number-pad"
+              placeholder="10"
+              placeholderTextColor={theme.color.mist}
+              style={[styles.priceInput, { color: theme.color.ink }]}
+            />
           </View>
           {/* S3.4: classes per month — the entitled count */}
-          <View style={[styles.priceTile, { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline }]}>
+          <View
+            style={[
+              styles.priceTile,
+              { backgroundColor: theme.color.ivory, borderColor: theme.color.hairline },
+            ]}
+          >
             <Text style={[styles.priceLabel, { color: theme.color.mist }]}>CLASSES/MO</Text>
-            <TextInput value={sessionsPerMonth} onChangeText={setSessionsPerMonth} keyboardType="number-pad" placeholder="8" placeholderTextColor={theme.color.mist} style={[styles.priceInput, { color: theme.color.ink }]} />
+            <TextInput
+              value={sessionsPerMonth}
+              onChangeText={setSessionsPerMonth}
+              keyboardType="number-pad"
+              placeholder="8"
+              placeholderTextColor={theme.color.mist}
+              style={[styles.priceInput, { color: theme.color.ink }]}
+            />
           </View>
         </View>
 
@@ -293,7 +451,12 @@ export default function BatchEditScreen() {
             {label('INSTRUCTOR')}
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
               {coaches.map((coach: any) => (
-                <Chip key={coach.id} label={coach.name} selected={coachId === coach.id} onPress={() => setCoachId(coach.id)} />
+                <Chip
+                  key={coach.id}
+                  label={coach.name}
+                  selected={coachId === coach.id}
+                  onPress={() => setCoachId(coach.id)}
+                />
               ))}
             </View>
           </>
@@ -305,17 +468,45 @@ export default function BatchEditScreen() {
         </Button>
 
         {/* Pause danger row */}
-        <View style={[styles.dangerRow, { backgroundColor: theme.color.roseSoft, borderColor: theme.color.rose }]}>
+        <View
+          style={[
+            styles.dangerRow,
+            { backgroundColor: theme.color.roseSoft, borderColor: theme.color.rose },
+          ]}
+        >
           <View style={{ flex: 1 }}>
-            <Text style={{ fontFamily: theme.font.sans, fontSize: 13, fontWeight: '600', color: theme.color.ink }}>
+            <Text
+              style={{
+                fontFamily: theme.font.sans,
+                fontSize: 13,
+                fontWeight: '600',
+                color: theme.color.ink,
+              }}
+            >
               {status === 'active' ? 'Pause this batch' : 'Batch is paused'}
             </Text>
-            <Text style={{ fontFamily: theme.font.sans, fontSize: 11, color: theme.color.inkSoft, marginTop: 2 }}>
+            <Text
+              style={{
+                fontFamily: theme.font.sans,
+                fontSize: 11,
+                color: theme.color.inkSoft,
+                marginTop: 2,
+              }}
+            >
               Stops new sign-ups · students notified
             </Text>
           </View>
           <Pressable onPress={onPause}>
-            <Text style={{ fontFamily: theme.font.sans, fontSize: 11, color: theme.color.rose, fontWeight: '700', letterSpacing: 0.6, textTransform: 'uppercase' }}>
+            <Text
+              style={{
+                fontFamily: theme.font.sans,
+                fontSize: 11,
+                color: theme.color.rose,
+                fontWeight: '700',
+                letterSpacing: 0.6,
+                textTransform: 'uppercase',
+              }}
+            >
               {status === 'active' ? 'Pause' : 'Resume'}
             </Text>
           </Pressable>
