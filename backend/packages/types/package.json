@@ -1,0 +1,10 @@
+{
+  "name": "@findemy/types",
+  "version": "1.0.0",
+  "description": "Shim types package for the backend API. Extracted from the schemas the routes actually consume so the backend can compile + boot without depending on the (missing) upstream packages/types checkout.",
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "zod": "^3.23.0"
+  }
+}
